@@ -6,13 +6,11 @@ module.exports =  async(client, guildId)=>{
     if(guildId){
         const guild = await client.guilds.fetch(guildId);
         applicationCommands = guild.commands;
-        console.log(guild.commands);
     }
     else{
         applicationCommands = await client.application.commands;
     }
     await applicationCommands.fetch();
     
-    console.log(applicationCommands);
     return applicationCommands;
 }
