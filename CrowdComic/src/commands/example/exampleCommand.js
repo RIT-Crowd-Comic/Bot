@@ -3,10 +3,11 @@
 const {ApplicationCommandOptionType, PermissionFlagsBits} = require('discord.js');
 //every command needs to export a command object
 module.exports = {
+    deleted: false, //deleted (optional) specifies if this command shouldn't be on the server/guild
     name: 'example',  //a name(required)
     description: 'test', //a description(required)
     devOnly: false, //a devonly flag(optional)
-    testOnly: false, //a testonly flaf(optional)
+    testOnly: false, //a testonly flag(optional)
     //options(optional)
     options:  [
         {
@@ -24,10 +25,12 @@ module.exports = {
 
         }
     ],
-    permissionsRequired: [PermissionFlagsBits.],
+    permissionsRequired: [PermissionFlagsBits.ViewChannel], //permissions(optional) check intellisense or docs to view permission options
+    //https://discord.com/developers/docs/topics/permissions
 
-    //logic
+    //logic for the command in the form of a callback function
+    //interaction stores the data of the interaction, like button press, user, data input etc
     callback: (client, interaction) =>{
-        interaction.reply(`Ban...`);
+        interaction.reply(`Test`);
     }
 };
