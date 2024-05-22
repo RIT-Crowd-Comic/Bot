@@ -12,7 +12,6 @@ module.exports = {
 
         const ping = reply.createdTimestamp - interaction.createdTimestamp;
 
-        interaction.editReply(`Client ${ping}ms | Websocket: ${client.ws.ping}ms`);
-        
+        interaction.editReply(`Client ${ping}ms | Websocket: ${client.ws.ping}ms`);  
     }
 };

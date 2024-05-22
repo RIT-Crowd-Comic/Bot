@@ -1,18 +1,18 @@
 const { roles } = require('../../../config.json');
 const {ActionRowBuilder, ButtonStyle, ButtonBuilder} = require('discord.js');
 
-
+//NOTE the bot has to have a higher role than others to properly assign roles
 module.exports = {
     name: 'roles',
     description: 'Brings up a menu to assign a role',
     devOnly: false,
     testOnly: false,
 
-    //logic
+    //logic, 
     callback: async(client, interaction) =>{
         interaction.reply(`Sending Roles...`);
         try {
-            const channel = await client.channels.cache.get('1242556174591594576');
+            const channel = await interaction.channel;
             if(!channel) return;
     
             const row = new ActionRowBuilder();
