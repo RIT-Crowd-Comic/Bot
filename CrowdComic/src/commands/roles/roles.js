@@ -1,6 +1,6 @@
 const { roles } = require('../../../config.json');
 const {ActionRowBuilder, ButtonStyle, ButtonBuilder} = require('discord.js');
-
+//Shows buttons for roles on command
 //NOTE the bot has to have a higher role than others to properly assign roles
 module.exports = {
     name: 'roles',
