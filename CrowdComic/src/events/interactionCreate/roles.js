@@ -5,9 +5,11 @@
 //
 
 module.exports = async (client, interaction) => {
+  return; // temporarily remove
     try {
         //if not a button, return
         if (!interaction.isButton()) return;
+
         //wait for a reply
         await interaction.deferReply({ ephemeral: true });
         //get the role from the interaction (buttons)
