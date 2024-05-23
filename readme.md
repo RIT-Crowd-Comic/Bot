@@ -54,11 +54,11 @@ Generate a token for the application by going to the wanted application under th
 	]
 }
 ```
-`testServer` Is the id of the server that the bot is running/testing on.
-`clientId` Is the id of the bot application.
-`devs` Are the discord Id's for the developers, is useful if certain features are dev only.
-`rolesChannelId` Is the id of the discord channel that the roles button will populate when the bot is started.
-`roles` Is the data for each role, including an `id`  for identification and a `label` for display.
+`testServer` is the id of the server that the bot is running/testing on.
+`clientId` is the id of the bot application.
+`devs` are the discord id's for the developers, is useful if certain features are dev only.
+`rolesChannelId` is the id of the discord channel that the roles button will populate when the bot is started.
+`roles` is the data for each role, including an `id`  for identification and a `label` for display.
 
 
 
