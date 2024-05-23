@@ -44,13 +44,13 @@ module.exports = {
             //save the message
             addMessage(parsedMessage);
 
-            interaction.reply({
+            await interaction.reply({
               content:`Remembered: "${msg.content}"`,
               ephemeral: true,
             });
         }
         catch(error){ 
-            interaction.reply({
+            await interaction.reply({
                 content:`Unable to find message. ${error}`,
                 ephemeral: true,
             }); 

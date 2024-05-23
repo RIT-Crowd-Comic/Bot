@@ -2,7 +2,7 @@ const getAllTextChannels = require('./getAllTextChannels');
 
 const rememberedMessages = []
 
-const addMessage = (message) => { rememberedMessages.push(message); console.log(rememberedMessages); }
+const addMessage = (message) => { rememberedMessages.push(message);}
 const getRememberedMessage = () => { return rememberedMessages }
 const clearRememeberedMessage = () => { rememberedMessages = [] }
 
