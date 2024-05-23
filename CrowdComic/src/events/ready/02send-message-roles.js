@@ -9,6 +9,6 @@ module.exports = async(client) =>{
     const getRoles = require('../../utils/getRoles');
     console.log(getRoles);
 
-    getRoles(client, channel);
+    await getRoles(client, channel);
     
 };

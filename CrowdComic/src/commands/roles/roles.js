@@ -9,12 +9,13 @@ module.exports = {
 
     //logic, 
     callback: async(client, interaction) =>{
-        interaction.reply(`Sending Roles...`);
+        
 
         const channel = await interaction.channel;
         if(!channel) return;
+        interaction.reply(`Sending Roles...`);
 
-        getRoles(client, channel);
+        await getRoles(client, channel);
     }
     
         
