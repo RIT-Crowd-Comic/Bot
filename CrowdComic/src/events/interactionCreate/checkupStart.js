@@ -6,23 +6,23 @@
  * Handle when a user interacts with the checkup notification
  */
 
-const { ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } = require("discord.js");
+const { ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, Client } = require("discord.js");
 
 
 
 
 /**
  * 
- * @param {*} client 
+ * @param {Client} client 
  * @param {CommandInteraction} interaction 
  * @returns 
  */
 module.exports = async (client, interaction) => {
 
-    try {
-        // only handling button interactions with the checkup interface
-        if (!interaction.isButton()) return;
+    // only handling button interactions with the checkup interface
+    if (!interaction?.isButton()) return;
 
+    try {
         // user clicked yes, start the survey
         if (interaction.customId === 'checkup-start-btn') {
             const checkupForm = new ModalBuilder()
@@ -58,25 +58,22 @@ module.exports = async (client, interaction) => {
                         .setRequired(false)
                 );
 
-            checkupForm.addComponents(roses, buds)
+            checkupForm.addComponents(roses, thorns)
 
             await interaction.showModal(checkupForm);
         }
 
         // user clicked no, stop bothering them
         else if (interaction.customId === 'checkup-cancel-btn') {
-            await interaction.deferReply({ephemeral: true});
+            await interaction.reply(
+                {
+                    ephemeral: true,
+                    content: `Thanks for responding! Make sure to take short breaks and to drink plenty of water!`
+                }
+            );
         }
 
         else return; // user didn't interact with either of these buttons, do nothing
-
-        // User interacted with either button
-        // Give them encouraging words and stop bothering them (for now)
-        await interaction.followUp({
-            ephemeral: true,
-            content: `Thanks for responding! Make sure to take short breaks and to drink plenty of water.`
-        });
-
     }
     catch (error) {
         console.log(error);
