@@ -22,7 +22,6 @@ module.exports = (client) =>{
             for(const eventFile of eventFiles){
                 const eventFunction = require(eventFile);
                 await eventFunction(client, arg);
-                console.log(eventFile);
             }
         })
     }
