@@ -5,6 +5,9 @@ const {ActionRowBuilder, ButtonStyle, ButtonBuilder} = require('discord.js');
 //send the roles message into a specific channel - id is inside of config.json
 module.exports = async(client) =>{
     try {
+        //temp return
+        return;
+        
         //gets the channel
         const channel = await client.channels.cache.get(rolesChannelId);
         if(!channel) return;

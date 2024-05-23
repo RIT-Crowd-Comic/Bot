@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
+//gets all the files within a specified directory, foldersonly makes it only return folders
 module.exports = (directory, foldersOnly = false) => {
     let fileNames = [];
 

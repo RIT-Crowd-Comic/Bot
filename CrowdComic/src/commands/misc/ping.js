@@ -1,3 +1,4 @@
+//checks ping of the client (bot) and the ping of the server
 module.exports = {
     name: 'ping',
     description: 'Replies with a bot ping',
