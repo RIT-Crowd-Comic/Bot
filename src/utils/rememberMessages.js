@@ -42,6 +42,7 @@ const saveNumberMessages = async(numberToSave, channel, id) =>{
     let messages;
     //get the messages
 
+    //if id begin there
     if (id) 
         messages = await channel.messages.fetch({ cache: false, limit: numberToSave, before: id });
     else

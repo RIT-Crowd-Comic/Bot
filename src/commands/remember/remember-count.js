@@ -1,6 +1,5 @@
 const {ApplicationCommandOptionType} = require('discord.js');
 const {saveNumberMessages} = require("../../utils/rememberMessages");
-const { clientId } = require('../../../config.json');
 
 //remembers a message based on a message id parameter
 module.exports = {
@@ -9,14 +8,14 @@ module.exports = {
     options:  [
         {
             name: 'number-of-messages',
-            description: 'The number of messages to save. Max 600.',
+            description: 'The number of messages to save. Max 1000.',
             required: true,
             type: ApplicationCommandOptionType.Number,
         },
         {
             name: 'channel-id',
             description: 'Id of the channel to search.',
-            type: ApplicationCommandOptionType.Boolean,
+            type: ApplicationCommandOptionType.String,
         },
     ],
 
@@ -38,7 +37,7 @@ module.exports = {
             let num = numberOfMessages;
             let startId;
 
-            //check if over 100, if so loop
+            //check if over 100, if so loop to continue grabbing messages
             if(num > 100)
             {
                 startId = await saveNumberMessages(100, channel);
@@ -60,14 +59,14 @@ module.exports = {
             
             //show that it saved
             interaction.editReply({
-                content:`Remembered the last "${numberOfMessages}"`,
-                ephemeral: true,
+                content:`Remembered the last "${numberOfMessages} messages"`,
+                ephemeral: false,
             });
         }
         catch(error){ 
             await interaction.editReply({
                 content:`Something went wrong. ${error}`,
-                ephemeral: true,
+                ephemeral: false,
             }); 
         }
     }

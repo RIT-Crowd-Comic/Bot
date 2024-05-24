@@ -1,133 +1,65 @@
 Messages: 
-                
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                
-                
-                Sent Message
-                
-                Claim a role below.
-                
-                Remembered the last "1000"
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Remembered the last "1000"
-                
-                Claim a role below.
-                
-                
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                "1243312054329409593"
-                
-                Remembered the last "200"
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                
-                
-                Sent Message
-                
-                Remembered the last "1000"
-                
-                /r
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                
-                
-                Sent Message
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Remembered the last "1000"
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                
-                
-                Sent Message
-                
-                Remembered the last "150"
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                
-                
-                Sent Message
-                
-                Claim a role below.
-                
-                Remembered the last "150"
-                
-                10
-                
-                10
-                
-                10
-                
-                10
-                
-                9
-                
-                8
-                
-                7
-                
-                6
-                
                 5
+                
+                4
+                
+                3
+                
+                2
+                
+                1
+                
+                that's all, thanks
+                
+                these are the bots that have access. Let me know if you need anything else
+                
+                I kind of want to see if the bots use user permissions or its own permissions to display channels
+                
+                can you give the bots access to the hidden channels?
+                
+                do you need anything else?
+                
+                nope
+                
+                <@405162577673453569> do you see <#1242891173937287191> ?
+                
+                ok
+                
+                sure, i might need to change permission for everyone
+                
+                <@330475170835726347> can you create a channel that I don't have access to?
+                
+                
+                
+                Claim a role below.
+                
+                Sending Roles...
+                
+                Pong! 47ms
+                
+                
+                
+                
+                
+                /list commands
+                
+                
+                
+                
+                
+                roles avaible:
+                
+                
+                
+                fda'
+                
+                wa
+                
+                
+                
+                
+                
+                
                 
                 5
                 
@@ -139,406 +71,57 @@ Messages:
                 
                 1
                 
+                that's all, thanks
                 
+                these are the bots that have access. Let me know if you need anything else
                 
-                Sent Message
+                I kind of want to see if the bots use user permissions or its own permissions to display channels
                 
-                Claim a role below.
+                can you give the bots access to the hidden channels?
                 
-                Claim a role below.
+                do you need anything else?
                 
-                Claim a role below.
+                nope
                 
-                Claim a role below.
+                <@405162577673453569> do you see <#1242891173937287191> ?
                 
-                Claim a role below.
+                ok
                 
-                Claim a role below.
+                sure, i might need to change permission for everyone
                 
-                Claim a role below.
+                <@330475170835726347> can you create a channel that I don't have access to?
                 
                 
-                
-                Sent Message
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                
-                
-                Claim a role below.
-                
-                
-                
-                Claim a role below.
-                
-                
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Sent Message
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Sent Message
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Unable to find message. ReferenceError: updatedAt is not defined
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Items in Storage
-                
-                Claim a role below.
-                
-                Sent Message
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Items in Storage
-                
-                Unable to find message. DiscordAPIError[50006]: Cannot send an empty message
-                
-                Claim a role below.
-                
-                Items in Storage
-                
-                Unable to find message. DiscordAPIError[50006]: Cannot send an empty message
-                
-                Remembered the last "10"
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Items in Storage
-                
-                Message Sent
-                
-                Claim a role below.
-                
-                Items in Storage
-                
-                Unable to find message. RangeError [MessageContentType]: Message content must be a string.
-                
-                Claim a role below.
-                
-                Items in Storage
-                
-                Message Sent
-                
-                Remembered the last "5"
-                
-                Items in Storage
-                
-                Message Sent
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Unable to find message. ReferenceError: Attachment is not defined
-                
-                Claim a role below.
-                
-                Unable to find message. ReferenceError: Attachment is not defined
-                
-                Claim a role below.
-                
-                Unable to find message. DiscordAPIError[50035]: Invalid Form Body
-content[BASE_TYPE_MAX_LENGTH]: Must be 2000 or fewer in length.
-                
-                Remembered the last "250"
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Remembered: "Remembered: "Remembered: "Client 375ms | Websocket: 44ms"""
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Message Messages: 
-Remembered: "Client 375ms | Websocket: 44ms"
-Remembered: "Client 375ms | Websocket: 44ms"
-that's all, thanks
-                
-                Remembered: "that's all, thanks"
-                
-                Remembered: "Remembered: "Client 375ms | Websocket: 44ms""
-                
-                Remembered: "Remembered: "Client 375ms | Websocket: 44ms""
                 
                 Claim a role below.
                 
                 Sending Roles...
                 
-                Claim a role below.
+                Pong! 47ms
                 
-                Claim a role below.
                 
-                Claim a role below.
                 
-                Claim a role below.
                 
-                Message undefinedRemembered: "Client 375ms | Websocket: 44ms"Remembered: "Client 375ms | Websocket: 44ms"
                 
-                Remembered: "Remembered: "Client 375ms | Websocket: 44ms""
+                /list commands
                 
-                Remembered: "Remembered: "Client 375ms | Websocket: 44ms""
                 
-                Claim a role below.
                 
-                Message [object Object]
                 
-                Remembered: "Client 375ms | Websocket: 44ms"
                 
-                Message [object Object]
+                roles avaible:
                 
-                Remembered: "Client 375ms | Websocket: 44ms"
                 
-                Claim a role below.
                 
-                Sending Roles...
+                fda'
                 
-                Claim a role below.
+                wa
                 
-                Claim a role below.
                 
-                Client 375ms | Websocket: 44ms
                 
-                Claim a role below.
                 
                 
                 
-                Unable to find message. DiscordAPIError[50035]: Invalid Form Body
-message_id[NUMBER_TYPE_COERCE]: Value "await interaction.deferReply();" is not snowflake.
-                
-                Remembered: "that's all, thanks"
-                
-                Remembered the last "1000"
-                
-                Remembered the last "600"
-                
-                Remembered the last "125"
-                
-                Remembered the last "500"
-                
-                Remembered the last "475"
-                
-                
-                
-                
-                
-                Sent Message
-                
-                Remembered the last "200"
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                
-                
-                Sent Message
-                
-                Claim a role below.
-                
-                Remembered the last "1000"
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Remembered the last "1000"
-                
-                Claim a role below.
-                
-                
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                "1243312054329409593"
-                
-                Remembered the last "200"
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                
-                
-                Sent Message
-                
-                Remembered the last "1000"
-                
-                /r
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                
-                
-                Sent Message
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Remembered the last "1000"
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                
-                
-                Sent Message
-                
-                Remembered the last "150"
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                
-                
-                Sent Message
-                
-                Claim a role below.
-                
-                Remembered the last "150"
-                
-                10
-                
-                10
-                
-                10
-                
-                10
-                
-                9
-                
-                8
-                
-                7
-                
-                6
-                
-                5
                 
                 5
                 
@@ -550,1713 +133,489 @@ message_id[NUMBER_TYPE_COERCE]: Value "await interaction.deferReply();" is not s
                 
                 1
                 
+                that's all, thanks
                 
+                these are the bots that have access. Let me know if you need anything else
                 
-                Sent Message
+                I kind of want to see if the bots use user permissions or its own permissions to display channels
                 
-                Claim a role below.
+                can you give the bots access to the hidden channels?
                 
-                Claim a role below.
+                do you need anything else?
                 
-                Claim a role below.
+                nope
                 
-                Claim a role below.
+                <@405162577673453569> do you see <#1242891173937287191> ?
                 
-                Claim a role below.
+                ok
                 
-                Claim a role below.
+                sure, i might need to change permission for everyone
                 
-                Claim a role below.
+                <@330475170835726347> can you create a channel that I don't have access to?
                 
                 
-                
-                Sent Message
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                
-                
-                Claim a role below.
-                
-                
-                
-                Claim a role below.
-                
-                
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Sent Message
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Sent Message
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Unable to find message. ReferenceError: updatedAt is not defined
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Items in Storage
-                
-                Claim a role below.
-                
-                Sent Message
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Items in Storage
-                
-                Unable to find message. DiscordAPIError[50006]: Cannot send an empty message
-                
-                Claim a role below.
-                
-                Items in Storage
-                
-                Unable to find message. DiscordAPIError[50006]: Cannot send an empty message
-                
-                Remembered the last "10"
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Items in Storage
-                
-                Message Sent
-                
-                Claim a role below.
-                
-                Items in Storage
-                
-                Unable to find message. RangeError [MessageContentType]: Message content must be a string.
-                
-                Claim a role below.
-                
-                Items in Storage
-                
-                Message Sent
-                
-                Remembered the last "5"
-                
-                Items in Storage
-                
-                Message Sent
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Unable to find message. ReferenceError: Attachment is not defined
-                
-                Claim a role below.
-                
-                Unable to find message. ReferenceError: Attachment is not defined
-                
-                Claim a role below.
-                
-                Unable to find message. DiscordAPIError[50035]: Invalid Form Body
-content[BASE_TYPE_MAX_LENGTH]: Must be 2000 or fewer in length.
-                
-                Remembered the last "250"
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Remembered: "Remembered: "Remembered: "Client 375ms | Websocket: 44ms"""
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Message Messages: 
-Remembered: "Client 375ms | Websocket: 44ms"
-Remembered: "Client 375ms | Websocket: 44ms"
-that's all, thanks
-                
-                Remembered: "that's all, thanks"
-                
-                Remembered: "Remembered: "Client 375ms | Websocket: 44ms""
-                
-                Remembered: "Remembered: "Client 375ms | Websocket: 44ms""
                 
                 Claim a role below.
                 
                 Sending Roles...
                 
-                Claim a role below.
+                Pong! 47ms
                 
-                Claim a role below.
                 
-                Claim a role below.
                 
-                Claim a role below.
                 
-                Message undefinedRemembered: "Client 375ms | Websocket: 44ms"Remembered: "Client 375ms | Websocket: 44ms"
                 
-                Remembered: "Remembered: "Client 375ms | Websocket: 44ms""
+                /list commands
                 
-                Remembered: "Remembered: "Client 375ms | Websocket: 44ms""
                 
-                Claim a role below.
                 
-                Message [object Object]
                 
-                Remembered: "Client 375ms | Websocket: 44ms"
                 
-                Message [object Object]
+                roles avaible:
                 
-                Remembered: "Client 375ms | Websocket: 44ms"
+                
+                
+                fda'
+                
+                wa
+                
+                
+                
+                
+                
+                
+                
+                5
+                
+                4
+                
+                3
+                
+                2
+                
+                1
+                
+                that's all, thanks
+                
+                these are the bots that have access. Let me know if you need anything else
+                
+                I kind of want to see if the bots use user permissions or its own permissions to display channels
+                
+                can you give the bots access to the hidden channels?
+                
+                do you need anything else?
+                
+                nope
+                
+                <@405162577673453569> do you see <#1242891173937287191> ?
+                
+                ok
+                
+                sure, i might need to change permission for everyone
+                
+                <@330475170835726347> can you create a channel that I don't have access to?
+                
+                
                 
                 Claim a role below.
                 
                 Sending Roles...
                 
-                Claim a role below.
+                Pong! 47ms
                 
-                Claim a role below.
                 
-                Client 375ms | Websocket: 44ms
                 
-                Claim a role below.
                 
                 
+                /list commands
                 
-                Unable to find message. DiscordAPIError[50035]: Invalid Form Body
-message_id[NUMBER_TYPE_COERCE]: Value "await interaction.deferReply();" is not snowflake.
                 
-                Remembered: "that's all, thanks"
                 
-                Remembered the last "1000"
                 
-                Remembered the last "600"
                 
-                Remembered the last "125"
+                roles avaible:
                 
-                Remembered the last "500"
                 
-                Remembered the last "475"
                 
-                Remembered the last "450"
+                fda'
                 
-                Remembered the last "400"
+                wa
                 
-                Remembered the last "399"
                 
-                Remembered the last "400"
                 
-                Something went wrong. DiscordAPIError[50035]: Invalid Form Body
-limit[NUMBER_TYPE_MIN]: int value should be greater than or equal to 1.
                 
-                Remembered the last "350"
                 
-                Something went wrong. ReferenceError: channel is not defined
                 
-                Something went wrong. ReferenceError: channel is not defined
                 
-                Claim a role below.
+                5
                 
-                Select a Role Below
+                4
                 
-                Sending Roles...
+                3
                 
-                Select a Role Below
+                2
                 
-                Select a Role Below
+                1
                 
-                Select a Role Below
+                that's all, thanks
                 
-                Select a Role Below
+                these are the bots that have access. Let me know if you need anything else
                 
-                Select a Role Below
+                I kind of want to see if the bots use user permissions or its own permissions to display channels
                 
-                Select a Role Below
+                can you give the bots access to the hidden channels?
                 
-                Select a Role Below
+                do you need anything else?
                 
-                Claim a role below.
+                nope
                 
-                Claim a role below.
+                <@405162577673453569> do you see <#1242891173937287191> ?
                 
-                Claim a role below.
+                ok
                 
-                Claim a role below.
+                sure, i might need to change permission for everyone
                 
-                Claim a role below.
+                <@330475170835726347> can you create a channel that I don't have access to?
                 
-                Claim a role below.
                 
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                test
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Remembered: "test message"
-                
-                Remembered: "test message"
-                
-                Remembered: "test message"
-                
-                Claim a role below.
-                
-                Remembered: "undefined"
-                
-                Claim a role below.
-                
-                Remembered: "undefined"
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Remembered: "undefined"
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Remembered: "undefined"
-                
-                test message
-                
-                Remembered: "undefined"
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                BLAH B;AH BLAH
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Sending Roles...
-                
-                Sending Roles...
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Sending Roles...
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below!
-                
-                Select a Role Below!
-                
-                Select a Role Below!
-                
-                Select a Role Below!
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Select a Role Below
-                
-                Hello
-                
-                Hello
-                
-                Hello
-                
-                Hello
-                
-                Hello
-                
-                Hello
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                Hello
-                
-                Hello
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                Hello
-                
-                Hello
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                Hello
-                
-                Hello
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                Hello
-                
-                
-                
-                Hello
-                
-                Hello
-                
-                Hello
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
                 
                 Claim a role below.
                 
                 Sending Roles...
                 
-                Claim a role below.
+                Pong! 47ms
                 
-                Claim a role below.
                 
-                Claim a role below.
                 
-                Test
                 
-                Claim a role below.
                 
-                Claim a role below.
+                /list commands
                 
-                Claim a role below.
                 
-                Claim a role below.
                 
-                Claim a role below.
                 
-                Claim a role below.
                 
-                Claim a role below.
+                roles avaible:
                 
-                Claim a role below.
                 
-                Claim a role below.
                 
-                Claim a role below.
+                fda'
                 
-                Claim a role below.
+                wa
                 
-                Claim a role below.
                 
-                Claim a role below.
                 
-                Claim a role below.
                 
-                Claim a role below.
                 
-                Claim a role below.
                 
-                Claim a role below.
+                
+                5
+                
+                4
+                
+                3
+                
+                2
+                
+                1
+                
+                that's all, thanks
+                
+                these are the bots that have access. Let me know if you need anything else
+                
+                I kind of want to see if the bots use user permissions or its own permissions to display channels
+                
+                can you give the bots access to the hidden channels?
+                
+                do you need anything else?
+                
+                nope
+                
+                <@405162577673453569> do you see <#1242891173937287191> ?
+                
+                ok
+                
+                sure, i might need to change permission for everyone
+                
+                <@330475170835726347> can you create a channel that I don't have access to?
+                
+                
                 
                 Claim a role below.
                 
                 Sending Roles...
                 
-                Claim a role below.
+                Pong! 47ms
+                
+                
+                
+                
+                
+                /list commands
+                
+                
+                
+                
+                
+                roles avaible:
+                
+                
+                
+                fda'
+                
+                wa
+                
+                
+                
+                
+                
+                
+                
+                5
+                
+                4
+                
+                3
+                
+                2
+                
+                1
+                
+                that's all, thanks
+                
+                these are the bots that have access. Let me know if you need anything else
+                
+                I kind of want to see if the bots use user permissions or its own permissions to display channels
+                
+                can you give the bots access to the hidden channels?
+                
+                do you need anything else?
+                
+                nope
+                
+                <@405162577673453569> do you see <#1242891173937287191> ?
+                
+                ok
+                
+                sure, i might need to change permission for everyone
+                
+                <@330475170835726347> can you create a channel that I don't have access to?
+                
+                
                 
                 Claim a role below.
                 
-                Claim a role below.
+                Sending Roles...
+                
+                Pong! 47ms
+                
+                
+                
+                
+                
+                /list commands
+                
+                
+                
+                
+                
+                roles avaible:
+                
+                
+                
+                fda'
+                
+                wa
+                
+                
+                
+                
+                
+                
+                
+                5
+                
+                4
+                
+                3
+                
+                2
+                
+                1
+                
+                that's all, thanks
+                
+                these are the bots that have access. Let me know if you need anything else
+                
+                I kind of want to see if the bots use user permissions or its own permissions to display channels
+                
+                can you give the bots access to the hidden channels?
+                
+                do you need anything else?
+                
+                nope
+                
+                <@405162577673453569> do you see <#1242891173937287191> ?
+                
+                ok
+                
+                sure, i might need to change permission for everyone
+                
+                <@330475170835726347> can you create a channel that I don't have access to?
+                
+                
                 
                 Claim a role below.
                 
-                Claim a role below.
+                Sending Roles...
+                
+                Pong! 47ms
+                
+                
+                
+                
+                
+                /list commands
+                
+                
+                
+                
+                
+                roles avaible:
+                
+                
+                
+                fda'
+                
+                wa
+                
+                
+                
+                
+                
+                
+                
+                5
+                
+                4
+                
+                3
+                
+                2
+                
+                1
+                
+                that's all, thanks
+                
+                these are the bots that have access. Let me know if you need anything else
+                
+                I kind of want to see if the bots use user permissions or its own permissions to display channels
+                
+                can you give the bots access to the hidden channels?
+                
+                do you need anything else?
+                
+                nope
+                
+                <@405162577673453569> do you see <#1242891173937287191> ?
+                
+                ok
+                
+                sure, i might need to change permission for everyone
+                
+                <@330475170835726347> can you create a channel that I don't have access to?
+                
+                
                 
                 Claim a role below.
                 
-                Claim a role below.
+                Sending Roles...
+                
+                Pong! 47ms
+                
+                
+                
+                
+                
+                /list commands
+                
+                
+                
+                
+                
+                roles avaible:
+                
+                
+                
+                fda'
+                
+                wa
+                
+                
+                
+                
+                
+                
+                
+                5
+                
+                4
+                
+                3
+                
+                2
+                
+                1
+                
+                that's all, thanks
+                
+                these are the bots that have access. Let me know if you need anything else
+                
+                I kind of want to see if the bots use user permissions or its own permissions to display channels
+                
+                can you give the bots access to the hidden channels?
+                
+                do you need anything else?
+                
+                nope
+                
+                <@405162577673453569> do you see <#1242891173937287191> ?
+                
+                ok
+                
+                sure, i might need to change permission for everyone
+                
+                <@330475170835726347> can you create a channel that I don't have access to?
+                
+                
                 
                 Claim a role below.
                 
-                Claim a role below.
+                Sending Roles...
                 
-                Client 205ms | Websocket: 46ms
+                Pong! 47ms
                 
-                Claim a role below.
                 
-                Claim a role below.
                 
-                Claim a role below.
                 
-                Claim a role below.
                 
-                Claim a role below.
+                /list commands
                 
-                Claim a role below.
                 
-                Claim a role below.
                 
-                Claim a role below.
                 
-                Claim a role below.
                 
-                Claim a role below.
+                roles avaible:
                 
-                Claim a role below.
                 
-                Claim a role below.
                 
-                Claim a role below.
+                fda'
                 
-                Claim a role below.
+                wa
                 
-                Claim a role below.
                 
-                Claim a role below.
                 
-                Claim a role below.
                 
-                Claim a role below.
                 
-                Claim a role below.
                 
-                Claim a role below.
-                
-                Client 179ms | Websocket: -1ms
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Claim a role below.
-                
-                Client 174ms | Websocket: -1ms
-                
-                Ban...
                 
