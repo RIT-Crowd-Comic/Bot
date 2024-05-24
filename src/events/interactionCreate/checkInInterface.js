@@ -4,11 +4,11 @@
  * 
  * 
  * This command should be called one time in a dedicated channel where only the bot can send messages.
- * Prompt the user to schedule a time for the bot to send a quick checkup survey.
+ * Prompt the user to schedule a time for the bot to send a quick checkin survey.
  */
 
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, CommandInteraction, Client } = require("discord.js");
-const { fakeCheckupDatabase } = require("../../commands/dailyCheckup/checkupInterface");
+const { fakecheckInDatabase } = require("../../commands/dailyCheckIn/checkInInterface");
 
 /**
  * Code retrieved from https://stackoverflow.com/questions/68764440/discord-js-how-to-change-style-of-button
@@ -62,15 +62,15 @@ const updateComponent = (interaction, newButtonFunc, customId) => {
  */
 module.exports = async (client, interaction) => {
 
-    // only handling button interactions with the checkup interface
+    // only handling button interactions with the checkin interface
     if (!interaction?.isButton()) return;
 
-    if (interaction.customId?.startsWith('checkup-day')) {
+    if (interaction.customId?.startsWith('checkin-day')) {
         try {
             const userId = interaction.user.id;
             if (userId === undefined || userId === null) return;
 
-            let currentUserSettings = fakeCheckupDatabase[userId];
+            let currentUserSettings = fakecheckInDatabase[userId];
             if (currentUserSettings === undefined) {
                 currentUserSettings = {
                     tag: interaction.user.tag,
@@ -85,12 +85,12 @@ module.exports = async (client, interaction) => {
                 }
             }
 
-            const day = interaction.customId.substr('checkup-day-'.length);
+            const day = interaction.customId.substr('checkin-day-'.length);
 
             currentUserSettings.notificationDays[day].notify = !currentUserSettings.notificationDays[day].notify;
 
             // update the database
-            fakeCheckupDatabase[userId] = currentUserSettings;
+            fakecheckInDatabase[userId] = currentUserSettings;
 
             const buttonStyle = currentUserSettings.notificationDays[day].notify ? ButtonStyle.Primary : ButtonStyle.Secondary;
             
@@ -108,10 +108,10 @@ module.exports = async (client, interaction) => {
             console.log(error);
         }
 
-        // fakeCheckupDatabase
+        // fakecheckInDatabase
     }
 
-    else if (interaction.customId?.startsWith('checkup-btn')) {
+    else if (interaction.customId?.startsWith('check-in-btn')) {
         try {
             await interaction.deferReply({ ephemeral: true });
             let replyContent = "";
@@ -119,15 +119,16 @@ module.exports = async (client, interaction) => {
 
             replyContent += `<@${userId}>\n\n`;
             replyContent += `Would you like to spend a few minutes to describe how you're doing? `;
-            replyContent += `Feel free to respond as in depth or as vague as you like.\n\n** **`
-
+            replyContent += `Feel free to respond as vague or as in depth as you like. `
+            replyContent += `Keep in mind that your response may be viewed by an administrator. `
+            replyContent += `\n\n** **`
             const actions = new ActionRowBuilder();
             const yesBtn = new ButtonBuilder()
-                .setCustomId('checkup-start-btn')
+                .setCustomId('check-in-start-btn')
                 .setLabel('Yes')
                 .setStyle(ButtonStyle.Primary);
             const notNowBtn = new ButtonBuilder()
-                .setCustomId('checkup-cancel-btn')
+                .setCustomId('check-in-cancel-btn')
                 .setLabel('Not Really')
                 .setStyle(ButtonStyle.Secondary);
 
