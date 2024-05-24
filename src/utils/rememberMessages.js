@@ -1,39 +1,25 @@
 const getAllTextChannels = require('./getAllTextChannels');
 
-const rememberedMessages = []
+let rememberedMessages = []
 
 const addMessage = (message) => { rememberedMessages.push(message);}
+const addMessages = (messages) => { rememberedMessages = rememberedMessages.concat(messages); }
 const getRememberedMessage = () => { return rememberedMessages }
 const clearRememeberedMessage = () => { rememberedMessages = [] }
 
-//this parses into an object
-const parseMessage = (msg) => { 
-    const message = {
-        content: msg.content,
-        authorId: msg.author.id,
-        authorGlobalName: msg.author.globalName,
-        timestamp: msg.createdTimestamp
-    }
 
-    return message;
-}
-
-//searches all channels for the message
-const searchAllChannelsForMessage = async (id, client, guildId) => { 
-    //get all channels
-    let channels = await getAllTextChannels(client, guildId);
-
-    //loop through and attempt to find message
-    channels =  Array.from(channels);
-
-    for(let i = 0; i < channels.length; i++){
-        try{
-            const msg = await channels[i].messages.fetch(id);
-            return msg;
-
-        }catch(error){
-            console.log(`${channels[i].name} did not have the message`);
-        }
+//parses message api response json to message object 
+//including message, who sent it, and what time
+//? assuming that all time are in UTC 
+const parseMessage = (message) => {
+    return {
+        author: {
+            id: message.author.id,
+            globalName: message.author.global_name ?? message.author.globalName,
+        },
+        content: message.content,
+        id: message.id,
+        timestamp: message.timestamp ?? message.createdTimestamp
     }
 }
 
@@ -103,10 +89,9 @@ const saveMessagesTime = async(channel, pastTime, chunkSize) =>{
 
 module.exports = {
     addMessage,
+    addMessages,
     getRememberedMessage,
     clearRememeberedMessage,
     parseMessage,
-    searchAllChannelsForMessage,
-    saveNumberMessages,
-    saveMessagesTime
+    saveNumberMessages
  }
