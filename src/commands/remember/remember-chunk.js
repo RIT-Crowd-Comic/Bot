@@ -35,7 +35,8 @@ module.exports = {
 
             //validate accuracy
             let accuracy = interaction.options.getNumber("speed") ?? 100;
-            if(accuracy < 1 || accuracy > 100) accuracy = 100;
+            if(accuracy < 25) accuracy = 25; 
+            if(accuracy > 100) accuracy = 100;
 
             const numberOfMinutes = (value > 600 ? 600 : value).toString() + 'm'; //formatting for ms
             
