@@ -10,12 +10,6 @@ module.exports = {
     description: 'Remember all messages between two specific messages (inclusivley)',
     options: [
         {
-            name: 'channel-id',
-            description: 'the id of the channel the messages are in',
-            required: true,
-            type: ApplicationCommandOptionType.String
-        },
-        {
             name: 'start-message-id',
             description: "the first message's id",
             required: true,
@@ -30,6 +24,11 @@ module.exports = {
 
         },
         {
+            name: 'channel-id',
+            description: 'the id of the channel the messages are in. Default is the channel the command was ran',
+            type: ApplicationCommandOptionType.String
+        },
+        {
             name: 'exclude-bot-messages',
             description: `If bot messages should be excluded in the message collection. Default is ${defaultExcludeBotMessages}`,
             type: ApplicationCommandOptionType.Boolean
@@ -38,14 +37,10 @@ module.exports = {
     permissionsRequired: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ReadMessageHistory],
 
     callback: async (client, interaction) => {
-        const channelId = interaction.options.get('channel-id').value;
         const startMessageId = interaction.options.get('start-message-id').value;
         const endMessageId = interaction.options.get('end-message-id').value;
-        let excludeBotMessages = interaction.options.get('exclude-bot-messages')?.value;
-
-        if (excludeBotMessages === undefined) {
-            excludeBotMessages = defaultExcludeBotMessages;
-        }
+        let excludeBotMessages = interaction.options.getBoolean('exclude-bot-messages') ?? defaultExcludeBotMessages;
+        let channelId = interaction.options.getString('channel-id') ?? interaction.channel.id;
 
         try {
             await interaction.deferReply({ ephemeral: rememberEphemeral })
@@ -121,9 +116,14 @@ module.exports = {
                     }
                     const message = remeberMessagesMethods.parseMessageApi(m)
                     messagesToSave.push(message)
+
+                    if(addedEndMessage) {
+                        break;
+                    }
                 }
             } while (!addedEndMessage)
 
+                messagesToSave.forEach(m => console.log(m))
             remeberMessagesMethods.addMessages(messagesToSave)
 
             //? possibly replace this a to string of the remembered messages saved
