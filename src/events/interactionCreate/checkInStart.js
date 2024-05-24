@@ -3,7 +3,7 @@
  * Date: 5/22/2024
  * 
  * 
- * Handle when a user interacts with the checkup notification
+ * Handle when a user interacts with the check in notification
  */
 
 const { ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, Client } = require("discord.js");
@@ -19,20 +19,20 @@ const { ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, Client
  */
 module.exports = async (client, interaction) => {
 
-    // only handling button interactions with the checkup interface
+    // only handling button interactions with the check in interface
     if (!interaction?.isButton()) return;
 
     try {
         // user clicked yes, start the survey
-        if (interaction.customId === 'checkup-start-btn') {
-            const checkupForm = new ModalBuilder()
-                .setCustomId('checkup-form-modal')
+        if (interaction.customId === 'check-in-start-btn') {
+            const checkInForm = new ModalBuilder()
+                .setCustomId('check-in-form-modal')
                 .setTitle('How are you doing?');
 
             const roses = new ActionRowBuilder()
                 .addComponents(
                     new TextInputBuilder()
-                        .setCustomId('checkup-form-roses')
+                        .setCustomId('check-in-form-roses')
                         .setLabel('What are you proud of today.')
                         .setStyle(TextInputStyle.Paragraph)
                         .setRequired(false)
@@ -41,7 +41,7 @@ module.exports = async (client, interaction) => {
             const thorns = new ActionRowBuilder()
                 .addComponents(
                     new TextInputBuilder()
-                        .setCustomId('checkup-form-thorns')
+                        .setCustomId('check-in-form-thorns')
                         .setLabel('What did you struggle with today.')
                         .setStyle(TextInputStyle.Paragraph)
                         .setRequired(false)
@@ -52,19 +52,19 @@ module.exports = async (client, interaction) => {
             const buds = new ActionRowBuilder()
                 .addComponents(
                     new TextInputBuilder()
-                        .setCustomId('checkup-form-buds')
+                        .setCustomId('check-in-form-buds')
                         .setLabel('How do you plan on improving?')
                         .setStyle(TextInputStyle.Paragraph)
                         .setRequired(false)
                 );
 
-            checkupForm.addComponents(roses, thorns)
+            checkInForm.addComponents(roses, thorns)
 
-            await interaction.showModal(checkupForm);
+            await interaction.showModal(checkInForm);
         }
 
         // user clicked no, stop bothering them
-        else if (interaction.customId === 'checkup-cancel-btn') {
+        else if (interaction.customId === 'check-in-cancel-btn') {
             await interaction.reply(
                 {
                     ephemeral: true,

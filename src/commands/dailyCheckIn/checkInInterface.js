@@ -46,7 +46,7 @@ module.exports = {
 
             interaction.reply({
                 content: `Hello, I am [bot name]. I am here to help users stay on task and maintain a healthy workflow.\n\n__Schedule feedback__\n\nClick below to force a check in as if it were scheduled for now.`,
-                components: [schedulerDayRow, schedulerTimeRow, actions]
+                components: [/*schedulerDayRow, schedulerTimeRow, */actions]
             });
         }
         catch (error) {

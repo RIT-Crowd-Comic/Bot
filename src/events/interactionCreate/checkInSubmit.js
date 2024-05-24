@@ -3,7 +3,7 @@
  * Date: 5/22/2024
  * 
  * 
- * Handle when a user submits the checkup modal survey. 
+ * Handle when a user submits the check in modal survey. 
  * 
  * TODO: store the result in a database
  */
@@ -17,14 +17,14 @@
  */
 module.exports = async (client, interaction) => {
 
-    // only handle when the user submits the checkup form
+    // only handle when the user submits the check in form
     if (!interaction?.isModalSubmit()) return;
-    if (interaction.customId !== 'checkup-form-modal') return;
+    if (interaction.customId !== 'check-in-form-modal') return;
 
     try {
         // TODO: save to a database and provide feedback
-        const roseResponse = interaction.fields?.getTextInputValue('checkup-form-roses') ?? '';
-        const thornResponse = interaction.fields?.getTextInputValue('checkup-form-thorns') ?? '';
+        const roseResponse = interaction.fields?.getTextInputValue('check-in-form-roses') ?? '';
+        const thornResponse = interaction.fields?.getTextInputValue('check-in-form-thorns') ?? '';
 
         
 
