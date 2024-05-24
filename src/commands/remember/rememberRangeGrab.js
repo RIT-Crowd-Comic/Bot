@@ -137,7 +137,7 @@ module.exports = {
             return;
         } catch (error) {
             //! I don't think this reply is work as intended
-            interaction.reply('There is was an error')
+            interaction.editReply('There is was an error')
             console.log("Error: " + error)
         }
     }
