@@ -1,5 +1,5 @@
 const { ApplicationCommandOptionType, PermissionFlagsBits } = require('discord.js');
-const remeberMessagesMethods = require("../../utils/remeberMessages");
+const remeberMessagesMethods = require("../../utils/rememberMessages");
 const apiCalls = require("../../utils/apiCalls")
 const path = require('path');
 const { defaultExcludeBotMessages, rememberEphemeral } = require('../../../config.json');
@@ -114,7 +114,7 @@ module.exports = {
                     if (excludeBotMessages && m.author.bot) {
                         continue;
                     }
-                    const message = remeberMessagesMethods.parseMessageApi(m)
+                    const message = remeberMessagesMethods.parseMessage(m)
                     messagesToSave.push(message)
 
                     if(addedEndMessage) {
