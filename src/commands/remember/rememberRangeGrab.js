@@ -31,7 +31,7 @@ module.exports = {
         },
         {
             name: 'exclude-bot-messages',
-            description: `If bot should be excluded in the message collection. Default is ${defaultExcludeBotMessages}`,
+            description: `If bot messages should be excluded in the message collection. Default is ${defaultExcludeBotMessages}`,
             type: ApplicationCommandOptionType.Boolean
         }
     ],

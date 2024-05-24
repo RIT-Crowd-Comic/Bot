@@ -1,8 +1,6 @@
 const { version } = require('../../config.json')
 const getBaseUrl = () => { return `https://discord.com/api/${version}` }
 
-
-//todo: make a function that deals with all the get requests that takes a url as a parameter
 //helper method for discord get requests
 const getAPICall = async (url, body = {
     method: 'GET',
@@ -36,7 +34,7 @@ const getMessagesAfterId = async (channelId, limit, afterId, addFirstMessage = f
     if (addFirstMessage) {
         const firstMessage = await getMessageObject(channelId, afterId);
         if (!firstMessage) {
-            // ? probably need some sort of way to say what went wrong
+            //? probably need some sort of way to say what went wrong
             return undefined;
         }
         messages.push(firstMessage)
