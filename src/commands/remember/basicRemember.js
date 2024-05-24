@@ -14,6 +14,11 @@ module.exports = {
             type: ApplicationCommandOptionType.String,
         },
         {
+            name: 'search-specific-channel',
+            description: 'Searches the give channel for the message.',
+            type: ApplicationCommandOptionType.String,
+        },
+        {
             name: 'search-all-channels',
             description: 'Searches all channels for the message instead of the current channel.',
             type: ApplicationCommandOptionType.Boolean,
@@ -25,18 +30,28 @@ module.exports = {
         
         try{
             await interaction.deferReply(); //defer waits for logic to finish
-            //get the id    
-            const id = interaction.options.get('message-id').value;
+            
+            //get the id of the message  
+            const idMessage = interaction.options.get('message-id').value;
+            //channel id
+            const specificChannelId = interaction.options.getString('search-specific-channel');
+            //search all channels?
             const s = interaction.options.getBoolean('search-all-channels') ?? false;
             
             let msg;
-            //if true, search all
-            if(s){
-                msg = await searchAllChannelsForMessage(id, client, testServer);
+            //specific channel is true, search that channel
+            if(specificChannelId){
+                //get the message from given channel
+                const channel = await client.channels.cache.get(specificChannelId);
+                msg =  await channel.messages.fetch(idMessage);
+            }
+            //else if 
+            else if(s){
+                msg = await searchAllChannelsForMessage(idMessage, client, testServer);
             }
             else{
                 //get the message from current channel
-                msg =  await interaction.channel.messages.fetch(id);
+                msg =  await interaction.channel.messages.fetch(idMessage);
             }
 
             //parse the message

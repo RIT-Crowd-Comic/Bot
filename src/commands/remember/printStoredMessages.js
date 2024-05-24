@@ -1,5 +1,7 @@
 const {getRememberedMessage} = require("../../utils/rememberMessages");
 
+const fs = require('fs');
+
 //remembers a message based on a message id parameter
 module.exports = {
     name: 'print-storage',
@@ -13,12 +15,30 @@ module.exports = {
             const messages = getRememberedMessage();
             let print = "Messages: ";
             messages.forEach(async(msg)=>{
-                print+=`\n${msg.content}`;
+                print+=`
+                ${msg.content}
+                `;
             });
+            
+
+            const path = './storedFiles/storage.txt';
+            fs.writeFile(path, print, error =>{
+                if(error) console.log(error); 
+                return;
+            });
+
+            interaction.channel.send({
+                files: [{
+                    attachment: path,
+                    name: 'storage.txt'
+                }],
+            });
+
             await interaction.editReply({
-                content:`Message ${print}`,
+                content:`Sent Message`,
                 ephemeral: false,
-            });          
+            });
+                      
         }
         catch(error){ 
             await interaction.editReply({
