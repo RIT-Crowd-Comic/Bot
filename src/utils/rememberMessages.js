@@ -93,5 +93,6 @@ module.exports = {
     getRememberedMessage,
     clearRememeberedMessage,
     parseMessage,
-    saveNumberMessages
+    saveNumberMessages,
+    saveMessagesTime
  }
