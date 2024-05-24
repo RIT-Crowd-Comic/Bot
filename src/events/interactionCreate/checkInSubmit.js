@@ -8,6 +8,9 @@
  * TODO: store the result in a database
  */
 
+const { CommandInteraction, Client } = require("discord.js");
+
+let formResult = {}
 
 /**
  * 
@@ -21,18 +24,37 @@ module.exports = async (client, interaction) => {
     if (!interaction?.isModalSubmit()) return;
     if (interaction.customId !== 'check-in-form-modal') return;
 
+    const userId = interaction?.user?.id;
+    const userTag = interaction?.user?.tag;
+
+    await interaction.deferReply({ephemeral: true});
+
+    if (userId === undefined || userTag === undefined) {
+        await interaction.editReply(`Could not process form data`);
+        return;
+    }
+
     try {
         // TODO: save to a database and provide feedback
         const roseResponse = interaction.fields?.getTextInputValue('check-in-form-roses') ?? '';
         const thornResponse = interaction.fields?.getTextInputValue('check-in-form-thorns') ?? '';
 
-        
+        formResult = {
+            roseResponse,
+            thornResponse,
+            id: userId,
+            tag: userTag,
+            submitDate: interaction.createdAt
+        }
+
+        let reply = `Thanks for responding! Make sure to take short breaks and to drink plenty of water!\n\n`;
+        reply += `[debug] \`\`\`json\n${JSON.stringify(formResult, undefined, 2)}\`\`\``
 
         // user finished form, give them words of encouragement
-        await interaction.reply(
+        await interaction.editReply(
             {
                 ephemeral: true,
-                content: `Thanks for responding! Make sure to take short breaks and to drink plenty of water!`
+                content: reply
             }
         );
     }

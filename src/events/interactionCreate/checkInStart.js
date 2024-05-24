@@ -33,7 +33,7 @@ module.exports = async (client, interaction) => {
                 .addComponents(
                     new TextInputBuilder()
                         .setCustomId('check-in-form-roses')
-                        .setLabel('What are you proud of today.')
+                        .setLabel('What are you proud of today?')
                         .setStyle(TextInputStyle.Paragraph)
                         .setRequired(false)
                 );
@@ -42,7 +42,7 @@ module.exports = async (client, interaction) => {
                 .addComponents(
                     new TextInputBuilder()
                         .setCustomId('check-in-form-thorns')
-                        .setLabel('What did you struggle with today.')
+                        .setLabel('What did you struggle with today?')
                         .setStyle(TextInputStyle.Paragraph)
                         .setRequired(false)
                 );

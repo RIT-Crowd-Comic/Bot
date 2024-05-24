@@ -100,7 +100,7 @@ module.exports = async (client, interaction) => {
                 interaction.customId
             )
 
-            interaction.update({
+            await interaction.update({
                 components: updatedActionRows
             });
         }
