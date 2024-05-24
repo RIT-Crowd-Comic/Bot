@@ -111,23 +111,19 @@ module.exports = {
 
                 //push all messages until the last message is in the array, or we go through the entire array
                 for (const m of messageObjArray) {
-
+                    startId = m.id;
+                    if (m.id === endMessageId) {
+                        addedEndMessage = true;
+                    }
                     // exlude bot messages if option is enabled
                     if (excludeBotMessages && m.author.bot) {
                         continue;
                     }
                     const message = remeberMessagesMethods.parseMessageApi(m)
                     messagesToSave.push(message)
-
-                    if (message.id === endMessageId) {
-                        addedEndMessage = true;
-                        break;
-                    }
                 }
-                startId = messagesToSave[messagesToSave.length - 1].id;
             } while (!addedEndMessage)
 
-            // console.log(messagesToSave.length)
             remeberMessagesMethods.addMessages(messagesToSave)
 
             //? possibly replace this a to string of the remembered messages saved
@@ -136,8 +132,7 @@ module.exports = {
             });
             return;
         } catch (error) {
-            //! I don't think this reply is work as intended
-            interaction.editReply('There is was an error')
+            interaction.editReply(error)
             console.log("Error: " + error)
         }
     }
