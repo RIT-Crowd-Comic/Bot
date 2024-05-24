@@ -2,7 +2,7 @@ const { ApplicationCommandOptionType, PermissionFlagsBits } = require('discord.j
 const remeberMessagesMethods = require("../../utils/remeberMessages");
 const apiCalls = require("../../utils/apiCalls")
 const path = require('path');
-const { defaultExcludeBotMessages } = require('../../../config.json');
+const { defaultExcludeBotMessages, rememberEphemeral } = require('../../../config.json');
 
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') })
 module.exports = {
@@ -38,12 +38,17 @@ module.exports = {
     permissionsRequired: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ReadMessageHistory],
 
     callback: async (client, interaction) => {
-        const ephemeral = false;
         const channelId = interaction.options.get('channel-id').value;
         const startMessageId = interaction.options.get('start-message-id').value;
         const endMessageId = interaction.options.get('end-message-id').value;
+        let excludeBotMessages = interaction.options.get('exclude-bot-messages')?.value;
+
+        if (excludeBotMessages === undefined) {
+            excludeBotMessages = defaultExcludeBotMessages;
+        }
+
         try {
-            await interaction.deferReply({ ephemeral: ephemeral })
+            await interaction.deferReply({ ephemeral: rememberEphemeral })
 
             //make sure channel exist
             const channelObj = await apiCalls.getChannelObject(channelId)
@@ -104,7 +109,6 @@ module.exports = {
                 //sort the message in ascending order of timestamp
                 messageObjArray.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
-
                 //push all messages until the last message is in the array, or we go through the entire array
                 for (const m of messageObjArray) {
 
@@ -123,12 +127,16 @@ module.exports = {
                 startId = messagesToSave[messagesToSave.length - 1].id;
             } while (!addedEndMessage)
 
+            // console.log(messagesToSave.length)
+            remeberMessagesMethods.addMessages(messagesToSave)
+
+            //? possibly replace this a to string of the remembered messages saved
             interaction.editReply({
                 content: `Success`
             });
             return;
         } catch (error) {
-            //! I don't think this reply is work as intended, causing the bot to seem like it's hanging when it crashed
+            //! I don't think this reply is work as intended
             interaction.reply('There is was an error')
             console.log("Error: " + error)
         }

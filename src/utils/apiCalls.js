@@ -3,8 +3,13 @@ const getBaseUrl = () => { return `https://discord.com/api/${version}` }
 
 
 //todo: make a function that deals with all the get requests that takes a url as a parameter
-//helper parameter to get get request
-const getAPICall = async (url, body) => {
+//helper method for discord get requests
+const getAPICall = async (url, body = {
+    method: 'GET',
+    headers: {
+        'Authorization': `Bot ${process.env.DISCORD_TOKEN}`,
+    },
+}) => {
     return await fetch(url, body
     ).then(response => {
         if (response.status != 200) {
@@ -17,50 +22,25 @@ const getAPICall = async (url, body) => {
 }
 
 const getChannelObject = async (channelId) => {
-    return await getAPICall(`${getBaseUrl()}/channels/${channelId}`,
-        {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bot ${process.env.DISCORD_TOKEN}`,
-            },
-        });
+    return await getAPICall(`${getBaseUrl()}/channels/${channelId}`);
 }
 
 const getMessageObject = async (channelId, messageId) => {
-    return await getAPICall(`${getBaseUrl()}/channels/${channelId}/messages/${messageId}`,
-        {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bot ${process.env.DISCORD_TOKEN}`,
-            },
-        }
-    )
+    return await getAPICall(`${getBaseUrl()}/channels/${channelId}/messages/${messageId}`)
 }
 
 //get {limit} (max 100) messages in channel with {channelId} after messages with {afterId}
 //if {addFirstMessage} is true, the message with the id of {afterId} will be added (does not count towards limit)
 const getMessagesAfterId = async (channelId, limit, afterId, addFirstMessage = false) => {
-    const messages = await getAPICall(`${getBaseUrl()}/channels/${channelId}/messages?limit=${limit}&after=${afterId}`,
-    {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bot ${process.env.DISCORD_TOKEN}`,
-        },
-    })
-
-    if(addFirstMessage) {
+    const messages = await getAPICall(`${getBaseUrl()}/channels/${channelId}/messages?limit=${limit}&after=${afterId}`)
+    if (addFirstMessage) {
         const firstMessage = await getMessageObject(channelId, afterId);
-        if(!firstMessage) {
+        if (!firstMessage) {
             // ? probably need some sort of way to say what went wrong
             return undefined;
         }
-        
-
-
         messages.push(firstMessage)
-
     }
-
     return messages;
 }
 

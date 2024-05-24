@@ -1,9 +1,9 @@
 const { MessageActivityType } = require("discord.js");
 
-const rememberedMessages = []
+let rememberedMessages = []
 const addMessage = (message) => { rememberedMessages.push(message); }
 const addMessages = (messages) => { rememberedMessages = rememberedMessages.concat(messages); }
-const getRememberedMessage = () => { return rememberedMessages }
+const getRememberedMessages = () => { return rememberedMessages }
 const clearRememeberedMessage = () => { rememberedMessages = [] }
 
 //this parses into an object
@@ -34,7 +34,7 @@ const parseMessageApi = (message) => {
 module.exports = {
     addMessage,
     addMessages,
-    getRememberedMessage,
+    getRememberedMessages,
     clearRememeberedMessage,
     parseMessage,
     parseMessageApi

@@ -1,6 +1,7 @@
 {
     "version": "v10",
     "defaultExcludeBotMessages": true, 
+    "rememberEphemeral": true,
     "testServer": "1242218138586841188",
     "clientId": 1242559805973856408,
     "devs": [568106584836931584],
