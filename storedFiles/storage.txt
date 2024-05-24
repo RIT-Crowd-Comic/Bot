@@ -1,7 +1,804 @@
 Messages: 
-                1716563838739
                 
-                1716563814511
                 
-                1716520877113
+                Claim a role below.
+                
+                Claim a role below.
+                
+                
+                
+                Sent Message
+                
+                
+                
+                Remembered the last "600m minutes"
+                
+                Remembered the last "600m minutes"
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                
+                
+                Claim a role below.
+                
+                
+                
+                Sent Message
+                
+                Remembered the last "600m minutes"
+                
+                
+                
+                Sent Message
+                
+                Remembered the last "600m minutes"
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Something went wrong. DiscordAPIError[50035]: Invalid Form Body
+limit[NUMBER_TYPE_MIN]: int value should be greater than or equal to 1.
+                
+                Claim a role below.
+                
+                Remembered the last "100m minutes"
+                
+                Remembered the last "500m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "300m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "200m minutes"
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Something went wrong. TypeError [CommandInteractionOptionType]: Option "accuracy" is of type: 3; expected 10.
+                
+                Remembered the last "500m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "500m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "500m minutes"
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                
+                
+                Sent Message
+                
+                Remembered the last "500m minutes"
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                
+                
+                Sent Message
+                
+                Remembered the last "500m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "500m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "500m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "500m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "500m minutes"
+                
+                Claim a role below.
+                
+                
+                
+                Sent Message
+                
+                Remembered the last "500m minutes"
+                
+                Claim a role below.
+                
+                
+                
+                Sent Message
+                
+                Remembered the last "500m minutes"
+                
+                Claim a role below.
+                
+                
+                
+                Sent Message
+                
+                Remembered the last "500m minutes"
+                
+                
+                
+                Sent Message
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                
+                
+                Sent Message
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Remembered the last "500m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "500m minutes"
+                
+                Remembered the last "2m minutes"
+                
+                
+                
+                Sent Message
+                
+                Claim a role below.
+                
+                
+                
+                Sent Message
+                
+                Remembered the last "500m minutes"
+                
+                Remembered the last "100m minutes"
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Remembered the last "100m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "100m minutes"
+                
+                Claim a role below.
+                
+                
+                
+                Sent Message
+                
+                Remembered the last "100m minutes"
+                
+                Claim a role below.
+                
+                
+                
+                Sent Message
+                
+                Remembered the last "500m minutes"
+                
+                Claim a role below.
+                
+                
+                
+                Sent Message
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                
+                
+                Sent Message
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                
+                
+                Sent Message
+                
+                Remembered the last "10m minutes"
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                
+                
+                Sent Message
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                
+                
+                Sent Message
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                
+                
+                Sent Message
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "10m minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "100m minutes"
+                
+                Claim a role below.
+                
+                Something went wrong. ReferenceError: saveMessagesTime is not defined
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                1
+                
+                2
+                
+                3
+                
+                4
+                
+                5
+                
+                6
+                
+                7
+                
+                8
+                
+                9
+                
+                10
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Remembered the last "100m minutes"
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Remembered the last "100 minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "100 minutes"
+                
+                Claim a role below.
+                
+                Remembered the last "100 minutes"
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                
+                
+                Sent Message
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                
+                
+                Sent Message
+                
+                Remembered the last "1000 messages"
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Remembered the last "1000 messages"
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                
+                
+                Sent Message
+                
+                Remembered the last "1000"
+                
+                Claim a role below.
+                
+                Remembered the last "1000"
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Remembered: "that's all, thanks"
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Remembered: "that's all, thanks"
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Unable to find message. TypeError: Cannot read properties of undefined (reading 'content')
+                
+                Remembered: "that's all, thanks"
+                
+                Claim a role below.
+                
+                Remembered: "Claim a role below."
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Unable to find message. TypeError: Cannot read properties of undefined (reading 'channels')
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Remembered: "Claim a role below."
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Unable to find message. ReferenceError: interactions is not defined
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                
+                
+                Sent Message
+                
+                Remembered: "Claim a role below."
+                
+                Claim a role below.
+                
+                Sent Message
+                
+                Remembered: "Claim a role below."
+                
+                Claim a role below.
+                
+                Sent Message
+                
+                Remembered: "Claim a role below."
+                
+                Claim a role below.
+                
+                Remembered: "Claim a role below."
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
+                
+                Claim a role below.
                 

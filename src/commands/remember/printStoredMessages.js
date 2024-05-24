@@ -16,7 +16,7 @@ module.exports = {
             let print = "Messages: ";
             messages.forEach(async(msg)=>{
                 print+=`
-                ${msg.timestamp}
+                ${msg.content}
                 `;
             });
             

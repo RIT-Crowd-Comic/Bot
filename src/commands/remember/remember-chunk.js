@@ -9,7 +9,7 @@ module.exports = {
     options:  [
         {
             name: 'minutes',
-            description: 'The number of minutes to save to save. Max 5000.',
+            description: 'The number of minutes to save to save. Max 600.',
             required: true,
             type: ApplicationCommandOptionType.Number,
         },
@@ -18,17 +18,26 @@ module.exports = {
             description: 'Id of the channel to search. This is optional.',
             type: ApplicationCommandOptionType.String,
         },
+        {
+            name: 'speed',
+            description: 'Speed of the Search. Lower value is more accurate but slower.',
+            type: ApplicationCommandOptionType.Number,
+        },
     ],
 
     //logic, 
     callback: async(client, interaction) =>{
-        
         try{
             await interaction.deferReply();
 
             //get the id    
             const value = interaction.options.get('minutes').value;
-            const numberOfMinutes = (value > 500 ? 500 : value).toString() + 'm'; //formatting for ms
+
+            //validate accuracy
+            let accuracy = interaction.options.getNumber("speed") ?? 100;
+            if(accuracy < 1 || accuracy > 100) accuracy = 100;
+
+            const numberOfMinutes = (value > 600 ? 600 : value).toString() + 'm'; //formatting for ms
             
             const channelId = interaction.options.getString('channel-id') ?? interaction.channel.id;
             
@@ -45,7 +54,7 @@ module.exports = {
             const pastTime = currentTime - minutes;
 
             //call the method to save until the message time < pastTime
-            saveMessagesTime(channel, pastTime);
+            await saveMessagesTime(channel, pastTime, accuracy);
 
             //show that it saved
             interaction.editReply({

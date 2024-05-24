@@ -71,15 +71,16 @@ const saveNumberMessages = async(numberToSave, channel, id) =>{
 
 //continues saving messages until their time is lesser than given
 //we are going into the past to fetch old messages by their timestamps(ms)
-const saveMessagesTime = async(channel, pastTime) =>{
+const saveMessagesTime = async(channel, pastTime, chunkSize) =>{
     let message;
     let startId;
     let messageTime;
+    if(chunkSize > 100) chunkSize = 100;
 
     do{
-        //if startId use it
+        //if startId use it //chunks of 100 is more efficient
         if (startId) 
-            message = await channel.messages.fetch({ cache: false, limit: 1, before: startId });
+            message = await channel.messages.fetch({ cache: false, limit: chunkSize, before: startId });
         else
             message = await channel.messages.fetch({ cache: false, limit: 1});
 
@@ -95,9 +96,7 @@ const saveMessagesTime = async(channel, pastTime) =>{
             //save the message
             addMessage(parsedMessage);
         })
-    }
-    while(messageTime >= pastTime) //loop until the message timestamp is lower/=  than the past time
-    console.log('blah');
+    } while(messageTime >= pastTime); //loop until the message timestamp is lower/=  than the past time
 }
 
 
