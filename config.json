@@ -1,8 +1,7 @@
 {
     "version": "v10",
     "ephemeral": {
-        "rememberRangeGrab": true,
-        "recall": false
+        "rememberRangeGrab": true
     },
     "defaultExcludeBotMessages": true, 
     "testServer": "1242218138586841188",

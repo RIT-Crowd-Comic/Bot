@@ -1,31 +1,34 @@
-const { ApplicationCommandOptionType } = require('discord.js');
+const { ApplicationCommandOptionType, Attachment } = require('discord.js');
 const { getRememberedMessage } = require("../../utils/rememberMessages");
 const { ephemeral } = require('../../../config.json');
+var fs = require('fs');
 //remembers a message based on a message id parameter
 module.exports = {
     name: 'recall',
     description: 'creates a JSON of all the saved message',
-
-    options: [
-        {
-            name: "private",
-            description: `If the JSON will seen by only the person sending the command. Default is ${ephemeral.recall}`,
-            type: ApplicationCommandOptionType.Boolean
-        }
-    ],
-
     //logic, 
     callback: async (client, interaction) => {
         try {
-            const hideMessage = interaction.options.getBoolean('private') ?? ephemeral.recall
-            await interaction.deferReply({ ephemeral: hideMessage })
+            //get the json
+            await interaction.deferReply({ ephemeral: false })
+            const jsonFilePath = './src/rememberedMessages.json';
             const messageObj = []
             const messages = getRememberedMessage();
             messages.forEach(m => messageObj.push(m))
-            const json = JSON.parse(JSON.stringify(messageObj))
             interaction.editReply("Success")
+            const json = JSON.stringify(messageObj)
+
+            //send the json
+            fs.writeFile(jsonFilePath, json, (err) => err && console.error(err))
+            await interaction.channel.send({
+                files: [{
+                    attachment: jsonFilePath,
+                    name: 'rememberedMessages.json'
+                }]
+            })
         }
         catch (error) {
+            console.log(error)
             await interaction.editReply({
                 content: `${error}`
             });
