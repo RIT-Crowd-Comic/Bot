@@ -8,6 +8,7 @@ It takes care of registering commands and other events automatically, lessening 
  - [Discord.js Documentation](https://discord.js.org/)
  - [Discord Developer Portal](https://discord.com/developers/applications)
 
+
 # Required Packages and Version
 
 ```
