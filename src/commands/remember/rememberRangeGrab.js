@@ -1,5 +1,5 @@
 const { ApplicationCommandOptionType, PermissionFlagsBits } = require('discord.js');
-const remeberMessagesMethods = require("../../utils/rememberMessages");
+const remeberMessagesUtils = require("../../utils/rememberMessages");
 const apiCalls = require("../../utils/apiCalls")
 const path = require('path');
 const { defaultExcludeBotMessages, ephemeral } = require('../../../config.json');
@@ -30,7 +30,7 @@ module.exports = {
         },
         {
             name: 'exclude-bot-messages',
-            description: `If bot messages should be excluded in the message collection. Default is ${defaultExcludeBotMessages}`,
+            description: `If bot messages should be excluded in the message collection. Default is ${defaultExcludeBotMessages.rememberRangeGrab}`,
             type: ApplicationCommandOptionType.Boolean
         }
     ],
@@ -39,98 +39,22 @@ module.exports = {
     callback: async (client, interaction) => {
         const startMessageId = interaction.options.get('start-message-id').value;
         const endMessageId = interaction.options.get('end-message-id').value;
-        const excludeBotMessages = interaction.options.getBoolean('exclude-bot-messages') ?? defaultExcludeBotMessages;
+        const excludeBotMessages = interaction.options.getBoolean('exclude-bot-messages') ?? defaultExcludeBotMessages.rememberRangeGrab;
         const channelId = interaction.options.getString('channel-id') ?? interaction.channel.id;
 
         try {
             await interaction.deferReply({ ephemeral: ephemeral.rememberEphemeral })
-
-            //make sure channel exist
-            const channelObj = await apiCalls.getChannelObject(channelId)
-
-            if (!channelObj) {
+            const rememberRangeGrabResponse = await remeberMessagesUtils.rememberRangeGrab(channelId, startMessageId, endMessageId, excludeBotMessages)
+            if (rememberRangeGrabResponse.status === "Fail") {
                 interaction.editReply({
-                    content: `Cannot find a channel with the id "${channelId}". Or there was another error`
-                });
-                return;
-            };
-
-            //verify start message is valid
-            const startMessageObj = await apiCalls.getMessageObject(channelId, startMessageId);
-
-            if (!startMessageObj) {
-                interaction.editReply({
-                    content: `Cannot find start message with the id "${startMessageId}". Or there was another error`
-                });
-                return;
-            };
-
-            //verify end message is valid
-            const endMessageObj = await apiCalls.getMessageObject(channelId, endMessageId);
-
-            if (!endMessageObj) {
-                interaction.editReply({
-                    content: `Cannot find end message with the id "${endMessageId}". Or there was another error`
-                });
-                return;
-            };
-
-            //make sure first messages is before second messages
-            const startMessageFirst = new Date(startMessageObj.timestamp) < new Date(endMessageObj.timestamp)
-
-            if (!startMessageFirst) {
-                interaction.editReply({
-                    content: `Error: End message is after start message`
+                    content: rememberRangeGrabResponse.description
                 });
                 return;
             }
 
-            //get all of the messages between the start and the end (possilby loop through multiple times)
-            const messagesToSave = [];
-            let addedEndMessage = false;
-            let startId = startMessageId;
-            do {
-
-                //get the first 100 messages at a specifc point
-                const messageObjArray = await apiCalls.getMessagesAfterId(channelId, 100, startId, startId === startMessageId)
-
-                if (!messageObjArray) {
-                    interaction.editReply({
-                        content: `There was an error getting the messages`
-                    });
-                    return;
-                };
-
-                //sort the message in ascending order of timestamp
-                messageObjArray.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-
-                //push all messages until the last message is in the array, or we go through the entire array
-                for (const m of messageObjArray) {
-                    startId = m.id;
-                    if (m.id === endMessageId) {
-                        addedEndMessage = true;
-                    }
-                    // exlude bot messages if option is enabled
-                    if (excludeBotMessages && m.author.bot) {
-                        continue;
-                    }
-                    const message = remeberMessagesMethods.parseMessage(m)
-                    messagesToSave.push(message)
-
-                    if(addedEndMessage) {
-                        break;
-                    }
-                }
-            } while (!addedEndMessage)
-
-                messagesToSave.forEach(m => console.log(m))
-            remeberMessagesMethods.addMessages(messagesToSave)
-
-            //? possibly replace this a to string of the remembered messages saved
             interaction.editReply({
-                content: `Success`
-            });
-            return;
+                content: rememberRangeGrabResponse.status
+            })
         } catch (error) {
             interaction.editReply(error)
             console.log("Error: " + error)
