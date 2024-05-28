@@ -24,9 +24,8 @@ const parseMessage = (message) => {
 }
 
 //returns the id of the message at the final index
-const saveNumberMessages = async(numberToSave, channel, id) =>{
+const saveNumberMessages = async(channel, numberToSave, id) =>{
     let messages;
-    //get the messages
 
     //if id begin there
     if (id) 
@@ -34,25 +33,7 @@ const saveNumberMessages = async(numberToSave, channel, id) =>{
     else
         messages = await channel.messages.fetch({ cache: false, limit: numberToSave});
             
-    //loop for each message
-    //using a amalgamation of a for + foreach to keep track
-    //feel free to refactor!!!
-    let i = 1;
-    let returnId;
-    messages.forEach((msg)=>{
-                    
-        //parse the message
-        const parsedMessage = parseMessage(msg);
-    
-        //save the message
-        addMessage(parsedMessage);
-
-        //return the index if its the final one
-        if(i == numberToSave)
-            returnId = msg.id;
-        i++;
-    });
-    return returnId;  
+    return messages;
 }
 
 //continues saving messages until their time is lesser than given
