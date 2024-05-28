@@ -8,33 +8,49 @@ const { PermissionFlagsBits, ButtonBuilder, ButtonStyle, ActionRowBuilder, TextI
  */
 
 const fakecheckInDatabase = {}
+const makeDefaultUserSettings = (userTag, userId) => {
+    return {
+        tag: userTag,
+        id: userId,
+        notificationDays: {
+            monday: { notify: false },
+            tuesday: { notify: false },
+            wednesday: { notify: false },
+            thursday: { notify: false },
+            friday: { notify: false },
+        }
+    }
+}
 
 module.exports = {
     callback: (client, interaction) => {
 
         try {
-            const schedulerDayRow = new ActionRowBuilder();
-            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-            for (const day of days) {
-                schedulerDayRow.addComponents(
-                    new ButtonBuilder()
-                        .setCustomId(`check-in-day-${day.toLocaleLowerCase()}`)
-                        .setStyle(ButtonStyle.Secondary)
-                        .setLabel(day)
-                );
-            }
 
-            const schedulerTimeRow = new ActionRowBuilder();
-            schedulerTimeRow.addComponents(
-                new StringSelectMenuBuilder()
-                    .setCustomId('check-in-time-input')
-                    .setPlaceholder('Select a time to be notified')
-                    .addOptions([
-                        new StringSelectMenuOptionBuilder()
-                            .setLabel('12:30pm')
-                            .setValue('12:30pm')
-                    ])
-            )
+            // Experimental code for scheduling days using discord buttons
+            // (unfortunately not a great option for multiple choices, since button styling is global for all users)
+            // const schedulerDayRow = new ActionRowBuilder();
+            // const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+            // for (const day of days) {
+            //     schedulerDayRow.addComponents(
+            //         new ButtonBuilder()
+            //             .setCustomId(`check-in-day-${day.toLocaleLowerCase()}`)
+            //             .setStyle(ButtonStyle.Secondary)
+            //             .setLabel(day)
+            //     );
+            // }
+
+            // const schedulerTimeRow = new ActionRowBuilder();
+            // schedulerTimeRow.addComponents(
+            //     new StringSelectMenuBuilder()
+            //         .setCustomId('check-in-time-input')
+            //         .setPlaceholder('Select a time to be notified')
+            //         .addOptions([
+            //             new StringSelectMenuOptionBuilder()
+            //                 .setLabel('12:30pm')
+            //                 .setValue('12:30pm')
+            //         ])
+            // );
 
             const actions = new ActionRowBuilder();
             const testBtn = new ButtonBuilder()
@@ -59,5 +75,6 @@ module.exports = {
     devOnly: false,
     testOnly: false,
     permissionsRequired: [PermissionFlagsBits.SendMessages],
-    fakecheckInDatabase: fakecheckInDatabase
+    fakecheckInDatabase,
+    makeDefaultUserSettings
 }

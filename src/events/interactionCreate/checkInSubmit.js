@@ -47,8 +47,15 @@ module.exports = async (client, interaction) => {
             submitDate: interaction.createdAt
         }
 
-        let reply = `Thanks for responding! Make sure to take short breaks and to drink plenty of water!\n\n`;
-        reply += `[debug] \`\`\`json\n${JSON.stringify(formResult, undefined, 2)}\`\`\``
+        let reply = [
+            'Thanks for responding! Make sure to take short breaks and to drink plenty of water!',
+            '',
+            '',
+            '[debug]',
+            '```json',
+            `${JSON.stringify(formResult, undefined, 2)}`,
+            '```'
+        ].join('\n');
 
         // user finished form, give them words of encouragement
         await interaction.editReply(
