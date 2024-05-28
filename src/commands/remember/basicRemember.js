@@ -1,6 +1,6 @@
 const {ApplicationCommandOptionType} = require('discord.js');
 const {addMessage, parseMessage} = require("../../utils/rememberMessages");
-const { getChannelObject, getMessageObject } = require('../../utils/apiCalls');
+const {getMessageObject } = require('../../utils/apiCalls');
 
 //remembers a message based on a message id parameter
 module.exports = {
