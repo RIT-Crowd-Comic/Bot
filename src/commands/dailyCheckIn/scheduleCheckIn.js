@@ -3,18 +3,13 @@ const { PermissionFlagsBits, ApplicationCommandOptionType, Client, CommandIntera
 const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
 const weekday = require('dayjs/plugin/weekday');
+const localizedFormat = require('dayjs/plugin/localizedFormat');
 dayjs.extend(utc);
 dayjs.extend(weekday);
+dayjs.extend(localizedFormat);
 
 
 const fakeScheduleEntry = {
-    "monday": {},
-    "tuesday": {},
-    "wednesday": {},
-    "thursday": {},
-    "friday": {},
-    "saturday": {},
-    "sunday": {},
 }
 
 module.exports = {
@@ -122,27 +117,29 @@ module.exports = {
 
             // update the database
 
-            // clear current user's entries
+            // until we have a way of cleanly updating a schedule,
+            // clear current user's entries and repopulate them
 
-            Object.keys(fakeScheduleEntry).forEach(day => {
-                delete fakeScheduleEntry[day][userId]
-            });
+            delete fakeScheduleEntry[userId];
 
             // update user's entries
-            utcDays.forEach((d, i) => {
-                fakeScheduleEntry[d][userId] = {
-                    id: userId,
-                    tag: userTag,
-                    utcTime: [utcHour, utcMin],
-                    localTime: `${parsedDays[i]} ${timeHours}:${formattedTimeMin}`
-                }
-            });
+            fakeScheduleEntry[userId] = {
+                id: userId,
+                tag: userTag,
+                schedules: [
+                    {
+                        days: utcDays,
+                        utcTime: [utcHour, utcMin],
+                        displaySchedule: `${parsedDays} ${firstScheduleDay.format('LT')}`
+                    }
+                ]
+            };
 
             // respond to the user to confirm schedule
             const daysResponse = daily ? 'every day' : `[${parsedDays.join(', ')}]`;
 
             let reply = [
-                `Check ins scheduled for ${daysResponse} at ${timeHours}:${formattedTimeMin} (24hr time)`,
+                `Check ins scheduled for ${daysResponse} at ${firstScheduleDay.format('LT')}`,
                 '',
                 '[debug]',
                 '',
@@ -190,4 +187,5 @@ module.exports = {
     devOnly: false,
     testOnly: false,
     permissionsRequired: [PermissionFlagsBits.SendMessages],
+    fakeScheduleEntry
 }
