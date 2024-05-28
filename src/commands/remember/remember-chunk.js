@@ -44,8 +44,14 @@ module.exports = {
     description: 'Saves messages from past set amount of "minutes" in the current channel.',
     options:  [
         {
+            name: 'hours',
+            description: 'The number of hours to save. Max 5.',
+            required: true,
+            type: ApplicationCommandOptionType.Number,
+        },
+        {
             name: 'minutes',
-            description: 'The number of minutes to save to save. Max 600.',
+            description: 'The number of minutes to save to save. Max 59.',
             required: true,
             type: ApplicationCommandOptionType.Number,
         },
@@ -71,8 +77,11 @@ module.exports = {
         try{
             await interaction.deferReply();
 
-            //get the id    
-            const value = interaction.options.get('minutes').value;
+            //get the hours   
+            const valueHours = interaction.options.get('hours').value;
+
+            //get the minutes   
+            const valueMinutes = interaction.options.get('minutes').value;
 
             //bot messages
             const excludeBotMessages = interaction.options.getBoolean('exclude-bot-messages') ?? defaultExcludeBotMessages;
@@ -82,7 +91,9 @@ module.exports = {
             if(accuracy < 25) accuracy = 25; 
             if(accuracy > 100) accuracy = 100;
 
-            const numberOfMinutes = (value > 600 ? 600 : value).toString() + 'm'; //formatting for ms
+            //format and clamp
+            const numberOfHours = (valueHours > 5 ? 5 : valueHours).toString() + 'h'; //formatting for ms
+            const numberOfMinutes = (valueMinutes > 59 ? 59 : valueMinutes).toString() + 'm'; //formatting for ms
             
             const channelId = interaction.options.getString('channel-id') ?? interaction.channel.id;
             
@@ -93,10 +104,12 @@ module.exports = {
             const currentTime = Date.now();
 
             //get the time in x minutes
+            const hours = ms(numberOfHours);
             const minutes = ms(numberOfMinutes);
+            console.log(hours);
 
             //subtract minutes from current time to get the time to loop to
-            const pastTime = currentTime - minutes;
+            const pastTime = currentTime - (hours + minutes);
 
             //call the method to save until the message time < pastTime
             const messagesToSave = await getMessagesByTime(channel, pastTime, excludeBotMessages, accuracy);
@@ -106,7 +119,7 @@ module.exports = {
 
             //show that it saved
             interaction.editReply({
-                content:`Remembered the last "${numberOfMinutes} minutes"`,
+                content:`Remembered the last "${numberOfHours} hours ${numberOfMinutes} minutes"`,
                 ephemeral: false,
             });
         }
