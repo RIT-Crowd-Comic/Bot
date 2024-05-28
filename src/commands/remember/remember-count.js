@@ -1,16 +1,17 @@
 const {ApplicationCommandOptionType} = require('discord.js');
-const {parseMessage, addMessages, saveNumberMessages} = require("../../utils/rememberMessages");
+const {parseMessage, addMessages} = require("../../utils/rememberMessages");
 const {defaultExcludeBotMessages} = require('../../../config.json');
+const {getNumberMessages} = require('../../utils/apiCalls');
 
 const getMessagesAndReturnId = async(messagesToSave, channel, num, excludeBotMessages, startId) =>{
     let messageObjArray;
     if(startId){
          //get the first 100 messages at a specifc point
-         messageObjArray = await saveNumberMessages(channel, num, startId)
+         messageObjArray = await getNumberMessages(channel, num, startId)
     }
     else{
         //get the num messages starting with the latest one
-        messageObjArray = await saveNumberMessages(channel, num)
+        messageObjArray = await getNumberMessages(channel, num)
     }
 
     if (!messageObjArray) {

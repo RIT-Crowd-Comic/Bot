@@ -23,50 +23,6 @@ const parseMessage = (message) => {
     }
 }
 
-//returns the id of the message at the final index
-const saveNumberMessages = async(channel, numberToSave, id) =>{
-    let messages;
-
-    //if id begin there
-    if (id) 
-        messages = await channel.messages.fetch({ cache: false, limit: numberToSave, before: id });
-    else
-        messages = await channel.messages.fetch({ cache: false, limit: numberToSave});
-            
-    return messages;
-}
-
-//continues saving messages until their time is lesser than given
-//we are going into the past to fetch old messages by their timestamps(ms)
-const saveMessagesTime = async(channel, pastTime, chunkSize) =>{
-    let message;
-    let startId;
-    let messageTime;
-    if(chunkSize > 100) chunkSize = 100;
-
-    do{
-        //if startId use it //chunks of 100 is more efficient
-        if (startId) 
-            message = await channel.messages.fetch({ cache: false, limit: chunkSize, before: startId });
-        else
-            message = await channel.messages.fetch({ cache: false, limit: 1});
-
-        //add the message
-        //parse the message
-        //may be a better way, but message is a map, so using foreach to iterate to get at the object
-        message.forEach((msg) =>{
-            startId = msg.id; //save the message id so we can start there next iteraction
-            messageTime = msg.createdTimestamp; //save timestamp for comparison
-
-            const parsedMessage = parseMessage(msg);
-    
-            //save the message
-            addMessage(parsedMessage);
-        })
-    } while(messageTime >= pastTime); //loop until the message timestamp is lower/=  than the past time
-}
-
-
 
 module.exports = {
     addMessage,
@@ -74,6 +30,4 @@ module.exports = {
     getRememberedMessage,
     clearRememeberedMessage,
     parseMessage,
-    saveNumberMessages,
-    saveMessagesTime
  }
