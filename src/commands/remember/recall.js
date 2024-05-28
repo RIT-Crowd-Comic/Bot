@@ -10,6 +10,8 @@ module.exports = {
     callback: async (client, interaction) => {
         try {
             //get the json
+            //? There is probably a way to do this so we don't have to have a fle created to save to
+            //? Will probably be resolved once DB is created
             await interaction.deferReply({ ephemeral: false })
             const jsonFilePath = './src/rememberedMessages.json';
             const messageObj = []
