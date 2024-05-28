@@ -2,7 +2,7 @@ const { ApplicationCommandOptionType, PermissionFlagsBits } = require('discord.j
 const remeberMessagesMethods = require("../../utils/rememberMessages");
 const apiCalls = require("../../utils/apiCalls")
 const path = require('path');
-const { defaultExcludeBotMessages, rememberEphemeral } = require('../../../config.json');
+const { defaultExcludeBotMessages, ephemeral } = require('../../../config.json');
 
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') })
 module.exports = {
@@ -39,11 +39,11 @@ module.exports = {
     callback: async (client, interaction) => {
         const startMessageId = interaction.options.get('start-message-id').value;
         const endMessageId = interaction.options.get('end-message-id').value;
-        let excludeBotMessages = interaction.options.getBoolean('exclude-bot-messages') ?? defaultExcludeBotMessages;
-        let channelId = interaction.options.getString('channel-id') ?? interaction.channel.id;
+        const excludeBotMessages = interaction.options.getBoolean('exclude-bot-messages') ?? defaultExcludeBotMessages;
+        const channelId = interaction.options.getString('channel-id') ?? interaction.channel.id;
 
         try {
-            await interaction.deferReply({ ephemeral: rememberEphemeral })
+            await interaction.deferReply({ ephemeral: ephemeral.rememberEphemeral })
 
             //make sure channel exist
             const channelObj = await apiCalls.getChannelObject(channelId)
