@@ -8,7 +8,7 @@ const excludeBotMessagesDefaultSetting = defaultExcludeBotMessages.startRemember
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') })
 module.exports = {
     name: 'start-remembering',
-    description: 'Start remembering message in a specic channels',
+    description: 'Start remembering message in a specific channels',
     options: [
         {
             name: 'channel-id',
