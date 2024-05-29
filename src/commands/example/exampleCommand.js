@@ -14,7 +14,7 @@ module.exports = {
             name: 'test', //name(required)
             description: 'blah', //description(required)
             required: true, //required(optional) : makes it so the user needs to input something to run the command
-            type: ApplicationCommandOptionType.String, //type of command, use intellisence or docs to select proper one
+            type: ApplicationCommandOptionType.String, //type of command, use intellisense or docs to select proper one
             //https://discord.com/developers/docs/interactions/application-commands
 
         },

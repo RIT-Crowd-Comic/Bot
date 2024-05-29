@@ -4,8 +4,8 @@ let rememberedMessages = []
 
 const addMessage = (message) => { rememberedMessages.push(message);}
 const addMessages = (messages) => { rememberedMessages = rememberedMessages.concat(messages); }
-const getRememberedMessage = () => { return rememberedMessages }
-const clearRememeberedMessage = () => { rememberedMessages = [] }
+const getRememberedMessages = () => { return rememberedMessages }
+const clearRememberedMessages = () => { rememberedMessages = [] }
 
 
 //parses message api response json to message object 
@@ -23,11 +23,10 @@ const parseMessage = (message) => {
     }
 }
 
-
 module.exports = {
     addMessage,
     addMessages,
-    getRememberedMessage,
-    clearRememeberedMessage,
+    getRememberedMessages,
+    clearRememberedMessages,
     parseMessage,
  }
