@@ -42,9 +42,17 @@ const getMessagesAfterId = async (channelId, limit, afterId, addFirstMessage = f
     return messages;
 }
 
+//returns the id of the message at the final index
+const getNumberMessages = async(channel, numberToSave, id) =>{
+    return id
+    ? channel.messages.fetch({cache: false, limit: numberToSave, before: id})
+    : channel.messages.fetch({cache: false, limit: numberToSave});
+}
+
 
 module.exports = {
     getChannelObject,
     getMessageObject,
-    getMessagesAfterId
+    getMessagesAfterId,
+    getNumberMessages
 }
