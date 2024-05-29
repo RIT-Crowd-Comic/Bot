@@ -1,24 +1,21 @@
 const { ApplicationCommandOptionType, Attachment } = require('discord.js');
-const { getRememberedMessage } = require("../../utils/rememberMessages");
+const { getRememberedMessages } = require("../../utils/rememberMessages");
 const { ephemeral } = require('../../../config.json');
-var fs = require('fs');
+const fs = require('fs');
 //remembers a message based on a message id parameter
 module.exports = {
     name: 'recall',
     description: 'creates a JSON of all the saved message',
     //logic, 
-    callback: async (client, interaction) => {
+    callback: async (_, interaction) => {
         try {
             //get the json
             //? There is probably a way to do this so we don't have to have a fle created to save to
             //? Will probably be resolved once DB is created
             await interaction.deferReply({ ephemeral: false })
             const jsonFilePath = './src/rememberedMessages.json';
-            const messageObj = []
-            const messages = getRememberedMessage();
-            messages.forEach(m => messageObj.push(m))
+            const json = JSON.stringify(getRememberedMessages(), null, 2)
             interaction.editReply("Success")
-            const json = JSON.stringify(messageObj)
 
             //send the json
             fs.writeFile(jsonFilePath, json, (err) => err && console.error(err))
