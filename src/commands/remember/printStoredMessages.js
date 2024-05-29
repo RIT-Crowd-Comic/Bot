@@ -6,6 +6,7 @@ const fs = require('fs');
 module.exports = {
     name: 'print-storage',
     description: 'Stores a message from the current channel based on its message-id',
+    devOnly: true,
 
     //logic, 
     callback: async(client, interaction) =>{
