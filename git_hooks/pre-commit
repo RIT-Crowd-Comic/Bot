@@ -1,0 +1,11 @@
+#!/bin/sh
+# before committing, run eslint --fix on staged files
+
+
+ESLINT="npx eslint --fix"
+for file in $(git diff --cached --name-only | grep ".js$"); do
+  # potentially check return result to cancel the commit on error
+  if ! $ESLINT "$file"; then
+    echo "Please fix ESLINT errors >~<"
+  fi
+done
