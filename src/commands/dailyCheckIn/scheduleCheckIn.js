@@ -1,5 +1,5 @@
 
-const { PermissionFlagsBits, ApplicationCommandOptionType, Client, CommandInteraction, ApplicationCommandOptionWithChoicesMixin } = require("discord.js");
+const { PermissionFlagsBits, ApplicationCommandOptionType, Client, CommandInteraction, ApplicationCommandOptionWithChoicesMixin } = require('discord.js');
 const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
 const weekday = require('dayjs/plugin/weekday');
@@ -98,9 +98,9 @@ module.exports = {
             // regardless of time zone
             const firstScheduleDay =
                 dayjs()
-                	.day(validDays.indexOf(parsedDays[0])) // must use integer
-                	.hour(timeHours)
-                	.minute(timeMinutes);
+                    .day(validDays.indexOf(parsedDays[0])) // must use integer
+                    .hour(timeHours)
+                    .minute(timeMinutes);
             const utcHour = firstScheduleDay.utc().hour();
             const utcMin = firstScheduleDay.utc().minute();
             // dayjs().day(1).hour(17)

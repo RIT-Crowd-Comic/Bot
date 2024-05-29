@@ -1,27 +1,27 @@
-import globals from "globals";
-import pluginJs from "@eslint/js";
+import globals from 'globals';
+import pluginJs from '@eslint/js';
 import stylisticJs from '@stylistic/eslint-plugin-js';
 
 export default [
     {
-		    files: ["**/*.js"],
-		    languageOptions:
+        files: ['**/*.js'],
+        languageOptions:
     {
-    	sourceType: "commonjs",
+        sourceType: 'commonjs',
     }
     },
     {
         languageOptions:
     {
-    	globals: globals.node
+        globals: globals.node
     }
     },
     pluginJs.configs.recommended,
     {
-        "rules": {
-            "consistent-return": 2,
-            "no-else-return": 1,
-            "space-unary-ops": 2
+        'rules': {
+            'consistent-return': 2,
+            'no-else-return': 1,
+            'space-unary-ops': 2
         }
     },
     {
@@ -30,7 +30,9 @@ export default [
         },
         rules: {
             'indent': ['warn', 4],
-            "semi": [1, "always"],
+            'semi': [1, 'always'],
+            'no-mixed-spaces-and-tabs': ['warn', 'smart-tabs'],
+            'quotes': [1, 'single', {'allowTemplateLiterals': true, 'avoidEscape': true}]
             // ...
         }
     }
