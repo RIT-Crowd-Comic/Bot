@@ -1,5 +1,6 @@
 const {ApplicationCommandOptionType} = require('discord.js');
 const {addMessage, parseMessage} = require("../../utils/rememberMessages");
+const {getMessageObject } = require('../../utils/apiCalls');
 
 //remembers a message based on a message id parameter
 module.exports = {
@@ -13,8 +14,8 @@ module.exports = {
             type: ApplicationCommandOptionType.String,
         },
         {
-            name: 'search-specific-channel',
-            description: 'Searches the give channel for the message.',
+            name: 'channel-id',
+            description: 'The id of the channel to search for the message',
             type: ApplicationCommandOptionType.String,
         },
     ],
@@ -28,20 +29,10 @@ module.exports = {
             //get the id of the message  
             const idMessage = interaction.options.get('message-id').value;
             //channel id
-            const specificChannelId = interaction.options.getString('search-specific-channel');
+            const specificChannelId = interaction.options.getString('channel-id');
 
             
-            let msg;
-            //specific channel is true, search that channel
-            if(specificChannelId){
-                //get the message from given channel
-                const channel = await client.channels.cache.get(specificChannelId);
-                msg =  await channel.messages.fetch(idMessage);
-            }
-            else{
-                //get the message from current channel
-                msg =  await interaction.channel.messages.fetch(idMessage);
-            }
+            const msg = await getMessageObject(specificChannelId || interaction.channel.id, idMessage);
 
             //parse the message
             const parsedMessage = parseMessage(msg);

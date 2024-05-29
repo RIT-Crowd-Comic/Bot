@@ -1,5 +1,5 @@
 const { ApplicationCommandOptionType, PermissionFlagsBits } = require('discord.js');
-const remeberMessagesUtils = require("../../utils/rememberMessages");
+const rememberMessagesUtils = require("../../utils/rememberMessages");
 const apiCalls = require("../../utils/apiCalls")
 const path = require('path');
 const { defaultExcludeBotMessages, ephemeral } = require('../../../config.json');
@@ -7,7 +7,7 @@ const { defaultExcludeBotMessages, ephemeral } = require('../../../config.json')
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') })
 module.exports = {
     name: 'remember-messages',
-    description: 'Remember all messages between two specific messages (inclusivley)',
+    description: 'Remember all messages between two specific messages (inclusively)',
     options: [
         {
             name: 'start-message-id',
@@ -36,7 +36,8 @@ module.exports = {
     ],
     permissionsRequired: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ReadMessageHistory],
 
-    callback: async (client, interaction) => {
+
+    callback: async (_, interaction) => {
         const startMessageId = interaction.options.get('start-message-id').value;
         const endMessageId = interaction.options.get('end-message-id').value;
         const excludeBotMessages = interaction.options.getBoolean('exclude-bot-messages') ?? defaultExcludeBotMessages.rememberRangeGrab;
@@ -44,7 +45,7 @@ module.exports = {
 
         try {
             await interaction.deferReply({ ephemeral: ephemeral.rememberEphemeral })
-            const rememberRangeGrabResponse = await remeberMessagesUtils.rememberRangeGrab(channelId, startMessageId, endMessageId, excludeBotMessages)
+            const rememberRangeGrabResponse = await rememberMessagesUtils.rememberRangeGrab(channelId, startMessageId, endMessageId, excludeBotMessages)
             if (rememberRangeGrabResponse.status === "Fail") {
                 interaction.editReply({
                     content: rememberRangeGrabResponse.description

@@ -1,4 +1,6 @@
-const { getRememberedMessage } = require("../../utils/rememberMessages");
+const { ApplicationCommandOptionType, Attachment } = require('discord.js');
+const { getRememberedMessages } = require("../../utils/rememberMessages");
+const { ephemeral } = require('../../../config.json');
 const fs = require('fs');
 //remembers a message based on a message id parameter
 module.exports = {
@@ -12,7 +14,7 @@ module.exports = {
             //? Will probably be resolved once DB is created
             await interaction.deferReply({ ephemeral: false })
             const jsonFilePath = './src/rememberedMessages.json';
-            const json = JSON.stringify(getRememberedMessage(), null, 2)
+            const json = JSON.stringify(getRememberedMessages(), null, 2)
             interaction.editReply("Success")
 
             //send the json

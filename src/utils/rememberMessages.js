@@ -4,14 +4,9 @@ let rememberedMessages = []
 
 const addMessage = (message) => { rememberedMessages.push(message); }
 const addMessages = (messages) => { rememberedMessages = rememberedMessages.concat(messages); }
-const getRememberedMessage = () => { return structuredClone(rememberedMessages) }
-const clearRememeberedMessage = () => { rememberedMessages = [] }
+const getRememberedMessages = () => { return structuredClone(rememberedMessages); }
+const clearRememberedMessages = () => { rememberedMessages = [] }
 let rememberMessageObj = undefined;
-// {
-//     id:
-//     last_message_id:
-//     name: 
-// }
 
 //parses message api response json to message object 
 //including message, who sent it, and what time
@@ -28,70 +23,8 @@ const parseMessage = (message) => {
     }
 }
 
-//returns the id of the message at the final index
-const saveNumberMessages = async (numberToSave, channel, id) => {
-    let messages;
-    //get the messages
-
-    //if id begin there
-    if (id)
-        messages = await channel.messages.fetch({ cache: false, limit: numberToSave, before: id });
-    else
-        messages = await channel.messages.fetch({ cache: false, limit: numberToSave });
-
-    //loop for each message
-    //using a amalgamation of a for + foreach to keep track
-    //feel free to refactor!!!
-    let i = 1;
-    let returnId;
-    messages.forEach((msg) => {
-
-        //parse the message
-        const parsedMessage = parseMessage(msg);
-
-        //save the message
-        addMessage(parsedMessage);
-
-        //return the index if its the final one
-        if (i == numberToSave)
-            returnId = msg.id;
-        i++;
-    });
-    return returnId;
-}
-
-//continues saving messages until their time is lesser than given
-//we are going into the past to fetch old messages by their timestamps(ms)
-const saveMessagesTime = async (channel, pastTime, chunkSize) => {
-    let message;
-    let startId;
-    let messageTime;
-    if (chunkSize > 100) chunkSize = 100;
-
-    do {
-        //if startId use it //chunks of 100 is more efficient
-        if (startId)
-            message = await channel.messages.fetch({ cache: false, limit: chunkSize, before: startId });
-        else
-            message = await channel.messages.fetch({ cache: false, limit: 1 });
-
-        //add the message
-        //parse the message
-        //may be a better way, but message is a map, so using foreach to iterate to get at the object
-        message.forEach((msg) => {
-            startId = msg.id; //save the message id so we can start there next iteraction
-            messageTime = msg.createdTimestamp; //save timestamp for comparison
-
-            const parsedMessage = parseMessage(msg);
-
-            //save the message
-            addMessage(parsedMessage);
-        })
-    } while (messageTime >= pastTime); //loop until the message timestamp is lower/=  than the past time
-}
-
 //remembers all messages between two messages.
-const rememberRangeGrab = async (channelId, startMessageId, endMessageId, excludeBotMessages, rememberFirstMessage = undefined) => {
+const rememberRangeGrab = async (channelId, startMessageId, endMessageId, excludeBotMessages) => {
     try {
         //make sure channel exist
         const channelObj = await apiCalls.getChannelObject(channelId)
@@ -133,15 +66,15 @@ const rememberRangeGrab = async (channelId, startMessageId, endMessageId, exclud
             }
         }
 
-        //get all of the messages between the start and the end (possilby loop through multiple times)
+        //get all of the messages between the start and the end (possibly loop through multiple times)
         const messagesToSave = [];
         let addedEndMessage = false;
         let startId = startMessageId;
 
         do {
 
-            //get the first 100 messages at a specifc point
-            const messageObjArray = await apiCalls.getMessagesAfterId(channelId, 100, startId, rememberFirstMessage ?? startId === startMessageId)
+            //get the first 100 messages at a specific point
+            const messageObjArray = await apiCalls.getMessagesAfterId(channelId, 100, startId, startId === startMessageId)
 
             if (!messageObjArray) {
                 return {
@@ -159,12 +92,11 @@ const rememberRangeGrab = async (channelId, startMessageId, endMessageId, exclud
                 if (m.id === endMessageId) {
                     addedEndMessage = true;
                 }
-                // exlude bot messages if option is enabled
+                // exclude bot messages if option is enabled
                 if (excludeBotMessages && m.author.bot) {
                     continue;
                 }
-                const message = parseMessage(m);
-                messagesToSave.push(message);
+                messagesToSave.push(parseMessage(m));
 
                 if (addedEndMessage) {
                     break;
@@ -189,11 +121,9 @@ const rememberRangeGrab = async (channelId, startMessageId, endMessageId, exclud
 module.exports = {
     addMessage,
     addMessages,
-    getRememberedMessage,
-    clearRememeberedMessage,
+    getRememberedMessages,
+    clearRememberedMessages,
     parseMessage,
-    saveNumberMessages,
-    saveMessagesTime,
     rememberRangeGrab,
     rememberMessageObj
 }

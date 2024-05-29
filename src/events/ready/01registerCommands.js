@@ -60,6 +60,19 @@ module.exports = async (client) => {
         console.log(`👍 Registered command "${name}."`);
       }
     }
+
+    // remove commands that no longer exist
+    for(const command of applicationCommands.cache) {
+      const id = command[0];
+      const appCommand = command[1];
+      
+      if (!localCommands.find(c => c.name === appCommand.name)) {
+        // server command does not exist here anymore
+        await applicationCommands.delete(id);
+          console.log(`🗑 Deleted command "${appCommand.name}".`);
+      }
+    }
+
   } catch (error) {
     console.log(`There was an error: ${error}`);
   }

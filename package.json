@@ -12,6 +12,7 @@
   "author": "William Tallarico",
   "license": "ISC",
   "dependencies": {
+    "dayjs": "^1.11.11",
     "discord.js": "^14.15.2",
     "dotenv": "^16.4.5",
     "ms": "^2.1.3",

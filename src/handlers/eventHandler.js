@@ -11,7 +11,7 @@ module.exports = (client) =>{
         //get the files
         const eventFiles = getAllFiles(eventFolder);
 
-        //sort by prioriy (number in name)
+        //sort by priority (number in name)
         eventFiles.sort((a,b)=> a > b);
         
         //get the event names from them
@@ -21,7 +21,13 @@ module.exports = (client) =>{
         client.on(eventName, async (arg) =>{
             for(const eventFile of eventFiles){
                 const eventFunction = require(eventFile);
-                await eventFunction(client, arg);
+
+                try {
+                    await eventFunction(client, arg);
+                }
+                catch (error) {
+                    console.log(error);
+                }
             }
         })
     }

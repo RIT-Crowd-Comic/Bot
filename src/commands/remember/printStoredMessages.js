@@ -1,4 +1,4 @@
-const {getRememberedMessage} = require("../../utils/rememberMessages");
+const {getRememberedMessages} = require("../../utils/rememberMessages");
 
 const fs = require('fs');
 
@@ -6,13 +6,14 @@ const fs = require('fs');
 module.exports = {
     name: 'print-storage',
     description: 'Stores a message from the current channel based on its message-id',
+    devOnly: true,
 
     //logic, 
     callback: async(client, interaction) =>{
         
         try{
             await interaction.deferReply();
-            const messages = getRememberedMessage();
+            const messages = getRememberedMessages();
             let print = "Messages: ";
             messages.forEach(async(msg)=>{
                 print+=`
