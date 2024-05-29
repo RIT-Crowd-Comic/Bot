@@ -15,10 +15,9 @@ const getMessagesByTime = async(channel, pastTime, excludeBotMessages, chunkSize
 
     do{
         //if startId use it //chunks of 100 is more efficient
-        if (startId) 
-            message = await getNumberMessages(channel,chunkSize,startId);
-        else
-            message = await getNumberMessages(channel,1);
+        const message = startId 
+            ? await getNumberMessages(channel, chunkSize, startId) 
+            : await getNumberMessages(channel, 1);
 
         //add the message
         //parse the message
@@ -62,7 +61,7 @@ module.exports = {
         },
         {
             name: 'speed',
-            description: 'Speed of the Search. Lower value is more accurate but slower. Default is 50',
+            description: 'Speed of the Search. Lower value is more accurate but slower. Range 25-100 inclusive',
             type: ApplicationCommandOptionType.Number,
         },
         {
@@ -88,8 +87,8 @@ module.exports = {
 
             //validate accuracy
             let accuracy = interaction.options.getNumber("speed") ?? 50;
-            if(accuracy < 25) accuracy = 25; 
-            if(accuracy > 100) accuracy = 100;
+            accuracy = Math.max (accuracy, 25); 
+            accuracy = Math.min(accuracy, 100);
 
             //format and clamp
             const numberOfHours = (valueHours > 5 ? 5 : valueHours).toString() + 'h'; //formatting for ms

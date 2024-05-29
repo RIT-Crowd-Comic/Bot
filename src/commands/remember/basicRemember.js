@@ -15,7 +15,7 @@ module.exports = {
         },
         {
             name: 'channel-id',
-            description: 'Searches the give channel for the message.',
+            description: 'The id of the channel to search for the message',
             type: ApplicationCommandOptionType.String,
         },
     ],
@@ -29,19 +29,10 @@ module.exports = {
             //get the id of the message  
             const idMessage = interaction.options.get('message-id').value;
             //channel id
-            const specificChannelId = interaction.options.getString('search-specific-channel');
+            const specificChannelId = interaction.options.getString('channel-id');
 
             
-            let msg;
-            //specific channel is true, search that channel
-            if(specificChannelId){
-                //get the message from given channel
-                msg =  await getMessageObject(specificChannelId,idMessage);
-            }
-            else{
-                //get the message from current channel
-                msg =  await getMessageObject(interaction.channel.id, idMessage);
-            }
+            const msg = await getMessageObject(specificChannelId || interaction.channel.id, idMessage);
 
             //parse the message
             const parsedMessage = parseMessage(msg);

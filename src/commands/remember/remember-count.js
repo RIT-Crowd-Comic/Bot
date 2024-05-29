@@ -4,15 +4,7 @@ const {defaultExcludeBotMessages} = require('../../../config.json');
 const {getNumberMessages} = require('../../utils/apiCalls');
 
 const getMessagesAndReturnId = async(messagesToSave, channel, num, excludeBotMessages, startId) =>{
-    let messageObjArray;
-    if(startId){
-         //get the first 100 messages at a specifc point
-         messageObjArray = await getNumberMessages(channel, num, startId)
-    }
-    else{
-        //get the num messages starting with the latest one
-        messageObjArray = await getNumberMessages(channel, num)
-    }
+    const messageObjArray = await getNumberMessages(channel, num, startId);
 
     if (!messageObjArray) {
         return;

@@ -44,15 +44,9 @@ const getMessagesAfterId = async (channelId, limit, afterId, addFirstMessage = f
 
 //returns the id of the message at the final index
 const getNumberMessages = async(channel, numberToSave, id) =>{
-    let messages;
-
-    //if id begin there
-    if (id) 
-        messages = await channel.messages.fetch({ cache: false, limit: numberToSave, before: id });
-    else
-        messages = await channel.messages.fetch({ cache: false, limit: numberToSave});
-            
-    return messages;
+    return id
+    ? channel.messages.fetch({cache: false, limit: numberToSave, before: id})
+    : channel.messages.fetch({cache: false, limit: numberToSave});
 }
 
 
