@@ -4,7 +4,7 @@ module.exports = {
     name: 'help',
     description: 'List of commands',
 
-    callback: (client, interation) => {
+    callback: (client, interaction) => {
         
         const embed = new EmbedBuilder()
         .setTitle('Server Commands')
