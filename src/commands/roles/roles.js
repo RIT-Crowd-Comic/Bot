@@ -5,7 +5,7 @@ const {ActionRowBuilder, ButtonStyle, ButtonBuilder} = require('discord.js');
 module.exports = {
     name: 'roles',
     description: 'Brings up a menu to assign a role',
-    devOnly: false,
+    devOnly: true,
     testOnly: false,
 
     //logic, 

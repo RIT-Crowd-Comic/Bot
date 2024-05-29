@@ -5,13 +5,14 @@ module.exports = {
     description: 'List of commands',
 
     callback: (client, interaction) => {
-        
+        //Create an embed to send to the user
         const embed = new EmbedBuilder()
         .setTitle('Server Commands')
-        /*.setDescription('List of server commands')*/
         .addFields(
             {
+                // name - /[name of command]
                 name: '/help-remember',
+                // value - description of command
                 value: 'Brings up list of remember commands'
             },
             {

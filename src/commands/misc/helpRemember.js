@@ -2,16 +2,18 @@ const { EmbedBuilder } = require('@discordjs/builders')
 
 module.exports = {
     name: 'help-remember',
-    description: 'List of remember commands',
+    description: 'List of commands for remembering messages',
 
     callback: (client, interation) => {
-        
+        //Create an embed to send to the user
         const embed = new EmbedBuilder()
         .setTitle('Remember Commands')
-        /*.setDescription('List of server commands')*/
+        .setDescription('Commands relating to message storage and retrieval')
         .addFields(
             {
+                // name - /[name of command]
                 name: '/remember',
+                // value - description of command
                 value: 'Stores a message from the current channel based on its message-id'
             },
             {
