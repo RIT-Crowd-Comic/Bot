@@ -5,9 +5,13 @@
 //
 
 module.exports = async (client, interaction) => {
+  return; // temporarily remove until roles are fixed
+  // this script runs for every button press.
+  // instead, include some kind of check to make sure the button is a role button
     try {
         //if not a button, return
         if (!interaction.isButton()) return;
+
         //wait for a reply
         await interaction.deferReply({ ephemeral: true });
         //get the role from the interaction (buttons)
