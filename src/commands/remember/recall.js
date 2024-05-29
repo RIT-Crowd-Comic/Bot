@@ -1,6 +1,5 @@
 const { ApplicationCommandOptionType, Attachment } = require('discord.js');
-const { getRememberedMessage } = require("../../utils/rememberMessages");
-const { ephemeral } = require('../../../config.json');
+const { getRememberedMessages } = require("../../utils/rememberMessages");
 var fs = require('fs');
 //remembers a message based on a message id parameter
 module.exports = {
@@ -15,7 +14,7 @@ module.exports = {
             await interaction.deferReply({ ephemeral: false })
             const jsonFilePath = './src/rememberedMessages.json';
             const messageObj = []
-            const messages = getRememberedMessage();
+            const messages = getRememberedMessages();
             messages.forEach(m => messageObj.push(m))
             interaction.editReply("Success")
             const json = JSON.stringify(messageObj)

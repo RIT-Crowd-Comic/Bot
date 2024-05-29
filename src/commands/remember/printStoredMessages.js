@@ -1,4 +1,4 @@
-const {getRememberedMessage} = require("../../utils/rememberMessages");
+const {getRememberedMessages} = require("../../utils/rememberMessages");
 
 const fs = require('fs');
 
@@ -12,7 +12,7 @@ module.exports = {
         
         try{
             await interaction.deferReply();
-            const messages = getRememberedMessage();
+            const messages = getRememberedMessages();
             let print = "Messages: ";
             messages.forEach(async(msg)=>{
                 print+=`

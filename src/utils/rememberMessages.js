@@ -4,7 +4,7 @@ let rememberedMessages = []
 
 const addMessage = (message) => { rememberedMessages.push(message);}
 const addMessages = (messages) => { rememberedMessages = rememberedMessages.concat(messages); }
-const getRememberedMessage = () => { return rememberedMessages }
+const getRememberedMessages = () => { return rememberedMessages }
 const clearRememberedMessages = () => { rememberedMessages = [] }
 
 
@@ -90,7 +90,7 @@ const saveMessagesTime = async(channel, pastTime, chunkSize) =>{
 module.exports = {
     addMessage,
     addMessages,
-    getRememberedMessage,
+    getRememberedMessages,
     clearRememberedMessages,
     parseMessage,
     saveNumberMessages,
