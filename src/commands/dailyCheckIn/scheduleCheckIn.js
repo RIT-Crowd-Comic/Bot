@@ -10,7 +10,7 @@ dayjs.extend(localizedFormat);
 
 
 const fakeScheduleEntry = {
-}
+};
 
 module.exports = {
     /**
@@ -46,10 +46,11 @@ module.exports = {
                 't': 'tuesday',
                 'w': 'wednesday',
                 'th': 'thursday',
+                'h': 'thursday',
                 'f': 'friday',
-                's': 'saturday',
+                'sa': 'saturday',
                 'su': 'sunday',
-            }
+            };
             const daily = rawDays.toLocaleLowerCase().startsWith('daily');
 
             // split days by whitespace or comma
@@ -165,7 +166,7 @@ module.exports = {
     options: [
         {
             name: 'days',
-            description: 'List of days. Ex: "Monday Wednesday Friday" or "daily"',
+            description: 'The name of days can be abbreviated as "m t w (th or h) f sa su". Ex: "Monday w f" or "daily"',
             // choices: [
             //     { name: "monday", value: "monday" },
             //     { name: "tuesday", value: "tuesday" },
@@ -188,4 +189,4 @@ module.exports = {
     testOnly: false,
     permissionsRequired: [PermissionFlagsBits.SendMessages],
     fakeScheduleEntry
-}
+};
