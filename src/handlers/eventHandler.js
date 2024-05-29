@@ -11,7 +11,7 @@ module.exports = (client) =>{
         //get the files
         const eventFiles = getAllFiles(eventFolder);
 
-        //sort by prioriy (number in name)
+        //sort by priority (number in name)
         eventFiles.sort((a,b)=> a > b);
         
         //get the event names from them

@@ -1,5 +1,5 @@
 const { ApplicationCommandOptionType, PermissionFlagsBits } = require('discord.js');
-const remeberMessagesMethods = require("../../utils/rememberMessages");
+const rememberMessagesMethods = require("../../utils/rememberMessages");
 const apiCalls = require("../../utils/apiCalls")
 const path = require('path');
 const { defaultExcludeBotMessages, ephemeral } = require('../../../config.json');
@@ -7,7 +7,7 @@ const { defaultExcludeBotMessages, ephemeral } = require('../../../config.json')
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') })
 module.exports = {
     name: 'remember-messages',
-    description: 'Remember all messages between two specific messages (inclusivley)',
+    description: 'Remember all messages between two specific messages (inclusively)',
     options: [
         {
             name: 'start-message-id',
@@ -36,7 +36,7 @@ module.exports = {
     ],
     permissionsRequired: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ReadMessageHistory],
 
-    callback: async (client, interaction) => {
+    callback: async (_, interaction) => {
         const startMessageId = interaction.options.get('start-message-id').value;
         const endMessageId = interaction.options.get('end-message-id').value;
         const excludeBotMessages = interaction.options.getBoolean('exclude-bot-messages') ?? defaultExcludeBotMessages;
@@ -85,13 +85,13 @@ module.exports = {
                 return;
             }
 
-            //get all of the messages between the start and the end (possilby loop through multiple times)
+            //get all of the messages between the start and the end (possibly loop through multiple times)
             const messagesToSave = [];
             let addedEndMessage = false;
             let startId = startMessageId;
             do {
 
-                //get the first 100 messages at a specifc point
+                //get the first 100 messages at a specific point
                 const messageObjArray = await apiCalls.getMessagesAfterId(channelId, 100, startId, startId === startMessageId)
 
                 if (!messageObjArray) {
@@ -110,11 +110,11 @@ module.exports = {
                     if (m.id === endMessageId) {
                         addedEndMessage = true;
                     }
-                    // exlude bot messages if option is enabled
+                    // exclude bot messages if option is enabled
                     if (excludeBotMessages && m.author.bot) {
                         continue;
                     }
-                    const message = remeberMessagesMethods.parseMessage(m)
+                    const message = rememberMessagesMethods.parseMessage(m)
                     messagesToSave.push(message)
 
                     if(addedEndMessage) {
@@ -124,7 +124,7 @@ module.exports = {
             } while (!addedEndMessage)
 
                 messagesToSave.forEach(m => console.log(m))
-            remeberMessagesMethods.addMessages(messagesToSave)
+            rememberMessagesMethods.addMessages(messagesToSave)
 
             //? possibly replace this a to string of the remembered messages saved
             interaction.editReply({

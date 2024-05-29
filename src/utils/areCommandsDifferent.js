@@ -20,7 +20,7 @@ module.exports = (existingCommand, localCommand) => {
       return false;
     };
   
-    //same thing as choice except compares optiojs
+    //same thing as choice except compares options
     const areOptionsDifferent = (existingOptions, localOptions) => {
       for (const localOption of localOptions) {
         const existingOption = existingOptions?.find(
@@ -31,7 +31,7 @@ module.exports = (existingCommand, localCommand) => {
           return true;
         }
   
-        //compates options and their parameters
+        //compares options and their parameters
         if (
           localOption.description !== existingOption.description ||
           localOption.type !== existingOption.type ||
