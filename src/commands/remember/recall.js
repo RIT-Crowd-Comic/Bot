@@ -12,8 +12,7 @@ module.exports = {
             //? Will probably be resolved once DB is created
             await interaction.deferReply({ ephemeral: false })
             const jsonFilePath = './src/rememberedMessages.json';
-            const messages = structuredClone(getRememberedMessage());
-            const json = JSON.stringify(messages, null, 2)
+            const json = JSON.stringify(getRememberedMessage(), null, 2)
             interaction.editReply("Success")
 
             //send the json

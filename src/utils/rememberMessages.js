@@ -4,7 +4,7 @@ let rememberedMessages = []
 
 const addMessage = (message) => { rememberedMessages.push(message); }
 const addMessages = (messages) => { rememberedMessages = rememberedMessages.concat(messages); }
-const getRememberedMessage = () => { return rememberedMessages }
+const getRememberedMessage = () => { return structuredClone(rememberedMessages) }
 const clearRememeberedMessage = () => { rememberedMessages = [] }
 let rememberMessageObj = undefined;
 // {
