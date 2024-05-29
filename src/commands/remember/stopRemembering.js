@@ -28,7 +28,7 @@ module.exports = {
 
             //todo:remeber all message in between then and now (refactor rememberRangeGrab)
             const channelObj = await apiCalls.getChannelObject(obj.id);
-            const rememberRangeGrabResponse = await remeberMessagesUtils.rememberRangeGrab(obj.id, obj.last_message_id, channelObj.last_message_id, obj.excludeBotMessages)
+            const rememberRangeGrabResponse = await remeberMessagesUtils.rememberRangeGrab(obj.id, obj.last_message_id, channelObj.last_message_id, obj.excludeBotMessages, false)
             if (rememberRangeGrabResponse.status === "Fail") {
                 interaction.editReply({
                     content: rememberRangeGrabResponse.description

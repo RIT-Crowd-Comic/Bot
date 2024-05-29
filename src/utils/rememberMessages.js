@@ -91,7 +91,7 @@ const saveMessagesTime = async (channel, pastTime, chunkSize) => {
 }
 
 //remembers all messages between two messages.
-const rememberRangeGrab = async (channelId, startMessageId, endMessageId, excludeBotMessages) => {
+const rememberRangeGrab = async (channelId, startMessageId, endMessageId, excludeBotMessages, rememberFirstMessage = undefined) => {
     try {
         //make sure channel exist
         const channelObj = await apiCalls.getChannelObject(channelId)
@@ -141,7 +141,7 @@ const rememberRangeGrab = async (channelId, startMessageId, endMessageId, exclud
         do {
 
             //get the first 100 messages at a specifc point
-            const messageObjArray = await apiCalls.getMessagesAfterId(channelId, 100, startId, startId === startMessageId)
+            const messageObjArray = await apiCalls.getMessagesAfterId(channelId, 100, startId, rememberFirstMessage ?? startId === startMessageId)
 
             if (!messageObjArray) {
                 return {
