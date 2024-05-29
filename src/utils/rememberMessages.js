@@ -5,7 +5,7 @@ let rememberedMessages = []
 const addMessage = (message) => { rememberedMessages.push(message);}
 const addMessages = (messages) => { rememberedMessages = rememberedMessages.concat(messages); }
 const getRememberedMessage = () => { return rememberedMessages }
-const clearRememeberedMessages = () => { rememberedMessages = [] }
+const clearRememberedMessages = () => { rememberedMessages = [] }
 
 
 //parses message api response json to message object 
@@ -74,7 +74,7 @@ const saveMessagesTime = async(channel, pastTime, chunkSize) =>{
         //parse the message
         //may be a better way, but message is a map, so using foreach to iterate to get at the object
         message.forEach((msg) =>{
-            startId = msg.id; //save the message id so we can start there next iteraction
+            startId = msg.id; //save the message id so we can start there next interaction
             messageTime = msg.createdTimestamp; //save timestamp for comparison
 
             const parsedMessage = parseMessage(msg);
@@ -91,7 +91,7 @@ module.exports = {
     addMessage,
     addMessages,
     getRememberedMessage,
-    clearRememeberedMessages,
+    clearRememberedMessages,
     parseMessage,
     saveNumberMessages,
     saveMessagesTime
