@@ -4,8 +4,11 @@
   "description": "test discord ai bot",
   "main": "./src/index.js",
   "scripts": {
-    "lint": "npx eslint src/commands/dailyCheckIn/scheduleCheckIn.js",
-    "lint:fix": "npx eslint src/commands/dailyCheckIn/scheduleCheckIn.js --fix",
+    "lint": "npx eslint src",
+    "lint:fix": "npx eslint --fix src",
+    "setup": "git config core.hooksPath ./git_hooks",
+    "prestart": "npm run setup",
+    "start": "node ./src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
