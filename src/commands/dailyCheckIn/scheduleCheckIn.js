@@ -14,13 +14,13 @@ const fakeScheduleEntry = {
 
 module.exports = {
 	/**
-     * Parse and save schedule date to the database
+     *  * Parse and save schedule date to the database
      * @param {Client} client 
      * @param {CommandInteraction} interaction 
      */
 	callback: async (client, interaction) => {
 
-		const userId = interaction?.user?.id;
+	  const userId = interaction?.user?.id;
 		const userTag = interaction?.user?.tag;
 
 		await interaction.deferReply({ ephemeral: true });
