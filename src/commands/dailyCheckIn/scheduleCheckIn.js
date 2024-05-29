@@ -5,8 +5,8 @@ const utc = require('dayjs/plugin/utc');
 const weekday = require('dayjs/plugin/weekday');
 const localizedFormat = require('dayjs/plugin/localizedFormat');
 dayjs.extend(utc);
-dayjs.extend(weekday);
-dayjs.extend(localizedFormat);
+dayjs.extend(weekday)
+dayjs.extend(localizedFormat)
 
 
 const fakeScheduleEntry = {
