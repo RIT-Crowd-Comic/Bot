@@ -2,6 +2,7 @@ const {ApplicationCommandOptionType} = require('discord.js');
 const {defaultExcludeBotMessages} = require('../../../config.json');
 const {addMessages, parseMessage} = require(`../../utils/rememberMessages`);
 const {getNumberMessages} = require('../../utils/apiCalls');
+const {clamp} = require(`../../utils/mathUtils`)
 const ms = require('ms'); //converts time to ms
 
 
@@ -11,7 +12,7 @@ const getMessagesByTime = async(channel, pastTime, excludeBotMessages, chunkSize
     let messages = [];
     let startId;
     let messageTime;
-    if(chunkSize > 100) chunkSize = 100;
+    chunkSize = clamp(0,100,chunkSize);
 
     do{
         //if startId use it //chunks of 100 is more efficient
@@ -86,13 +87,11 @@ module.exports = {
             const excludeBotMessages = interaction.options.getBoolean('exclude-bot-messages') ?? defaultExcludeBotMessages;
 
             //validate accuracy
-            let accuracy = interaction.options.getNumber("speed") ?? 50;
-            accuracy = Math.max (accuracy, 25); 
-            accuracy = Math.min(accuracy, 100);
+            const accuracy = clamp(25, 100, interaction.options.getNumber("speed") ?? 50);
 
             //format and clamp
-            const numberOfHours = (valueHours > 5 ? 5 : valueHours).toString() + 'h'; //formatting for ms
-            const numberOfMinutes = (valueMinutes > 59 ? 59 : valueMinutes).toString() + 'm'; //formatting for ms
+            const numberOfHours = clamp(0,5,valueHours).toString() + 'h'; //formatting for ms
+            const numberOfMinutes = clamp(0,59,valueMinutes).toString() + 'm'; //formatting for ms
             
             const channelId = interaction.options.getString('channel-id') ?? interaction.channel.id;
             

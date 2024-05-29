@@ -2,9 +2,10 @@ const {ApplicationCommandOptionType} = require('discord.js');
 const {parseMessage, addMessages} = require("../../utils/rememberMessages");
 const {defaultExcludeBotMessages} = require('../../../config.json');
 const {getNumberMessages} = require('../../utils/apiCalls');
+const{clamp} = require('../../utils/mathUtils')
 
 const getMessagesAndReturnId = async(messagesToSave, channel, num, excludeBotMessages, startId) =>{
-    const messageObjArray = await getNumberMessages(channel, num, startId);
+    const messageObjArray = [...await getNumberMessages(channel, num, startId)];
 
     if (!messageObjArray) {
         return;
@@ -13,20 +14,12 @@ const getMessagesAndReturnId = async(messagesToSave, channel, num, excludeBotMes
     //sort the message in ascending order of timestamp
     messageObjArray.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
-    //go through the entire array and save messages, maybe excluding bot
-    //m is a kvp [1] is the actual data
-    for (const m of messageObjArray) {
-        startId = m[1].id;
+    messageObjArray
+    .filter(([_, msg]) => !(excludeBotMessages && msg.author.bot))
+    .map(([_, msg]) => messagesToSave.push(parseMessage(msg)));
 
-        // exlude bot messages if option is enabled
-        if (excludeBotMessages && m[1].author.bot) {
-            continue;
-        }
-
-        const message = parseMessage(m[1])
-        messagesToSave.push(message)
-    }
-
+    startId = messageObjArray.at(-1)[1].id; // last element
+    
     return startId;
 }
 
@@ -37,7 +30,7 @@ module.exports = {
     options:  [
         {
             name: 'number-of-messages',
-            description: 'The number of messages to save. Max 1000.',
+            description: 'The number of messages to save. Min 1, Max 1000.',
             required: true,
             type: ApplicationCommandOptionType.Number,
         },
@@ -61,7 +54,7 @@ module.exports = {
 
             //get the id    
             const value = interaction.options.get('number-of-messages').value;
-            const numberOfMessages = value > 1000 ? 1000 : value;
+            const numberOfMessages = clamp(1,1000, value);
 
             const excludeBotMessages = interaction.options.getBoolean('exclude-bot-messages') ?? defaultExcludeBotMessages;
             
