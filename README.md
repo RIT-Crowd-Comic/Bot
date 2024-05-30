@@ -23,7 +23,7 @@ Generate a token for the application by going to the wanted application under th
 # Setup
 
 With the addition of [Git hooks](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks) to our project, developers can automate the 
-linting and formatting process. Run the following command to set up git hooks for your local repository. Go to the [Linting Section](https://github.com/RIT-Crowd-Comic/Bot/edit/main/README.md#linting) to read more about configuring ESLint and Git hooks.
+linting and formatting process. Run the following command to set up git hooks for your local repository. Go to the [Linting Section](https://github.com/RIT-Crowd-Comic/Bot?tab=readme-ov-file#Linting) to read more about configuring ESLint and Git hooks.
 ```
 npm run setup
 ```
