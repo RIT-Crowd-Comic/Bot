@@ -20,11 +20,11 @@ module.exports = async(client) =>{
         });
 
         //sends a message to that row
-        await channel.send({
-            content: 'Claim a role below.',
-            components: [row],
-            ephemeral: true
-        });
+        // await channel.send({
+        //     content: 'Claim a role below.',
+        //     components: [row],
+        //     ephemeral: true
+        // });
         
 
     } catch(error) {
