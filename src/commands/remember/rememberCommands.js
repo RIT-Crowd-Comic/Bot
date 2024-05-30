@@ -182,7 +182,6 @@ module.exports = {
     }
 };
 
-
 //Callbacks
 //remember message 
 const rememberMessage = async (interaction) => {
@@ -412,7 +411,6 @@ const stopRemember = async(client, interaction)=>{
     //make rememberMessageObj undefined
     rememberMessageObj = undefined;
 }
-
 
 //Helpers
 //continues saving messages until their time is lesser than given

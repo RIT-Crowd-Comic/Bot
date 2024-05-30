@@ -1,16 +1,25 @@
+const { SlashCommandBuilder, ActionRowBuilder, ButtonStyle, ButtonBuilder} = require('discord.js');
 const { roles } = require('../../../config.json');
-const {ActionRowBuilder, ButtonStyle, ButtonBuilder} = require('discord.js');
+
 //Shows buttons for roles on command
 //NOTE the bot has to have a higher role than others to properly assign roles
 module.exports = {
-    name: 'roles',
-    description: 'Brings up a menu to assign a role',
-    devOnly: false,
-    testOnly: false,
+    data: new SlashCommandBuilder()
+        .setName('roles')
+        .setDescription('Brings up a menu to assign a role'),
+
+    options:
+    {
+        devOnly: false,
+        testOnly: false,
+        deleted: false,
+    },
+
 
     //logic, 
-    callback: async(client, interaction) =>{
-        interaction.reply(`Sending Roles...`);
+    async execute(_, interaction) {
+        await interaction.deferReply();
+        await interaction.editReply(`Sending Roles...`);
         try {
             const channel = await interaction.channel;
             if(!channel) return;
@@ -30,7 +39,7 @@ module.exports = {
             
     
         } catch(error) {
-            console.log(error);
+            await interaction.editReply(`Somthing went wrong ${error}`);
         }
     }
 };
