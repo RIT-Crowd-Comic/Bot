@@ -7,8 +7,8 @@ module.exports = {
     callback: (client, interaction) => {
         //Create an embed to send to the user
         const embed = new EmbedBuilder()
-        .setTitle('Server Commands')
-        .addFields(
+            .setTitle('Server Commands')
+            .addFields(
             {
                 // name - /[name of command]
                 name: '/help-remember',
