@@ -6,7 +6,6 @@ const addMessage = (message) => { rememberedMessages.push(message); }
 const addMessages = (messages) => { rememberedMessages = rememberedMessages.concat(messages); }
 const getRememberedMessages = () => { return structuredClone(rememberedMessages); }
 const clearRememberedMessages = () => { rememberedMessages = [] }
-let rememberMessageObj = undefined;
 
 //parses message api response json to message object 
 //including message, who sent it, and what time
@@ -125,5 +124,4 @@ module.exports = {
     clearRememberedMessages,
     parseMessage,
     rememberRangeGrab,
-    rememberMessageObj
 }

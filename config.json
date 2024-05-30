@@ -6,7 +6,9 @@
     },
     "defaultExcludeBotMessages": {
         "rememberRangeGrab": true,
-        "startRemember": true
+        "startRemember": true,
+        "rememberNumber":true,
+        "rememberPast":true
     },
     "testServer": "1242218138586841188",
     "clientId": "1242559805973856408",

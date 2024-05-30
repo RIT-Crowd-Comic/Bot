@@ -9,12 +9,12 @@ module.exports = async (client, interaction) =>{
 
     try{
         const commandObject = localCommands.find(
-            (cmd) => cmd.name === interaction.commandName
+            (cmd) => cmd.data.name === interaction.commandName
         );
 
         if(!commandObject) return;
 
-        if(commandObject.devOnly){
+        if(commandObject.options.devOnly){
             if(!devs.includes(interaction.member.id)){
                 interaction.reply({
                     content: 'Only developers are allowed to run this command.',
@@ -24,7 +24,7 @@ module.exports = async (client, interaction) =>{
             } 
         }
 
-        if (commandObject.testOnly) {
+        if (commandObject.options.testOnly) {
             if (!(interaction.guild.id === testServer)) {
               interaction.reply({
                 content: 'This command cannot be ran here.',
@@ -34,7 +34,7 @@ module.exports = async (client, interaction) =>{
             }
         }
 
-        if (commandObject.permissionsRequired?.length) {
+        if (commandObject.data.permissionsRequired?.length) {
             for (const permission of commandObject.permissionsRequired) {
               if (!interaction.member.permissions.has(permission)) {
                 interaction.reply({
@@ -48,7 +48,7 @@ module.exports = async (client, interaction) =>{
 
 
         //bot permissions
-        if (commandObject.botPermissions?.length) {
+        if (commandObject.data.botPermissions?.length) {
             for (const permission of commandObject.botPermissions) {
               const bot = interaction.guild.members.me;
       
@@ -62,7 +62,7 @@ module.exports = async (client, interaction) =>{
             }
         }
 
-        await commandObject.callback(client, interaction);
+        await commandObject.execute(client, interaction);
       
 
     }catch(error){
