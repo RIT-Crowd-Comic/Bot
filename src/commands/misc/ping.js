@@ -8,7 +8,7 @@ module.exports = {
 
     options:
     {
-        devOnly: false,
+        devOnly: true,
         testOnly: false,
         deleted: false,
     },

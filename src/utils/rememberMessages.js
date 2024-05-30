@@ -1,4 +1,3 @@
-const getAllTextChannels = require('./getAllTextChannels');
 const apiCalls = require("./apiCalls")
 let rememberedMessages = []
 

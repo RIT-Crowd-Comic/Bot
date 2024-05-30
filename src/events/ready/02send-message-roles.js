@@ -17,7 +17,7 @@ module.exports = async(client) =>{
         roles.forEach((role) =>{
             row.components.push(
                 new ButtonBuilder().setCustomId(role.id).setLabel(role.label).setStyle(ButtonStyle.Primary)
-            )
+            );
         });
 
         //sends a message to that row

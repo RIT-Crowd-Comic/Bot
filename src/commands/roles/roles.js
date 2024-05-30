@@ -10,7 +10,7 @@ module.exports = {
 
     options:
     {
-        devOnly: false,
+        devOnly: true,
         testOnly: false,
         deleted: false,
     },
@@ -29,7 +29,7 @@ module.exports = {
             roles.forEach((role) =>{
                 row.components.push(
                     new ButtonBuilder().setCustomId(role.id).setLabel(role.label).setStyle(ButtonStyle.Primary)
-                )
+                );
             });
     
             await channel.send({

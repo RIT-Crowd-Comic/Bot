@@ -26,23 +26,23 @@ module.exports = async (client, interaction) =>{
 
         if (commandObject.options.testOnly) {
             if (!(interaction.guild.id === testServer)) {
-              interaction.reply({
-                content: 'This command cannot be ran here.',
-                ephemeral: true,
-              });
-              return;
+                interaction.reply({
+                    content: 'This command cannot be ran here.',
+                    ephemeral: true,
+                });
+                return;
             }
         }
 
         if (commandObject.data.permissionsRequired?.length) {
             for (const permission of commandObject.permissionsRequired) {
-              if (!interaction.member.permissions.has(permission)) {
-                interaction.reply({
-                  content: 'Not enough permissions.',
-                  ephemeral: true,
-                });
-                return;
-              }
+                if (!interaction.member.permissions.has(permission)) {
+                    interaction.reply({
+                        content: 'Not enough permissions.',
+                        ephemeral: true,
+                    });
+                    return;
+                }
             }
         }
 
@@ -50,15 +50,15 @@ module.exports = async (client, interaction) =>{
         //bot permissions
         if (commandObject.data.botPermissions?.length) {
             for (const permission of commandObject.botPermissions) {
-              const bot = interaction.guild.members.me;
+                const bot = interaction.guild.members.me;
       
-              if (!bot.permissions.has(permission)) {
-                interaction.reply({
-                  content: "I don't have enough permissions.",
-                  ephemeral: true,
-                });
-                return;
-              }
+                if (!bot.permissions.has(permission)) {
+                    interaction.reply({
+                        content: "I don't have enough permissions.",
+                        ephemeral: true,
+                    });
+                    return;
+                }
             }
         }
 

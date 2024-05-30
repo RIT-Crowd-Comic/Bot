@@ -53,7 +53,7 @@ module.exports = async (client, interaction) => {
                     .setRequired(false)
             );
 
-        checkInForm.addComponents(roses, thorns, buds)
+        checkInForm.addComponents(roses, thorns, buds);
 
         await interaction.showModal(checkInForm);
     }
@@ -78,4 +78,4 @@ module.exports = async (client, interaction) => {
     }
 
     else return; // user didn't interact with either of these buttons, do nothing
-}
+};

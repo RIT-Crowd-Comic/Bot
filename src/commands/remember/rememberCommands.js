@@ -277,7 +277,7 @@ const rememberRecall = async(interaction) =>{
 const rememberClear = async(interaction) =>{
     await interaction.deferReply(); //defer waits for logic to finish
     clearRememberedMessages();
-    await interaction.editReply({content: "Success"})
+    await interaction.editReply({content: 'Success'})
 }
 
 //remember number
