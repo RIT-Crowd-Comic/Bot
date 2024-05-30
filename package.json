@@ -4,6 +4,11 @@
   "description": "test discord ai bot",
   "main": "./src/index.js",
   "scripts": {
+    "lint": "npx eslint src",
+    "lint:fix": "npx eslint --fix src",
+    "setup": "git config core.hooksPath ./git_hooks",
+    "prestart": "npm run setup",
+    "start": "node ./src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -17,5 +22,11 @@
     "dotenv": "^16.4.5",
     "ms": "^2.1.3",
     "nodemon": "^3.1.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.3.0",
+    "@stylistic/eslint-plugin-js": "^2.1.0",
+    "eslint": "^9.3.0",
+    "globals": "^15.3.0"
   }
 }
