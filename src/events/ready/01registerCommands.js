@@ -63,12 +63,13 @@ module.exports = async (client) => {
 
     // remove commands that no longer exist
     for(const command of applicationCommands.cache) {
-      // command[0]: id
-      // command[1]: ApplicationCommand
-      if (!localCommands.find(c => c.name === command[1].name)) {
+      const id = command[0];
+      const appCommand = command[1];
+      
+      if (!localCommands.find(c => c.name === appCommand.name)) {
         // server command does not exist here anymore
-        await applicationCommands.delete(command[1].id);
-          console.log(`🗑 Deleted command "${command[1].name}".`);
+        await applicationCommands.delete(id);
+          console.log(`🗑 Deleted command "${appCommand.name}".`);
       }
     }
 
