@@ -10,12 +10,11 @@ module.exports = {
             description: 'The id of the availability channel',
             required: true,
             type: ApplicationCommandOptionType.String,
-
         }
     ],
 
     //logic
-    callback: async (client, interaction) => {
+    callback: async (_, interaction) => {
         try {
             await interaction.deferReply({ ephemeral: false })
             const oldId = getAvailabilityChannelId();
@@ -42,7 +41,7 @@ module.exports = {
             //set the new id as the current one
              setAvailabilityChannelId(newId)
             interaction.editReply({
-                content: `<#${newId}> is the new availability channel"`
+                content: `<#${newId}> is the new availability channel`
             })
 
             //todo future: make it so this is saved somewhere, so when the bot goes offline for a bit, messages will still be read when it goes back up
