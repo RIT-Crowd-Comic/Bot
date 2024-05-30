@@ -23,10 +23,10 @@ module.exports = {
                 )
             });
     
-            await channel.send({
-                content: 'Claim a role below.',
-                components: [row],
-            });
+            // await channel.send({
+            //     content: 'Claim a role below.',
+            //     components: [row],
+            // });
             
     
         } catch(error) {
