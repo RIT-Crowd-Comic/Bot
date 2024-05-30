@@ -17,8 +17,16 @@ module.exports = {
                 value: 'Stores a message from the current channel based on its message-id'
             },
             {
+                name: '/clear-messages',
+                value: 'Clear all messages currently saved in remembrance'
+            },
+            {
                 name: '/print-storage',
                 value: 'Recall and print stored messages'
+            },
+            {
+                name: '/recall',
+                value: 'creates a JSON of all the saved message'
             },
             {
                 name: '/remember-chunk-time',

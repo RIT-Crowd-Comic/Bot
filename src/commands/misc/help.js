@@ -16,16 +16,12 @@ module.exports = {
                 value: 'Brings up list of remember commands'
             },
             {
-                name: '/roles',
-                value: 'Brings up a menu to assign a role'
+                name: '/check-in-interface',
+                value: 'Create an interface for users to schedule their check ins'
             },
             {
-                name: '/ping',
-                value: 'Replies with a bot ping'
-            },
-            {
-                name: '/ban',
-                value: 'Bans a member from the server'
+                name: '/schedule-check-in',
+                value: 'Schedule a day and time to be notified'
             }
         );
 
