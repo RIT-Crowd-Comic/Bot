@@ -1,5 +1,5 @@
 const { version } = require('../../config.json')
-const getBaseUrl = () => { return `https://discord.com/api/${version}` }
+const baseUrl = `https://discord.com/api/${version}`;
 
 //helper method for discord get requests
 const getAPICall = async (url, body = {
@@ -20,17 +20,17 @@ const getAPICall = async (url, body = {
 }
 
 const getChannelObject = async (channelId) => {
-    return await getAPICall(`${getBaseUrl()}/channels/${channelId}`);
+    return await getAPICall(`${baseUrl}/channels/${channelId}`);
 }
 
 const getMessageObject = async (channelId, messageId) => {
-    return await getAPICall(`${getBaseUrl()}/channels/${channelId}/messages/${messageId}`)
+    return await getAPICall(`${baseUrl}/channels/${channelId}/messages/${messageId}`)
 }
 
 //get {limit} (max 100) messages in channel with {channelId} after messages with {afterId}
 //if {addFirstMessage} is true, the message with the id of {afterId} will be added (does not count towards limit)
 const getMessagesAfterId = async (channelId, limit, afterId, addFirstMessage = false) => {
-    const messages = await getAPICall(`${getBaseUrl()}/channels/${channelId}/messages?limit=${limit}&after=${afterId}`)
+    const messages = await getAPICall(`${baseUrl}/channels/${channelId}/messages?limit=${limit}&after=${afterId}`)
     if (addFirstMessage) {
         const firstMessage = await getMessageObject(channelId, afterId);
         if (!firstMessage) {
@@ -40,6 +40,19 @@ const getMessagesAfterId = async (channelId, limit, afterId, addFirstMessage = f
         messages.push(firstMessage)
     }
     return messages;
+}
+
+//returns an array of servers this bot is in
+const getServers = async () => {
+    return await getAPICall(`${baseUrl}/users/@me/guilds`)
+}
+//returns a server object given the id 
+const getServer = async (serverId) => {
+    return await getAPICall(`${baseUrl}/guilds/${serverId}`)
+}
+
+const getServerChannels = async (serverId) => {
+    return await getAPICall(`${baseUrl}/guilds/${serverId}/channels`)
 }
 
 //returns the id of the message at the final index
@@ -54,5 +67,8 @@ module.exports = {
     getChannelObject,
     getMessageObject,
     getMessagesAfterId,
-    getNumberMessages
+    getNumberMessages,
+    getServers,
+    getServer,
+    getServerChannels
 }
