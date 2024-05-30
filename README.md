@@ -1,4 +1,4 @@
-﻿# Welcome to CrowdComic Bot
+﻿﻿# Welcome to CrowdComic Bot
 This will run through how the current Bot works behind the scenes, reference it to help with development. 
 
 It takes care of registering commands and other events automatically, lessening the workload and allowing for focus for developing actual commands and functionality. 
@@ -19,6 +19,14 @@ It takes care of registering commands and other events automatically, lessening 
 
     DISCORD_TOKEN='example bot token here'
 Generate a token for the application by going to the wanted application under the [discord developer portal](https://discord.com/developers/applications) then going to the Bot tab.
+
+# Setup
+
+With the addition of [Git hooks](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks) to our project, developers can automate the 
+linting and formatting process. Run the following command to set up git hooks for your local repository. Go to the [Linting Section](https://github.com/RIT-Crowd-Comic/Bot/edit/main/README.md#linting) to read more about configuring ESLint and Git hooks.
+```
+npm run setup
+```
 
 # Vocab
 
@@ -316,3 +324,55 @@ This file returns all the commands the client has within the guild.
 
  **`getLocalCommands.js`**
 This file uses `getAllFiles.js` to get the local commands.
+
+
+# Linting
+
+We use [ESLint](https://eslint.org/) for code suggestions and formatting.
+As a developer, you can utilize the following commands:
+
+
+| Command | Description |
+| --- | --- |
+| `npm run lint`                 | Use ESLint for code suggestions |
+| `npm run lint:fix`             | Use ESLint to format your code |
+| `npx eslint file/or/directory` | Use ESLint to check a specific file or directory |
+| `git commit ...`               | Invokes the `pre-commit` git hook |
+| `git commit --no-verify ...`   | Bypass all hooks related to committing |
+
+
+We use [Git hooks](https://git-scm.com/docs/githooks) to automate the linting and formatting process. Our hooks are located in [/git_hooks](/git_hooks/)
+
+For example, the Git hook `pre-commit` runs the command `npx eslint --fix` on all staged files, automatically fixing any fixable warnings (such as indents and semicolons) and re-staging the file for commit. 
+> This hook is invoked by [git-commit[1]](https://git-scm.com/docs/git-commit), and can be bypassed with the `--no-verify` option. It takes no parameters, and is invoked before obtaining the proposed commit log message and making a commit. Exiting with a non-zero status from this script causes the git commit command to abort before creating a commit. [Documentation](https://git-scm.com/docs/githooks#_pre_commit).
+
+
+If you want to update any [ESLint rules](https://eslint.org/docs/latest/rules), update the config file located in [/eslint.config.mjs](/eslint.config.mjs).  Keep in mind that many of the styling rules (such as "indent" and "semi") were deprecated and moved to the [@stylistic/js](https://eslint.style/packages/js) plugin. The specific rules for @stylistic/js can be found at the bottom of their web page.
+
+Example ESLint linting rules
+```js
+{
+	rules: {
+		'consistent-return': 2,
+		'no-else-return': 1,
+		'space-unary-ops': 2
+	}
+}
+```
+
+Example @stylistic/js rules
+
+```js
+{
+	plugins: {
+		'@stylistic/js': stylisticJs
+	},
+	rules: {
+		'indent': [1, 4],   // 0 - off. 1 - warn. 2 - error
+		'semi': ['warn', 'always'],
+		'no-mixed-spaces-and-tabs': ['warn', 'smart-tabs'],
+		'quotes': ['warn', 'single', {'allowTemplateLiterals': true, 'avoidEscape': true}]
+		// ...
+	}
+}
+```
