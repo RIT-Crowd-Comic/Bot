@@ -1,5 +1,5 @@
 
-const { PermissionFlagsBits, ApplicationCommandOptionType, Client, CommandInteraction, ApplicationCommandOptionWithChoicesMixin } = require("discord.js");
+const { PermissionFlagsBits, ApplicationCommandOptionType, Client, CommandInteraction, ApplicationCommandOptionWithChoicesMixin } = require('discord.js');
 const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
 const weekday = require('dayjs/plugin/weekday');
@@ -14,7 +14,7 @@ const fakeScheduleEntry = {
 
 module.exports = {
     /**
-     * Parse and save schedule date to the database
+     *  * Parse and save schedule date to the database
      * @param {Client} client 
      * @param {CommandInteraction} interaction 
      */
