@@ -6,7 +6,7 @@ module.exports = {
     deleted: false, //deleted (optional) specifies if this command shouldn't be on the server/guild
     name: 'example',  //a name(required)
     description: 'test', //a description(required)
-    devOnly: false, //a devonly flag(optional)
+    devOnly: true, //a devonly flag(optional)
     testOnly: false, //a testonly flag(optional)
     //options(optional)
     options:  [
