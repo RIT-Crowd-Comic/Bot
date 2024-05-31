@@ -76,6 +76,28 @@ const createSchedule = (daysList, time) => {
 };
 
 /**
+ * Create Unavailable object
+ * @param {Dayjs} start
+ * @param {Dayjs} end
+ * @param {string} userId
+ * @param {string} userTag 
+ * @param {string} reason
+ * @returns {Object}
+ */
+const createUnavailability = (start, end, userId, userTag, reason) => {
+    if(dayjs(start).isAfter(dayjs(end)))
+        throw new ScheduleError('End Date/Time must be after Start Date/Time');
+
+    return {
+            id: userId,
+            tag: userTag,
+            from: start,
+            to: end,
+            reason: reason
+        };
+}
+
+/**
  * Remove any duplicate time entries
  * @param {*} schedules 
  * @returns 
@@ -171,6 +193,7 @@ class ScheduleError extends Error {
 
 module.exports = {
     createSchedule,
+    createUnavailability,
     parseDaysList,
     parseTime,
     mergeSchedules,
