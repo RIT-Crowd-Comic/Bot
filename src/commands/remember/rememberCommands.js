@@ -345,7 +345,7 @@ const startRemember = async(client, interaction)=>{
     //if already remembering a channel, tell the user to stop remembering to use this command
     if (rememberingMessage) {
         await interaction.editReply({
-            content: `Already remembering in <#${rememberMessageObj.id}>. Use "/stop-remembering" to stop remembering.`
+            content: `Already remembering in ${rememberMessageObj.id}. Use "/stop-remembering" to stop remembering.`
         });
         return;
     }
@@ -382,7 +382,6 @@ const stopRemember = async(client, interaction)=>{
     // stop the remembering activity
     client.user.setActivity(null);
 
-    //todo:remeber all message in between then and now (refactor rememberRangeGrab)
     const channelObj = await getChannelObject(obj.id);
     const rememberRangeGrabResponse = await rememberRangeGrab(obj.id, obj.last_message_id, channelObj.last_message_id, obj.excludeBotMessages, false);
     if (rememberRangeGrabResponse.status === 'Fail') {

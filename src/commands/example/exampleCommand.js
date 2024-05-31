@@ -31,10 +31,6 @@ module.exports = {
     .addSubcommand(subcommand =>
         subcommand.setName('subcommand-2')
             .setDescription('testing')
-            .addStringOption(option =>
-                option.setName('hello')
-                    .setDescription('says hello')
-            )
     ),
 
     //options object, use to hold other command data. The system has some built in ones already that can be used
@@ -50,6 +46,15 @@ module.exports = {
     //interaction stores the data of the interaction, like button press, user, data input etc
     //must take in client and interaction
     async execute(client, interaction){
-        interaction.reply(`Test`);
+        const action = {
+            'subcommand'  : () => {interaction.reply('Hello')},
+            'subcommand-2': () => {interaction.reply('Goodbye')},
+        };
+
+        //get the used subcommand
+        const subcommand = interaction.options.getSubcommand();
+
+        //call the cuntion 
+        action[subcommand]();       
     }
 };

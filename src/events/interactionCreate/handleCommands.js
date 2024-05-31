@@ -1,5 +1,6 @@
-const {devs, testServer} = require('../../../config.json');
 const getLocalCommands = require('../../utils/getLocalCommands');
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 
 
 module.exports = async (client, interaction) =>{
@@ -15,7 +16,7 @@ module.exports = async (client, interaction) =>{
         if(!commandObject) return;
 
         if(commandObject.options.devOnly){
-            if(!devs.includes(interaction.member.id)){
+            if(!process.env.DEV_IDS.includes(interaction.member.id)){
                 interaction.reply({
                     content: 'Only developers are allowed to run this command.',
                     ephemeral: true,
@@ -25,7 +26,7 @@ module.exports = async (client, interaction) =>{
         }
 
         if (commandObject.options.testOnly) {
-            if (!(interaction.guild.id === testServer)) {
+            if (!(interaction.guild.id === process.env.TESTSERVER_ID)) {
                 interaction.reply({
                     content: 'This command cannot be ran here.',
                     ephemeral: true,
