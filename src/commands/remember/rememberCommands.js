@@ -374,7 +374,7 @@ const stopRemember = async(client, interaction)=>{
     //if a message is not being remembered, send a waring message
     if(!obj) {
         await interaction.editReply({
-            content: `No channel is being remembered. Use "start-remembering" to start remember messsages in a channel`
+            content: `No channel is being remembered. Use "start-remembering" to start remember messages in a channel`
         });
         return;
     }
