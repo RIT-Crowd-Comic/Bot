@@ -3,7 +3,7 @@ const { getChannelObject } = require('../../utils/apiCalls');
 module.exports = async (client, message) => {
     try {
 
-        const availabilityChannel = getAvailabilityChannel();
+        const availabilityChannel = await getAvailabilityChannel();
         //only send a message if it's not from a bot and it's from the available channel
         if (message.author.bot || !availabilityChannel || message.channelId !== availabilityChannel.id) {
             return;

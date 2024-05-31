@@ -43,16 +43,16 @@ const getMessagesAfterId = async (channelId, limit, afterId, addFirstMessage = f
 }
 
 //returns an array of servers this bot is in
-const getServers = async () => {
-    return await getAPICall(`${baseUrl}/users/@me/guilds`)
+const getServers = () => {
+    return getAPICall(`${baseUrl}/users/@me/guilds`);
 }
 //returns a server object given the id 
-const getServer = async (serverId) => {
-    return await getAPICall(`${baseUrl}/guilds/${serverId}`)
+const getServer = (serverId) => {
+    return getAPICall(`${baseUrl}/guilds/${serverId}`)
 }
 
-const getServerChannels = async (serverId) => {
-    return await getAPICall(`${baseUrl}/guilds/${serverId}/channels`)
+const getServerChannels = (serverId) => {
+    return getAPICall(`${baseUrl}/guilds/${serverId}/channels`)
 }
 
 //returns the id of the message at the final index

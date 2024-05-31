@@ -1,7 +1,8 @@
 
 let availabilityChannel = undefined;
-const getAvailabilityChannel = () => {return availabilityChannel}
-const setAvailabilityChannel = (channel) => {availabilityChannel = channel}
+const getAvailabilityChannel = async () => { return availabilityChannel }
+const setAvailabilityChannel = (channel) => { availabilityChannel = channel }
+
 module.exports = {
     getAvailabilityChannel,
     setAvailabilityChannel

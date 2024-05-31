@@ -1,6 +1,5 @@
 const { ApplicationCommandOptionType, ChannelType } = require('discord.js');
 const { getAvailabilityChannel, setAvailabilityChannel } = require('../../utils/availability');
-const { getServers, getServerChannels } = require('../../utils/apiCalls');
 module.exports = {
     name: 'set-availability-channel',
     description: 'sets the availability channel',
@@ -19,7 +18,7 @@ module.exports = {
         try {
             await interaction.deferReply({ ephemeral: false })
 
-            const oldChannel = getAvailabilityChannel();
+            const oldChannel = await getAvailabilityChannel();
             const newChannel = interaction.options.getChannel('channel');
 
             //check if new id is the same as the current one
