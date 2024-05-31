@@ -422,7 +422,7 @@ const getMessagesByTime = async (channel, pastTime, excludeBotMessages, chunkSiz
             startId = msg.id; //save the message id so we can start there next iteraction
             messageTime = msg.createdTimestamp; //save timestamp for comparison
 
-            // exlude bot messages if option is enabled
+            // exclude bot messages if option is enabled
             if (!(excludeBotMessages && msg.author.bot)) {
                 const parsedMessage = parseMessage(msg);
 
