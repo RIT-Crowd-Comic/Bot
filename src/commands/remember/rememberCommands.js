@@ -1,9 +1,9 @@
 const { SlashCommandBuilder, PermissionFlagsBits, ActivityType } = require('discord.js');
-const { addMessage, addMessages, parseMessage, getRememberedMessages, clearRememberedMessages, rememberRangeGrab} = require("../../utils/rememberMessages");
+const { addMessage, addMessages, parseMessage, getRememberedMessages, clearRememberedMessages, rememberRangeGrab} = require('../../utils/rememberMessages');
 const { getMessageObject, getNumberMessages, getChannelObject } = require('../../utils/apiCalls');
 const fs = require('fs');
 const { defaultExcludeBotMessages, ephemeral } = require('../../../config.json');
-const { clamp } = require(`../../utils/mathUtils`)
+const { clamp } = require(`../../utils/mathUtils`);
 const ms = require('ms'); //converts time to ms
 
 //global scope
@@ -34,7 +34,7 @@ module.exports = {
         //remember past
         .addSubcommand(subcommand =>
             subcommand.setName('past')
-                .setDescription('Saves messages from past set amount of "minutes" in the current channel.')
+                .setDescription('Saves messages from past set amount of "hours" and "minutes" in the current channel.')
                 .addNumberOption(option =>
                     option.setName('hours')
                         .setDescription('The number of hours to save. Max 5.')
@@ -116,7 +116,7 @@ module.exports = {
         )
         .addSubcommand(subcommand =>
             subcommand.setName('start-remembering')
-                .setDescription('Start remembering message in a specific channels')
+                .setDescription('Start remembering messages in a specific channels')
                 .addStringOption(option =>
                     option.setName('channel-id')
                         .setDescription('The id of the channel to search for the message. Default is the current channel.')
@@ -128,7 +128,7 @@ module.exports = {
         )
         .addSubcommand(subcommand =>
             subcommand.setName('stop-remembering')
-                .setDescription('Stop remembering message in a specific channels')
+                .setDescription('Stop remembering messages in a specific channels')
         ),
 
 
@@ -205,7 +205,7 @@ const rememberMessage = async (interaction) => {
         content: `Remembered: "${msg.content}"`,
         ephemeral: false,
     });
-}
+};
 
 //remember past messages
 const rememberPastMessages = async (client, interaction) => {
@@ -221,7 +221,7 @@ const rememberPastMessages = async (client, interaction) => {
     const excludeBotMessages = interaction.options.getBoolean('exclude-bot-messages') ?? defaultExcludeBotMessages.rememberPast;
 
     //validate accuracy
-    const accuracy = clamp(25, 100, interaction.options.getNumber("speed") ?? 50);
+    const accuracy = clamp(25, 100, interaction.options.getNumber('speed') ?? 50);
 
     //format and clamp
     const numberOfHours = clamp(0, 5, valueHours).toString() + 'h'; //formatting for ms
@@ -246,39 +246,39 @@ const rememberPastMessages = async (client, interaction) => {
     //call the method to save until the message time < pastTime
     const messagesToSave = await getMessagesByTime(channel, pastTime, excludeBotMessages, accuracy);
 
-    messagesToSave.forEach(m => console.log(m))
-    addMessages(messagesToSave)
+    messagesToSave.forEach(m => console.log(m));
+    addMessages(messagesToSave);
 
     //show that it saved
     interaction.editReply({
         content: `Remembered the last "${numberOfHours} hours ${numberOfMinutes} minutes"`,
         ephemeral: false,
     });
-}
+};
 
 //remember recall
 const rememberRecall = async(interaction) =>{
     await interaction.deferReply(); //defer waits for logic to finish
     const jsonFilePath = './src/rememberedMessages.json';
-    const json = JSON.stringify(getRememberedMessages(), null, 2)
-    interaction.editReply("Success")
+    const json = JSON.stringify(getRememberedMessages(), null, 2);
+    interaction.editReply('Success');
 
     //send the json
-    fs.writeFile(jsonFilePath, json, (err) => err && console.error(err))
+    fs.writeFile(jsonFilePath, json, (err) => err && console.error(err));
     await interaction.channel.send({
         files: [{
             attachment: jsonFilePath,
             name: 'rememberedMessages.json'
         }]
-    })
-}
+    });
+};
 
 //rememeber clear
 const rememberClear = async(interaction) =>{
     await interaction.deferReply(); //defer waits for logic to finish
     clearRememberedMessages();
-    await interaction.editReply({content: 'Success'})
-}
+    await interaction.editReply({content: 'Success'});
+};
 
 //remember number
 const rememberNumberMessages = async(client, interaction) =>{
@@ -301,7 +301,7 @@ const rememberNumberMessages = async(client, interaction) =>{
     //check if over 100, if so loop to continue grabbing messages
     if(num > 100)
     {
-        startId = await getMessagesAndReturnId(messagesToSave, channel, 100, excludeBotMessages)
+        startId = await getMessagesAndReturnId(messagesToSave, channel, 100, excludeBotMessages);
 
         num -= 100;
 
@@ -319,15 +319,15 @@ const rememberNumberMessages = async(client, interaction) =>{
         await getMessagesAndReturnId(messagesToSave,channel,num, excludeBotMessages);
     }
         
-    messagesToSave.forEach(m => console.log(m))
-    addMessages(messagesToSave)            
+    messagesToSave.forEach(m => console.log(m));
+    addMessages(messagesToSave);            
     
     //show that it saved
     interaction.editReply({
         content:`Remembered the last "${numberOfMessages} messages"`,
         ephemeral: false,
     });
-}
+};
 
 const rememberRange = async(interaction)=>{
     const startMessageId = interaction.options.get('start-message-id').value;
@@ -335,22 +335,22 @@ const rememberRange = async(interaction)=>{
     const excludeBotMessages = interaction.options.getBoolean('exclude-bot-messages') ?? defaultExcludeBotMessages.rememberRangeGrab;
     const channelId = interaction.options.getString('channel-id') ?? interaction.channel.id;
 
-        await interaction.deferReply({ ephemeral: ephemeral.rememberRangeGrab })
-        const rememberRangeGrabResponse = await rememberRangeGrab(channelId, startMessageId, endMessageId, excludeBotMessages)
-        if (rememberRangeGrabResponse.status === "Fail") {
-            interaction.editReply({
-                content: rememberRangeGrabResponse.description
-            });
-            return;
-        }
-
+    await interaction.deferReply({ ephemeral: ephemeral.rememberRangeGrab });
+    const rememberRangeGrabResponse = await rememberRangeGrab(channelId, startMessageId, endMessageId, excludeBotMessages);
+    if (rememberRangeGrabResponse.status === 'Fail') {
         interaction.editReply({
-            content: rememberRangeGrabResponse.status
-        });   
-}
+            content: rememberRangeGrabResponse.description
+        });
+        return;
+    }
+
+    interaction.editReply({
+        content: rememberRangeGrabResponse.status
+    });   
+};
 
 const startRemember = async(client, interaction)=>{
-    await interaction.deferReply({ ephemeral: ephemeral.startRemember })
+    await interaction.deferReply({ ephemeral: ephemeral.startRemember });
     const rememberingMessage = rememberMessageObj;
 
     //if already remembering a channel, tell the user to stop remembering to use this command
@@ -364,8 +364,8 @@ const startRemember = async(client, interaction)=>{
     //start remembering messages from the last message in the channel
     const excludeBotMessages = interaction.options.getBoolean('exclude-bot-messages') ?? defaultExcludeBotMessages.startRemember;
     const channelId = interaction.options.getString('channel-id') ?? interaction.channel.id;
-    const { last_message_id, name } = await getChannelObject(channelId)
-    const obj = { id: channelId, last_message_id: last_message_id, name: name, excludeBotMessages: excludeBotMessages, ephemeral: ephemeral.startRemember }
+    const { last_message_id, name } = await getChannelObject(channelId);
+    const obj = { id: channelId, last_message_id: last_message_id, name: name, excludeBotMessages: excludeBotMessages, ephemeral: ephemeral.startRemember };
     rememberMessageObj = obj;
     await interaction.editReply({
         content: `Starting to remember messages in <#${channelId}>."`
@@ -375,28 +375,28 @@ const startRemember = async(client, interaction)=>{
     client.user.setActivity({
         name: `Remembering #${obj.name}`,
         type: ActivityType.Custom
-    })
-}
+    });
+};
 
 const stopRemember = async(client, interaction)=>{
     const obj = rememberMessageObj;
-    await interaction.deferReply({ ephemeral: obj?.ephemeral ?? ephemeral.startRemember })
+    await interaction.deferReply({ ephemeral: obj?.ephemeral ?? ephemeral.startRemember });
     
     //if a message is not being remembered, send a waring message
     if(!obj) {
         await interaction.editReply({
             content: `No channel is being remembered. Use "start-remembering" to start remember messsages in a channel`
-        })
+        });
         return;
     }
 
     // stop the remembering activity
-    client.user.setActivity(null)
+    client.user.setActivity(null);
 
     //todo:remeber all message in between then and now (refactor rememberRangeGrab)
     const channelObj = await getChannelObject(obj.id);
-    const rememberRangeGrabResponse = await rememberRangeGrab(obj.id, obj.last_message_id, channelObj.last_message_id, obj.excludeBotMessages, false)
-    if (rememberRangeGrabResponse.status === "Fail") {
+    const rememberRangeGrabResponse = await rememberRangeGrab(obj.id, obj.last_message_id, channelObj.last_message_id, obj.excludeBotMessages, false);
+    if (rememberRangeGrabResponse.status === 'Fail') {
         interaction.editReply({
             content: rememberRangeGrabResponse.description
         });
@@ -406,11 +406,11 @@ const stopRemember = async(client, interaction)=>{
     
     await interaction.editReply({
         content: `Success`
-    })
+    });
     
     //make rememberMessageObj undefined
     rememberMessageObj = undefined;
-}
+};
 
 //Helpers
 //continues saving messages until their time is lesser than given
@@ -440,10 +440,10 @@ const getMessagesByTime = async (channel, pastTime, excludeBotMessages, chunkSiz
                 //save the message
                 messages.push(parsedMessage);
             }
-        })
+        });
     } while (messageTime >= pastTime); //loop until the message timestamp is lower/=  than the past time
     return messages;
-}
+};
 
 //grabs a number of messages and saves them to an array, while also returning the last id
 const getMessagesAndReturnId = async(messagesToSave, channel, num, excludeBotMessages, startId) =>{
@@ -455,10 +455,8 @@ const getMessagesAndReturnId = async(messagesToSave, channel, num, excludeBotMes
     };
     
     messageObjArray
-    .filter(([_, msg]) => !(excludeBotMessages && msg.author.bot))
-    .map(([_, msg]) => messagesToSave.push(parseMessage(msg)));
-
-   const id = messageObjArray.at(-1)[1].id; // last element
+        .filter(([_, msg]) => !(excludeBotMessages && msg.author.bot))
+        .map(([_, msg]) => messagesToSave.push(parseMessage(msg)));
     
     return messageObjArray.at(-1)[1].id;
-}
+};

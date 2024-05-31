@@ -1,10 +1,10 @@
-const { SlashCommandBuilder, PermissionFlagsBits, ButtonBuilder, ButtonStyle, ActionRowBuilder} = require("discord.js");
+const { SlashCommandBuilder, PermissionFlagsBits, ButtonBuilder, ButtonStyle, ActionRowBuilder} = require('discord.js');
 
 /**
  * Initiate a prompt allowing users to create a scheduler.
  */
 
-const fakecheckInDatabase = {}
+const fakecheckInDatabase = {};
 const makeDefaultUserSettings = (userTag, userId) => {
     return {
         tag: userTag,
@@ -16,8 +16,8 @@ const makeDefaultUserSettings = (userTag, userId) => {
             thursday: { notify: false },
             friday: { notify: false },
         }
-    }
-}
+    };
+};
 
 module.exports = {
     data: new SlashCommandBuilder()

@@ -6,7 +6,7 @@
  * Handle when a user interacts with the check in notification
  */
 
-const { ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, Client } = require("discord.js");
+const { ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, Client } = require('discord.js');
 
 
 /**

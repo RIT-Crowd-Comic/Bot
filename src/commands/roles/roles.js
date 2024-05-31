@@ -15,7 +15,6 @@ module.exports = {
         deleted: false,
     },
 
-
     //logic, 
     async execute(_, interaction) {
         await interaction.deferReply();
