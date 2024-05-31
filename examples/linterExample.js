@@ -95,7 +95,11 @@ class Foo {
 new Foo()
     .baz()
     .baz()
+    .baz()
     .foo;
+
+// chaining less than (3 I think) functions can be done inline
+new Foo().baz().baz();
 
 // switch-colon-spacing
 switch (foo) {
