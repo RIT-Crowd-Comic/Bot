@@ -8,6 +8,35 @@ const fakeScheduleEntry = {
 };
 
 module.exports = {
+    name: 'schedule-check-in',
+    description: 'Schedule a day and time to be notified',
+    options: [
+        {
+            name: 'days',
+            description: 'The name of days can be abbreviated as "m t w (th or h) f sa su". Ex: "Monday w f" or "daily"',
+            // choices: [
+            //     { name: "monday", value: "monday" },
+            //     { name: "tuesday", value: "tuesday" },
+            //     { name: "wednesday", value: "wednesday" },
+            //     { name: "thursday", value: "thursday" },
+            //     { name: "friday", value: "friday" },
+            //     { name: "saturday", value: "saturday" },
+            //     { name: "sunday", value: "sunday" }],
+            type: ApplicationCommandOptionType.String,
+            required: true
+        },
+        {
+            name: 'time',
+            description: 'Time of day. Ex: 12:30 am',
+            type: ApplicationCommandOptionType.String,
+            required: true
+        }
+    ],
+    devOnly: false,
+    testOnly: false,
+    permissionsRequired: [PermissionFlagsBits.SendMessages],
+    fakeScheduleEntry,
+
     /**
      *  * Parse and save schedule date to the database
      * @param {Client} client 
@@ -82,33 +111,5 @@ module.exports = {
                 });
             }
         }
-    },
-    name: 'schedule-check-in',
-    description: 'Schedule a day and time to be notified',
-    options: [
-        {
-            name: 'days',
-            description: 'The name of days can be abbreviated as "m t w (th or h) f sa su". Ex: "Monday w f" or "daily"',
-            // choices: [
-            //     { name: "monday", value: "monday" },
-            //     { name: "tuesday", value: "tuesday" },
-            //     { name: "wednesday", value: "wednesday" },
-            //     { name: "thursday", value: "thursday" },
-            //     { name: "friday", value: "friday" },
-            //     { name: "saturday", value: "saturday" },
-            //     { name: "sunday", value: "sunday" }],
-            type: ApplicationCommandOptionType.String,
-            required: true
-        },
-        {
-            name: 'time',
-            description: 'Time of day. Ex: 12:30 am',
-            type: ApplicationCommandOptionType.String,
-            required: true
-        }
-    ],
-    devOnly: false,
-    testOnly: false,
-    permissionsRequired: [PermissionFlagsBits.SendMessages],
-    fakeScheduleEntry
+    }
 };

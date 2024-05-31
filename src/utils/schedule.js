@@ -22,7 +22,12 @@ const abbreviations = {
 const displaySchedule = (schedule) => {
     const everyDay = validDays.every(d => schedule.localDays.includes(d));
     const days = everyDay ? 'every day' : `[${schedule.localDays.join(', ')}]`;
-    const time = `${schedule.localTime[0]}:${schedule.localTime[1]}`;
+    
+    // Adds a zero if necessary. Ex: '5:5' to '5:05'
+    let min = schedule.localTime[1].toString();
+    min = min.length === 1 ? `0${min}` : min;
+
+    const time = `${schedule.localTime[0]}:${min} (24 hr time)`;
     return `${days} at ${time}`;
 };
 
@@ -39,7 +44,7 @@ const displaySchedule = (schedule) => {
 const createSchedule = (daysList, time) => {
     // check if list of days is valid
     if (daysList.some(d => !validDays.includes(d))) {
-        throw new ScheduleError('Invalid list of days');
+        throw new ScheduleError('Invalid list of days. (abbreviations: m t w (th or h) f sa su).');
     }
 
     if (!time.isValid) throw new ScheduleError('Invalid time');
@@ -137,7 +142,7 @@ const parseDaysList = (days) => {
     parsedDays = parsedDays.map(d => abbreviations[d] ?? d);
 
     if (parsedDays.some(d => !validDays.includes(d))) {
-        throw ScheduleError('Invalid list of days');
+        throw new ScheduleError('Invalid list of days. (abbreviations: m t w (th or h) f sa su).');
     }
 
     return parsedDays;
