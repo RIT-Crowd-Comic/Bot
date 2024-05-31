@@ -1,7 +1,7 @@
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const path = require('path');
-const { clientId, testServer} = require('../../../config.json'); // Adjust the path if needed
+const {testServer} = require('../../../config.json'); // Adjust the path if needed
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 const getLocalCommands = require('../../utils/getLocalCommands');
 const getApplicationCommands = require('../../utils/getApplicationCommands');
@@ -54,7 +54,7 @@ module.exports = async (client) => {
         console.log('Started refreshing application (/) commands.');
 
         await rest.put(
-            Routes.applicationGuildCommands(clientId, testServer),
+            Routes.applicationGuildCommands(client.id, testServer),
             { body: commands },
         );
 
