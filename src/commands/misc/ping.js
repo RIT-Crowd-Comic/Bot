@@ -4,7 +4,7 @@ const { SlashCommandBuilder} = require('discord.js');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('ping')
-        .setDescription('SReplies with bot ping'),
+        .setDescription('Replies with bot ping'),
 
     options:
     {

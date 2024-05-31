@@ -54,7 +54,7 @@ module.exports = async (client) => {
         console.log('Started refreshing application (/) commands.');
 
         await rest.put(
-            Routes.applicationGuildCommands(client.id, testServer),
+            Routes.applicationGuildCommands(client.application.id, testServer),
             { body: commands },
         );
 
