@@ -1,8 +1,8 @@
 
-let availabilityChannelId = undefined;
-const getAvailabilityChannelId = () => {return availabilityChannelId}
-const setAvailabilityChannelId = (id) => {availabilityChannelId = id}
+let availabilityChannel = undefined;
+const getAvailabilityChannel = () => {return availabilityChannel}
+const setAvailabilityChannel = (channel) => {availabilityChannel = channel}
 module.exports = {
-    getAvailabilityChannelId,
-    setAvailabilityChannelId
+    getAvailabilityChannel,
+    setAvailabilityChannel
 }
