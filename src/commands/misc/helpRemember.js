@@ -42,7 +42,7 @@ module.exports = {
                 },
                 {
                     name: '/remember range',
-                    value: 'Remember all messages between two specific messages (inclusivley)'
+                    value: 'Remember all messages between two specific messages (inclusively)'
                 },
                 {
                     name: '/remember start-remembering',
