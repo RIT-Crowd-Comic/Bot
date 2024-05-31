@@ -25,7 +25,7 @@ module.exports = {
                     value: 'Stores a message from the current channel based on its message-id'
                 },
                 {
-                    name: '/rememer-clear',
+                    name: '/remember-clear',
                     value: 'Clear all messages currently saved in remembrance'
                 },
                 {
