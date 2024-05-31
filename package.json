@@ -4,8 +4,10 @@
   "description": "test discord ai bot",
   "main": "./src/index.js",
   "scripts": {
-    "lint": "npx eslint src",
-    "lint:fix": "npx eslint --fix src",
+    "lint": "npx eslint src eslint.config.mjs",
+    "lint:fix": "npx eslint --fix src eslint.config.mjs",
+    "lint-example": "npx eslint examples/linterExample.js eslint.config.mjs",
+    "lint-example:fix": "npx eslint --fix examples/linterExample.js eslint.config.mjs",
     "setup": "git config core.hooksPath ./git_hooks",
     "prestart": "npm run setup",
     "start": "node ./src/index.js",
