@@ -1,36 +1,60 @@
-//import ApplicationCommandOptionType if you need types of options
+//import SlashCommandBuilder
 //import PermissionFlagsBits if you need permissions
-const {ApplicationCommandOptionType, PermissionFlagsBits} = require('discord.js');
+const {SlashCommandBuilder, PermissionFlagsBits} = require('discord.js');
+
 //every command needs to export a command object
+
 module.exports = {
-    deleted: false, //deleted (optional) specifies if this command shouldn't be on the server/guild
-    name: 'example',  //a name(required)
-    description: 'test', //a description(required)
-    devOnly: true, //a devonly flag(optional)
-    testOnly: false, //a testonly flag(optional)
-    //options(optional)
-    options:  [
-        {
-            name: 'test', //name(required)
-            description: 'blah', //description(required)
-            required: true, //required(optional) : makes it so the user needs to input something to run the command
-            type: ApplicationCommandOptionType.String, //type of command, use intellisense or docs to select proper one
-            //https://discord.com/developers/docs/interactions/application-commands
+    data: new SlashCommandBuilder()
+    .setName('example') //name 
+    .setDescription('test') //description
+    .setDefaultMemberPermissions(PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ReadMessageHistory) //permissions(optional)
+    
+    //if you need options...
+    //options on the main command cannot mix with subCommands, they are mutually exclusive
 
-        },
-        {
-            name: 'test-2',
-            description: 'blah blah',
-            type: ApplicationCommandOptionType.String,
+    /*.addStringOption(option =>
+        option.setName('example-option')
+        .setDescription('this is a example')
+        .setRequired(true) //says this must be filled out
+    )*/
+    // if you need subcommands, subcommand options are shown.
+    .addSubcommand(subcommand =>
+        subcommand.setName('subcommand')
+            .setDescription('testing')
+            .addStringOption(option =>
+                option.setName('hello')
+                .setDescription('says hello')
+            )
+    )
 
-        }
-    ],
-    permissionsRequired: [PermissionFlagsBits.ViewChannel], //permissions(optional) check intellisense or docs to view permission options
-    //https://discord.com/developers/docs/topics/permissions
+    .addSubcommand(subcommand =>
+        subcommand.setName('subcommand-2')
+            .setDescription('testing')
+    ),
+
+    //options object, use to hold other command data. The system has some built in ones already that can be used
+    options:
+    {
+        deleted: false, //deleted (optional) specifies if this command shouldn't be on the server/guild
+        devOnly: true, //a devonly flag(optional)
+        testOnly: false, //a testonly flag(optional)
+    },
+   
 
     //logic for the command in the form of a callback function
     //interaction stores the data of the interaction, like button press, user, data input etc
-    callback: (client, interaction) =>{
-        interaction.reply(`Test`);
+    //must take in client and interaction
+    async execute(client, interaction){
+        const action = {
+            'subcommand'  : () => {interaction.reply('Hello')},
+            'subcommand-2': () => {interaction.reply('Goodbye')},
+        };
+
+        //get the used subcommand
+        const subcommand = interaction.options.getSubcommand();
+
+        //call the cuntion 
+        action[subcommand]();       
     }
 };
