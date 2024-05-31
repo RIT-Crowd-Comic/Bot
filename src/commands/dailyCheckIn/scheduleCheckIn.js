@@ -81,15 +81,7 @@ module.exports = {
             fakeScheduleEntry[userId].schedules ??= [];
             fakeScheduleEntry[userId].schedules.push(schedule);
 
-            let reply = [
-                `Check ins scheduled for ${displaySchedule(schedule)}`,
-                '',
-                '[debug]',
-                '',
-                '```json',
-                JSON.stringify(fakeScheduleEntry, undefined, 2),
-                '```'
-            ].join('\n');
+            let reply = `Check ins scheduled for ${displaySchedule(schedule)}`;
 
             await interaction.editReply({
                 ephemeral: true,

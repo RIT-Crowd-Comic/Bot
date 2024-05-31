@@ -1,12 +1,10 @@
-const { PermissionFlagsBits, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const scheduleCheckIn = require('./scheduleCheckIn');
+const { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, PermissionFlagsBits } = require('discord.js');
 const { displaySchedule } = require('../../utils/schedule');
-const { ActionRowBuilder } = require('@discordjs/builders');
-
+const scheduleCheckIn = require('./scheduleCheckIn');
 
 module.exports = {
-    name: 'remove-check-in-schedule',
-    description: 'See a list of schedules to remove',
+    name: 'view-check-in-schedules',
+    description: 'View your check-in schedules',
     devOnly: false,
     testOnly: false,
     permissionsRequired: [PermissionFlagsBits.SendMessages],
@@ -17,7 +15,6 @@ module.exports = {
      * @param {CommandInteraction} interaction 
      */
     callback: async (client, interaction) => {
-
         const userId = interaction?.user?.id;
 
         await interaction.deferReply({ ephemeral: true });
@@ -37,38 +34,36 @@ module.exports = {
                 });
                 return;
             }
-            const schedules = scheduleCheckIn.fakeScheduleEntry[userId]?.schedules?.map(s => (
-                {
-                    name: displaySchedule(s),
-                    schedule: s
-                }
-            ));
+
+
+            const schedules = scheduleCheckIn
+                .fakeScheduleEntry[userId]
+                ?.schedules
+                ?.map(s => displaySchedule(s));
 
             const row1 = new ActionRowBuilder();
-            const row2 = new ActionRowBuilder();
+
+            // show schedules as a dropdown
             const scheduleDropdown =
                 new StringSelectMenuBuilder()
-                    .setCustomId('remove-schedule-dropdown')
+                    .setCustomId('show-schedule-dropdown')
                     .addOptions(
-                        schedules.map((s, i) => (
+                        schedules.map(s => (
                             new StringSelectMenuOptionBuilder()
-                                .setLabel(s.name)
-                                .setValue(`${i}`)
+                                .setLabel(s)
+                                .setValue(s)
                         ))
                     )
                     .setMinValues(0)
                     .setMaxValues(schedules.length);
-            const removeButton = new ButtonBuilder()
-                .setCustomId('remove-schedule-btn')
-                .setLabel('Remove Schedule')
-                .setStyle(ButtonStyle.Danger);
+
             row1.addComponents(scheduleDropdown);
-            row2.addComponents(removeButton);
 
             await interaction.editReply({
-                content: `Select a schedule to remove`,
-                components: [row1, row2]
+                content: `Here are your schedules`,
+                components: [row1]
             });
+
         }
         catch (error) {
             if (error.name === 'ScheduleError') {
@@ -83,4 +78,5 @@ module.exports = {
             }
         }
     }
+
 };
