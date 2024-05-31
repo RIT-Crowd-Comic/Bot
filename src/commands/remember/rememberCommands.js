@@ -265,7 +265,7 @@ const rememberRecall = async(interaction) =>{
     });
 };
 
-//rememeber clear
+//remember clear
 const rememberClear = async(interaction) =>{
     await interaction.deferReply(); //defer waits for logic to finish
     clearRememberedMessages();
