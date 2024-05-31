@@ -149,35 +149,23 @@ module.exports = {
     //logic, 
     async execute(client, interaction) {
 
+
+        const action = {
+            'message'          : () => rememberMessage(interaction),
+            'past'             : () => rememberPastMessages(client, interaction),
+            'recall'           : () => rememberRecall(interaction),
+            'clear-messages'   : () => rememberClear(interaction),
+            'number'           : () => rememberNumberMessages(client, interaction),
+            'range'            : () => rememberRange(interaction),
+            'start-remembering': () => startRemember(client, interaction),
+            'stop-remembering' : () => stopRemember(client, interaction)
+        };
+
         try {
             //get the used subcommand
             const subcommand = interaction.options.getSubcommand();
 
-            //call the appropriate function from that subCommand
-            if (subcommand === 'message') {
-                await rememberMessage(interaction);
-            }
-            else if(subcommand === 'past'){
-                await rememberPastMessages(client, interaction);
-            }
-            else if(subcommand === 'recall'){
-                await rememberRecall(interaction);
-            }
-            else if(subcommand ==='clear-messages'){
-                await rememberClear(interaction);
-            }
-            else if(subcommand ==='number'){
-                await rememberNumberMessages(client, interaction);
-            }
-            else if(subcommand ==='range'){
-                await rememberRange(interaction);
-            }
-            else if(subcommand ==='start-remembering'){
-                await startRemember(client, interaction);
-            }
-            else if(subcommand ==='stop-remembering'){
-                await stopRemember(client, interaction);
-            }
+            action[subcommand]();   
         }
         catch (error) {
             await interaction.editReply({
@@ -196,10 +184,10 @@ const rememberMessage = async (interaction) => {
     //get the id of the message  
     const idMessage = interaction.options.get('message-id').value;
     //channel id
-    const channel = interaction.options.getChannel('channel');
+    const channel = interaction.options.getChannel('channel') ?? interaction.channel;
 
 
-    const msg = await getMessageObject(channel.id || interaction.channel.id, idMessage);
+    const msg = await getMessageObject(channel.id, idMessage);
 
     //parse the message
     const parsedMessage = parseMessage(msg);
