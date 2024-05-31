@@ -1,20 +1,24 @@
-const { ApplicationCommandOptionType, ChannelType } = require('discord.js');
+const { ApplicationCommandOptionType, ChannelType, SlashCommandBuilder } = require('discord.js');
 const { getAvailabilityChannel, setAvailabilityChannel } = require('../../utils/availability');
 module.exports = {
-    name: 'set-availability-channel',
-    description: 'sets the availability channel',
-    options: [
-        {
-            name: 'channel',
-            description: 'The desired availability channel',
-            required: true,
-            type: ApplicationCommandOptionType.Channel,
-            channel_types: [ChannelType.GuildText]
-        }
-    ],
+    data: new SlashCommandBuilder()
+        .setName('set-availability-channel')
+        .setDescription('sets the availability channel')
+        .addChannelOption(option => option
+            .setName('channel')
+            .setDescription('The desired availability channel')
+            .addChannelTypes(ChannelType.GuildText)
+            .setRequired(true)),
 
-    //logic
-    callback: async (_, interaction) => {
+    //todo: If options is not provided, the bot should assume false (or undefined) for all values
+    options:
+    {
+        devOnly: false,
+        testOnly: false,
+        deleted: false,
+    },
+
+    async execute(_, interaction) {
         try {
             await interaction.deferReply({ ephemeral: false })
 
@@ -41,6 +45,5 @@ module.exports = {
                 content: `Error ${error}`
             })
         }
-
     }
 };
