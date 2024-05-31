@@ -39,13 +39,14 @@ let obj = {
 };
 
 // object-curly-newline
-let inline_obj = {foo, fuz, fiz};
+// object-curly-spacing
+let inline_obj = { foo, fuz, fiz };
 let inline_long_obj = {
     foo, fuz, fiz, foz
 };
 
 // rest-spread-spacing
-let spread_obj = {...inline_obj};
+let spread_obj = { ...inline_obj };
 
 
 // arrow parens

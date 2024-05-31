@@ -6,11 +6,11 @@ export default [
     {
         files: ['**/*.js'],
         languageOptions:
-        {sourceType: 'commonjs',}
+        { sourceType: 'commonjs', }
     },
     {
         languageOptions:
-        {globals: globals.node}
+        { globals: globals.node }
     },
 
     pluginJs.configs.recommended,
@@ -26,7 +26,7 @@ export default [
     {
 
         // Stylistic rules documentation: https://eslint.style/packages/js
-        plugins: {'@stylistic/js': stylisticJs},
+        plugins: { '@stylistic/js': stylisticJs },
         rules:   {
 
             // 0 - off. 1 - warn. 2 - error
@@ -34,7 +34,7 @@ export default [
             'arrow-parens':          [1, 'as-needed'],
             'array-bracket-newline': [1, { 'multiline': true }],
             'block-spacing':         [1, 'always'],
-            'brace-style':           [1, '1tbs', { 'allowSingleLine': true}],
+            'brace-style':           [1, '1tbs', { 'allowSingleLine': true }],
             'comma-dangle':          [
                 0,
                 'always',
@@ -46,7 +46,7 @@ export default [
                     'functions': 'always'
                 }
             ],
-            'comma-spacing':                  [1, { 'after': true}],
+            'comma-spacing':                  [1, { 'after': true }],
             'computed-property-spacing':      [1, 'never'],
             'dot-location':                   [1, 'property'],
             'eol-last':                       [1, 'always'],
@@ -56,16 +56,16 @@ export default [
             'implicit-arrow-linebreak':       [0, 'beside'],
             'indent':                         [1, 4],
             'jsx-quotes':                     [1, 'prefer-double'],
-            'key-spacing':                    [1, {'align': 'value', 'beforeColon': false}],
-            'keyword-spacing':                [1, {'before': true, 'after': true}],
-            'lines-around-comment':           [1, {'beforeBlockComment': true, 'beforeLineComment': true}],
+            'key-spacing':                    [1, { 'align': 'value', 'beforeColon': false }],
+            'keyword-spacing':                [1, { 'before': true, 'after': true }],
+            'lines-around-comment':           [1, { 'beforeBlockComment': true, 'beforeLineComment': true }],
 
             // ignores jsdocs
             'multiline-comment-style':  [0, 'separate-lines'],
             'multiline-ternary':        [1, 'always-multiline'],
             'new-parens':               [1, 'always'],
-            'newline-per-chained-call': [1, {'ignoreChainWithDepth': 3}],
-            'no-confusing-arrow':       [1, {'allowParens': true, 'onlyOneSimpleParam': true}],
+            'newline-per-chained-call': [1, { 'ignoreChainWithDepth': 3 }],
+            'no-confusing-arrow':       [1, { 'allowParens': true, 'onlyOneSimpleParam': true }],
             'no-extra-parens':          [
                 1, 'all', {
                     'nestedBinaryExpressions':          false,
@@ -88,17 +88,18 @@ export default [
                     }
                 }
             ],
-            'no-trailing-spaces':               [1, {'ignoreComments': true}],
+            'no-trailing-spaces':               [1, { 'ignoreComments': true }],
             'no-whitespace-before-property':    1,
             'nonblock-statement-body-position': [0, 'beside'],
+            'object-curly-spacing':             [1, 'always'],
             'object-curly-newline':             [
                 1, {
                     'multiline':     true,
                     'minProperties': 4,
                 }
             ],
-            'object-property-newline':         [1, {'allowAllPropertiesOnSameLine': true}],
-            'operator-linebreak':              [1, 'after', {'overrides': {}}],
+            'object-property-newline':         [1, { 'allowAllPropertiesOnSameLine': true }],
+            'operator-linebreak':              [1, 'after', { 'overrides': {} }],
             'padded-blocks':                   [0, 'never'],
             'padding-line-between-statements': 0, // https://eslint.style/rules/js/padding-line-between-statements
             'quote-props':                     [
@@ -117,9 +118,9 @@ export default [
             'space-before-function-paren': [0, 'always'],
             'space-in-parens':             [1, 'never'],
             'space-infix-ops':             1,
-            'space-unary-ops':             [1, {'words': true, 'nonwords': false}],
+            'space-unary-ops':             [1, { 'words': true, 'nonwords': false }],
             'spaced-comment':              [1, 'always'],
-            'switch-colon-spacing':        [1, {'after': true, 'before': false}],
+            'switch-colon-spacing':        [1, { 'after': true, 'before': false }],
             'template-curly-spacing':      [0, 'never'],
             'wrap-iife':                   [1, 'any'],
             'wrap-regex':                  1,
