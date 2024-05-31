@@ -38,7 +38,7 @@ module.exports = {
             
     
         } catch(error) {
-            await interaction.editReply(`Somthing went wrong ${error}`);
+            await interaction.editReply(`Something went wrong ${error}`);
         }
     }
 };
