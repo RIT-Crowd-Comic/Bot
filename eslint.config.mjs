@@ -16,8 +16,10 @@ export default [
         globals: globals.node
     }
     },
+
     pluginJs.configs.recommended,
     {
+        // ESLint rules documentation: https://eslint.org/docs/latest/rules
         'rules': {
             'consistent-return': 2,
             'no-else-return': 1,
@@ -25,6 +27,7 @@ export default [
         }
     },
     {
+        // Stylistic rules documentation: https://eslint.style/packages/js
         plugins: {
             '@stylistic/js': stylisticJs
         },

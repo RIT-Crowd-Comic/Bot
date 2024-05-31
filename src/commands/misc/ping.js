@@ -1,17 +1,36 @@
+const { SlashCommandBuilder} = require('discord.js');
+
+//displays the bots ping
 module.exports = {
-    name: 'ping',
-    description: 'Replies with a bot ping',
-    devOnly: false,
-    testOnly: false,
-    //options []
+    data: new SlashCommandBuilder()
+        .setName('ping')
+        .setDescription('Replies with bot ping'),
 
-    callback: async (client, interaction) =>{
-        await interaction.deferReply();
+    options:
+    {
+        devOnly: true,
+        testOnly: false,
+        deleted: false,
+    },
 
-        const reply = await interaction.fetchReply();
 
-        const ping = reply.createdTimestamp - interaction.createdTimestamp;
+    //logic, 
+    async execute(client, interaction) {
 
-        interaction.editReply(`Client ${ping}ms | Websocket: ${client.ws.ping}ms`);  
+        try {
+            await interaction.deferReply();
+
+            const reply = await interaction.fetchReply();
+    
+            const ping = reply.createdTimestamp - interaction.createdTimestamp;
+    
+            interaction.editReply(`Client ${ping}ms | Websocket: ${client.ws.ping}ms`);     
+        }
+        catch (error) {
+            await interaction.editReply({
+                content: `Something went wrong. ${error}`,
+                ephemeral: false,
+            });
+        }
     }
 };

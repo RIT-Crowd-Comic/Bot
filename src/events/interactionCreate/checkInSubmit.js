@@ -8,9 +8,9 @@
  * TODO: store the result in a database
  */
 
-const { CommandInteraction, Client } = require("discord.js");
+const { CommandInteraction, Client } = require('discord.js');
 
-let formResult = {}
+let formResult = {};
 
 /**
  * 
@@ -45,7 +45,7 @@ module.exports = async (client, interaction) => {
             id: userId,
             tag: userTag,
             submitDate: interaction.createdAt
-        }
+        };
 
         let reply = [
             'Thanks for responding! Make sure to take short breaks and to drink plenty of water!',
@@ -68,4 +68,4 @@ module.exports = async (client, interaction) => {
     catch (error) {
         console.log(error);
     }
-}
+};
