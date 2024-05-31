@@ -419,7 +419,7 @@ const getMessagesByTime = async (channel, pastTime, excludeBotMessages, chunkSiz
         //add the message
         //parse the message
         message.forEach((msg) => {
-            startId = msg.id; //save the message id so we can start there next iteraction
+            startId = msg.id; //save the message id so we can start there next interaction
             messageTime = msg.createdTimestamp; //save timestamp for comparison
 
             // exclude bot messages if option is enabled
