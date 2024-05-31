@@ -4,28 +4,48 @@
 
 let foo = 'foo';
 let fuz = 'fuz';
+let foz = 'foz';
 
 // multiline-ternary
+// operator-linebreak
 let fiz = foo ? foo : fuz;
-fiz = fiz?
+fiz = fiz ?
     fiz :
-    foo ? 
-        foo : 
+    foo ?
+        foo :
         fuz;
 
 // array-bracket-newline
 let arr = [1, 2, 3];
 let azz = [
-    1,
-    2, 
+    1, 2,
     3
 ];
 
+// space-infix-ops
+let math = 5 + 2 + 3;
+
+// space-unary-ops
+math++;
+
 // key-spacing (objects)
+// object-property-newline
+// quote-props
 let obj = {
-    short:      'short',
-    longerName: 'long'
+    'shorter':    'short',
+    'longerName': 'long',
+    'quote-prop': 'required quotes',
+    '123':        '123'
 };
+
+// object-curly-newline
+let inline_obj = {foo, fuz, fiz};
+let inline_long_obj = {
+    foo, fuz, fiz, foz
+};
+
+// rest-spread-spacing
+let spread_obj = {...inline_obj};
 
 
 // arrow parens
@@ -47,6 +67,7 @@ bab(
 if (foo) bar();
 
 // brace styles 
+// space-before-blocks
 if (foo) {
     bar();
 } else if (fuz) {
@@ -74,5 +95,19 @@ new Foo()
     .baz()
     .baz()
     .foo;
+
+// switch-colon-spacing
+switch (foo) {
+case 'foo': break;
+case 'bar': break;
+}
+
+// wrap-iife
+(function() {}());
+(function() {})();
+
+// wrap regex
+(/foo/).test('bar');
+'foo'.replace(/foo/, 'bar');
 
 // eol-last: new line at EOF
