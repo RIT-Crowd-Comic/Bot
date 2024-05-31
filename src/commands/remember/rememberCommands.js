@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits, ActivityType } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, ActivityType, ChannelType } = require('discord.js');
 const { addMessage, addMessages, parseMessage, getRememberedMessages, clearRememberedMessages, rememberRangeGrab} = require('../../utils/rememberMessages');
 const { getMessageObject, getNumberMessages, getChannelObject } = require('../../utils/apiCalls');
 const fs = require('fs');
@@ -25,9 +25,10 @@ module.exports = {
                         .setDescription('The id of the message')
                         .setRequired(true)
                 )
-                .addStringOption(option =>
-                    option.setName('channel-id')
-                        .setDescription('The id of the channel to search for the message. Default is the current channel.')
+                .addChannelOption(option => option
+                    .setName('channel')
+                    .setDescription('text channel')
+                    .addChannelTypes(ChannelType.GuildText)
                 )
         )
 
@@ -45,9 +46,10 @@ module.exports = {
                         .setDescription('The number of minutes to save to save. Max 59.')
                         .setRequired(true)
                 )
-                .addStringOption(option =>
-                    option.setName('channel-id')
-                        .setDescription('The id of the channel to search for the message. Default is the current channel.')
+                .addChannelOption(option => option
+                    .setName('channel')
+                    .setDescription('text channel')
+                    .addChannelTypes(ChannelType.GuildText)
                 )
                 .addNumberOption(option =>
                     option.setName('speed')
@@ -80,9 +82,10 @@ module.exports = {
                         .setDescription('The number of messages to save. Min 1, Max 1000.')
                         .setRequired(true)
                 )
-                .addStringOption(option =>
-                    option.setName('channel-id')
-                        .setDescription('The id of the channel to search for the message. Default is the current channel.')
+                .addChannelOption(option => option
+                    .setName('channel')
+                    .setDescription('text channel')
+                    .addChannelTypes(ChannelType.GuildText)
                 )
                 .addBooleanOption(option =>
                     option.setName('exclude-bot-messages')
@@ -105,9 +108,10 @@ module.exports = {
                         .setDescription("the second message's id")
                         .setRequired(true)
                 )
-                .addStringOption(option =>
-                    option.setName('channel-id')
-                        .setDescription('The id of the channel to search for the message. Default is the current channel.')
+                .addChannelOption(option => option
+                    .setName('channel')
+                    .setDescription('text channel')
+                    .addChannelTypes(ChannelType.GuildText)
                 )
                 .addBooleanOption(option =>
                     option.setName('exclude-bot-messages')
@@ -117,15 +121,17 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand.setName('start-remembering')
                 .setDescription('Start remembering messages in a specific channels')
-                .addStringOption(option =>
-                    option.setName('channel-id')
-                        .setDescription('The id of the channel to search for the message. Default is the current channel.')
+                .addChannelOption(option => option
+                    .setName('channel')
+                    .setDescription('text channel')
+                    .addChannelTypes(ChannelType.GuildText)
                 )
                 .addBooleanOption(option =>
                     option.setName('exclude-bot-messages')
                         .setDescription(`If bot messages should be excluded in the message collection. Default is ${defaultExcludeBotMessages.startRemember}`)
                 )
         )
+
         .addSubcommand(subcommand =>
             subcommand.setName('stop-remembering')
                 .setDescription('Stop remembering messages in a specific channels')
@@ -190,10 +196,10 @@ const rememberMessage = async (interaction) => {
     //get the id of the message  
     const idMessage = interaction.options.get('message-id').value;
     //channel id
-    const specificChannelId = interaction.options.getString('channel-id');
+    const channel = interaction.options.getChannel('channel');
 
 
-    const msg = await getMessageObject(specificChannelId || interaction.channel.id, idMessage);
+    const msg = await getMessageObject(channel.id || interaction.channel.id, idMessage);
 
     //parse the message
     const parsedMessage = parseMessage(msg);
@@ -227,10 +233,8 @@ const rememberPastMessages = async (client, interaction) => {
     const numberOfHours = clamp(0, 5, valueHours).toString() + 'h'; //formatting for ms
     const numberOfMinutes = clamp(0, 59, valueMinutes).toString() + 'm'; //formatting for ms
 
-    const channelId = interaction.options.getString('channel-id') ?? interaction.channel.id;
+    const channel = interaction.options.getChannel('channel') ?? interaction.channel;
 
-    //get the channel
-    const channel = await client.channels.cache.get(channelId);
 
     //get the current time TIMESTAMP is a ms
     const currentTime = Date.now();
@@ -289,10 +293,7 @@ const rememberNumberMessages = async(client, interaction) =>{
 
     const excludeBotMessages = interaction.options.getBoolean('exclude-bot-messages') ?? defaultExcludeBotMessages.rememberNumber;
     
-    const channelId = interaction.options.getString('channel-id') ?? interaction.channel.id;
-    
-    //get the channel
-    const channel = await client.channels.cache.get(channelId);
+    const channel = interaction.options.getChannel('channel') ?? interaction.channel;
 
     let num = numberOfMessages;
     let startId;
@@ -333,10 +334,10 @@ const rememberRange = async(interaction)=>{
     const startMessageId = interaction.options.get('start-message-id').value;
     const endMessageId = interaction.options.get('end-message-id').value;
     const excludeBotMessages = interaction.options.getBoolean('exclude-bot-messages') ?? defaultExcludeBotMessages.rememberRangeGrab;
-    const channelId = interaction.options.getString('channel-id') ?? interaction.channel.id;
+    const channel = interaction.options.getChannel('channel') ?? interaction.channel;
 
     await interaction.deferReply({ ephemeral: ephemeral.rememberRangeGrab });
-    const rememberRangeGrabResponse = await rememberRangeGrab(channelId, startMessageId, endMessageId, excludeBotMessages);
+    const rememberRangeGrabResponse = await rememberRangeGrab(channel.id, startMessageId, endMessageId, excludeBotMessages);
     if (rememberRangeGrabResponse.status === 'Fail') {
         interaction.editReply({
             content: rememberRangeGrabResponse.description
@@ -363,12 +364,12 @@ const startRemember = async(client, interaction)=>{
 
     //start remembering messages from the last message in the channel
     const excludeBotMessages = interaction.options.getBoolean('exclude-bot-messages') ?? defaultExcludeBotMessages.startRemember;
-    const channelId = interaction.options.getString('channel-id') ?? interaction.channel.id;
-    const { last_message_id, name } = await getChannelObject(channelId);
-    const obj = { id: channelId, last_message_id: last_message_id, name: name, excludeBotMessages: excludeBotMessages, ephemeral: ephemeral.startRemember };
+    const channel = interaction.options.getChannel('channel') ?? interaction.channel;
+    const { last_message_id, name } = await getChannelObject(channel.id);
+    const obj = { id: channel.id, last_message_id: last_message_id, name: name, excludeBotMessages: excludeBotMessages, ephemeral: ephemeral.startRemember };
     rememberMessageObj = obj;
     await interaction.editReply({
-        content: `Starting to remember messages in <#${channelId}>."`
+        content: `Starting to remember messages in <#${channel}>."`
     });
 
     //change the status of the bot to say which channel it's remembering from
