@@ -20,11 +20,11 @@ const getAPICall = async (url, body = {
 };
 
 const getChannelObject = async (channelId) => {
-    return await getAPICall(`${getBaseUrl()}/channels/${channelId}`);
-};
+    return await getAPICall(`${baseUrl}/channels/${channelId}`);
+}
 
 const getMessageObject = async (channelId, messageId) => {
-    return await getAPICall(`${getBaseUrl()}/channels/${channelId}/messages/${messageId}`);
+    return await getAPICall(`${baseUrl}/channels/${channelId}/messages/${messageId}`);
 };
 
 //get {limit} (max 100) messages in channel with {channelId} after messages with {afterId}
@@ -40,7 +40,20 @@ const getMessagesAfterId = async (channelId, limit, afterId, addFirstMessage = f
         messages.push(firstMessage);
     }
     return messages;
-};
+}
+
+//returns an array of servers this bot is in
+const getServers = () => {
+    return getAPICall(`${baseUrl}/users/@me/guilds`);
+}
+//returns a server object given the id 
+const getServer = (serverId) => {
+    return getAPICall(`${baseUrl}/guilds/${serverId}`)
+}
+
+const getServerChannels = (serverId) => {
+    return getAPICall(`${baseUrl}/guilds/${serverId}/channels`)
+}
 
 //returns the id of the message at the final index
 const getNumberMessages = async(channel, numberToSave, id) =>{
@@ -54,5 +67,8 @@ module.exports = {
     getChannelObject,
     getMessageObject,
     getMessagesAfterId,
-    getNumberMessages
+    getNumberMessages,
+    getServers,
+    getServer,
+    getServerChannels
 };
