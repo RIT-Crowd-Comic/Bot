@@ -15,7 +15,6 @@ jobs:
         with:
           node-version: '20'
       - run: npm ci
-      - run: git switch ${{ github.head_ref || github.ref_name }} 
       - name: Get changed files
         id: changed-files
         run: |
