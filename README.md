@@ -1,5 +1,5 @@
-﻿﻿# CrowdComic Bot
 
+# CrowdComic Bot
 ## Table of Contents
 1. [Introduction](#introduction)
 2. [Developer Set Up](#setup)
@@ -38,7 +38,7 @@ This bot requires developer mode to be enabled as both a developer and a user.
 **UPDATE ME**
 
 ## Developer Set Up <a name="setup"></a>
-### Build Your Own Bot
+### Build Your Own Bot <a name="build-bot"></a>
 It's highly recommended to make your own version of the bot for testing purposes. A brief tutorial on how is written below. If you would like a visual representation, follow [this video (0:00 - 3:30)](https://www.youtube.com/watch?v=KZ3tIGHU314&list=PLpmb-7WxPhe0ZVpH9pxT5MtC4heqej8Es).
 
 #### Initialize Your Bot <a name="init-bot"></a>
