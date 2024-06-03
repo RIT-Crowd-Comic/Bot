@@ -1,4 +1,4 @@
-
+﻿
 # CrowdComic Bot
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -14,6 +14,7 @@
         - [Resources](#resources)
     - Code Structure **[Will]**
         - How to create a command **[Will]**
+          - How to create a subcommand **[Will]**
         - How to add an event **[Will]**
 3. [Command Documentation](#commands)
     -  [/help](#help)
