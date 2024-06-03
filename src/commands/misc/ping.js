@@ -6,13 +6,7 @@ module.exports = {
         .setName('ping')
         .setDescription('Replies with bot ping'),
 
-    options:
-    {
-        devOnly: true,
-        testOnly: false,
-        deleted: false,
-    },
-
+    
 
     //logic, 
     async execute(client, interaction) {

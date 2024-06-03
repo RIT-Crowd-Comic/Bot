@@ -2,8 +2,7 @@ const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
-const getLocalCommands = require('../../utils/getLocalCommands');
-const getApplicationCommands = require('../../utils/getApplicationCommands');
+const {getLocalCommands, getApplicationCommands} = require('../../utils/getCommands');
 
 //registers all the commands with the server
 module.exports = async (client) => {
@@ -23,7 +22,7 @@ module.exports = async (client) => {
             const {name} = localCommand.data;
 
             //check if its deleted in the file, if so, remove it
-            if (localCommand.options.deleted) {
+            if (localCommand.options?.deleted) {
                 console.log(`🗑 Deleted command "${name}".`);
                 continue;
             }
