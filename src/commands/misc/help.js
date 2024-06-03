@@ -1,5 +1,5 @@
-const {SlashCommandBuilder} = require('@discordjs/builders');
-const {help} = require('../../utils/miscCommands')
+const { SlashCommandBuilder } = require('@discordjs/builders');
+const { help } = require('../../utils/miscCommands');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -8,9 +8,9 @@ module.exports = {
 
     options:
     {
-        devOnly: false,
+        devOnly:  false,
         testOnly: false,
-        deleted: false
+        deleted:  false
     },
 
     async execute(client, interaction) {

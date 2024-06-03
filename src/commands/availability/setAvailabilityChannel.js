@@ -1,5 +1,5 @@
-const {ChannelType, SlashCommandBuilder } = require('discord.js');
-const {availability } = require('../../utils/availability');
+const { ChannelType, SlashCommandBuilder } = require('discord.js');
+const { availability } = require('../../utils/availability');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('set-availability-channel')
@@ -12,17 +12,16 @@ module.exports = {
 
     async execute(_, interaction) {
         try {
-            await interaction.deferReply({ ephemeral: false })
+            await interaction.deferReply({ ephemeral: false });
 
             const newChannel = interaction.options.getChannel('channel');
             const reply = await availability(newChannel);
 
             interaction.editReply(reply);
-            //todo future: make it so the channel is saved somewhere, so when the bot goes offline for a bit, messages will still be read when it goes back up
+
+            // todo future: make it so the channel is saved somewhere, so when the bot goes offline for a bit, messages will still be read when it goes back up
         } catch (error) {
-            interaction.editReply({
-                content: `Error ${error}`
-            })
+            interaction.editReply({ content: `Error ${error}` });
         }
     }
 };
