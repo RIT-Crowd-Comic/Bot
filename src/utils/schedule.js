@@ -89,13 +89,13 @@ const createUnavailability = (start, end, userId, userTag, reason) => {
         throw new ScheduleError('End Date/Time must be after Start Date/Time');
 
     return {
-            id: userId,
-            tag: userTag,
+            userId: userId,
+            userTag: userTag,
             from: start,
             to: end,
             reason: reason
         };
-}
+};
 
 /**
  * Remove any duplicate time entries
