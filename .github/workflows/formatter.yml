@@ -23,4 +23,7 @@ jobs:
             elif ${{ github.event_name == 'push' }}; then
               echo "changed_files=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | xargs)" >> $GITHUB_OUTPUT
             fi
-      - run: npx eslint --fix ${{ steps.changed-files.outputs.changed_files }}
+      - run: |
+            for file in ${{ steps.changed-files.outputs.changed_files }}; do
+              npx eslint --fix file
+            done
