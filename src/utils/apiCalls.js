@@ -20,11 +20,11 @@ const getAPICall = async (url, body = {
 };
 
 const getChannelObject = async (channelId) => {
-    return await getAPICall(`${baseUrl}/channels/${channelId}`);
+    return await getAPICall(`${getBaseUrl()}/channels/${channelId}`);
 }
 
 const getMessageObject = async (channelId, messageId) => {
-    return await getAPICall(`${baseUrl}/channels/${channelId}/messages/${messageId}`);
+    return await getAPICall(`${getBaseUrl()}/channels/${channelId}/messages/${messageId}`);
 };
 
 //get {limit} (max 100) messages in channel with {channelId} after messages with {afterId}
