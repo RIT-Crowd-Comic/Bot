@@ -11,7 +11,7 @@
     - [Project Installation](#project-installation)
       - [Node Dependencies](#node-dependencies)
       - [.env Set Up](#env-set-up)
-      - [Lint Set Up](#lint-set-up)
+      - [Linting Rules](#lint-set-up)
       - [How to run your bot](#how-to-run-your-bot)
       - [Resources](#resources)
       - [Code Structure](#code-structure)
@@ -23,7 +23,7 @@
     - [/help-remember](#help-remember)
     - [/check-in-interface](#check-in-interface)
     - [/schedule-check-in](#schedule-check-in)
-    - [/remember subcommands](#remember-subcommands)
+    - [/remember](#remember-subcommands)
       - [message](#message)
       - [clear-messages](#clear-messages)
       - [past](#past)
@@ -34,15 +34,13 @@
       - [stop-remembering](#stop-remembering)
 ## Introduction <a name="introduction"></a>
 
-This is a discord bot that is used to help run the Crowd Comic team in their server. It allows many quality of life features such as checking in on users for the day to see how they are feeling overall, remembering meeting notes, and marking people as unavabile if they are on vacation.
+This is a discord bot that is used to help run the Crowd Comic team in their server. It allows many quality of life features such as checking in on users for the day to see how they are feeling overall, remembering meeting notes, and marking people as unavailable if they are on vacation.
 
 ### Enable Developer Mode <a name="enable-developer-mode"></a>
 
 This bot requires developer mode to be enabled as both a developer and a user.
 
 - Settings -> Advanced -> Developer Mode
-
-  
 
 ## Developer Set Up <a name="developer-set-up"></a>
 
@@ -54,7 +52,7 @@ It's highly recommended to make your own version of the bot for testing purposes
 
 #### Initialize Your Bot <a name="initialize-your-bot"></a>
 
-1. Go to [this website](https://discord.com/developers/applications)
+1. Go to the [Discord Developer Portal](https://discord.com/developers/applications)
 
 2. Create a new application
 
@@ -124,7 +122,7 @@ This project uses Node.js with the following dependencies and versions:
 
 -  `TESTSERVER_ID` is your server's id, right click on your server's name in the top left, and click `Copy Server ID`
 
--  `DEV_IDS` - is an array of user id's. These are used to restrict who has access to certain commands of the bot. To get your user ID, right click on your account in bottom left icon, click `Copy User ID`
+-  `DEV_IDS` is an array of user id's. These are used to restrict who has access to certain commands of the bot. To get your user ID, right click on your account in bottom left icon, click `Copy User ID`
 
 3. Verify that all of these ids/tokens are strings.
 
@@ -134,19 +132,56 @@ Note: anything related to ids should be added to `.env` for privacy
 
   
 
-#### Lint Set Up <a name="lint-set-up"></a>
+#### Linting Rules <a name="lint-set-up"></a>
 
-With the addition of [Git hooks](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks) to our project, developers can automate the
+We use [ESLint](https://eslint.org/) for code suggestions and formatting.
+As a developer, you can utilize the following commands:
 
-linting and formatting process. Run the following command to set up git hooks for your local repository. Go to the [Linting Section](https://github.com/RIT-Crowd-Comic/Bot?tab=readme-ov-file#Linting) to read more about configuring ESLint and Git hooks.
 
+| Command | Description |
+| --- | --- |
+| `npm run lint`                 | Use ESLint for code suggestions |
+| `npm run lint:fix`             | Use ESLint to format your code |
+| `npx eslint file/or/directory` | Use ESLint to check a specific file or directory |
+| `git commit ...`               | Invokes the `pre-commit` git hook |
+| `git commit --no-verify ...`   | Bypass all hooks related to committing |
+
+
+We use [Git hooks](https://git-scm.com/docs/githooks) to automate the linting and formatting process. Our hooks are located in [/git_hooks](/git_hooks/)
+
+For example, the Git hook `pre-commit` runs the command `npx eslint --fix` on all staged files, automatically fixing any fixable warnings (such as indents and semicolons) and re-staging the file for commit. 
+> This hook is invoked by [git-commit[1]](https://git-scm.com/docs/git-commit), and can be bypassed with the `--no-verify` option. It takes no parameters, and is invoked before obtaining the proposed commit log message and making a commit. Exiting with a non-zero status from this script causes the git commit command to abort before creating a commit. [Documentation](https://git-scm.com/docs/githooks#_pre_commit).
+
+
+If you want to update any [ESLint rules](https://eslint.org/docs/latest/rules), update the config file located in [/eslint.config.mjs](/eslint.config.mjs).  Keep in mind that many of the styling rules (such as "indent" and "semi") were deprecated and moved to the [@stylistic/js](https://eslint.style/packages/js) plugin. The specific rules for @stylistic/js can be found at the bottom of their web page.
+
+Example ESLint linting rules
+```js
+{
+	rules: {
+		'consistent-return': 2,
+		'no-else-return': 1,
+		'space-unary-ops': 2
+	}
+}
 ```
 
-npm run setup
+Example @stylistic/js rules
 
+```js
+{
+	plugins: {
+		'@stylistic/js': stylisticJs
+	},
+	rules: {
+		'indent': [1, 4],   // 0 - off. 1 - warn. 2 - error
+		'semi': ['warn', 'always'],
+		'no-mixed-spaces-and-tabs': ['warn', 'smart-tabs'],
+		'quotes': ['warn', 'single', {'allowTemplateLiterals': true, 'avoidEscape': true}]
+		// ...
+	}
+}
 ```
-
-  
 
 #### How to run your bot <a name="how-to-run-your-bot"></a>
 
@@ -243,7 +278,7 @@ Check out  `./commands/example/exampleCommand.js` for an example.
 **Note:** The eventHandler sorts the events in each folder by number, so 1 has greater priority than 2. Example:  `01registerCommands.js`  comes before  `02example.js`.
 
 ## Command Documentation <a name="command-documentation"></a>
-All subcommands  append the its parent command with a space afterwards
+All subcommands append to its parent command with a space afterwards
 - Example: `/remember message`
 ### /help <a name="help"></a>
 
@@ -282,7 +317,7 @@ Create a schedule for receiving check in notifications
 | Saturday | saturday, sa |
 | Sunday | sunday, su |
 
-### /remember subcommands <a name="remember-subcommands"></a>
+### /remember <a name="remember-subcommands"></a>
 
 #### message <a name="message"></a>
 
