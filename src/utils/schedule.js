@@ -2,11 +2,13 @@ const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
 const weekday = require('dayjs/plugin/weekday');
 const localizedFormat = require('dayjs/plugin/localizedFormat');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, CommandInteraction, Client } = require("discord.js");
 const { Dayjs } = dayjs;
 dayjs.extend(utc);
 dayjs.extend(weekday);
 dayjs.extend(localizedFormat);
 
+const queue=[]
 const validDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 const abbreviations = {
     'm': 'monday',
@@ -166,6 +168,73 @@ const parseTime = (time) => {
     return parsedTime;
 };
 
+/**
+ * sends DM to user with check-in reminder interface
+ * @param {*} client 
+ * @param {*} id user id
+ */
+const sendMessage=async (client,id)=>{
+
+    let user = await client.users.cache.get(id);
+    if (!user) {//checks if user is already in cache
+        user = await client.users.fetch(id); //fetches user (will add to the cache)
+    }
+
+    //checkin interface module
+    let reply = [
+        'Would you like to spend a few minutes to describe how you\'re doing? ',
+        'Feel free to leave any fields blank. ',
+        'Keep in mind that your response may be viewed by an administrator. ',
+        '** **',
+    ].join('\n');
+
+    const actions = new ActionRowBuilder();
+    const yesBtn = new ButtonBuilder()
+        .setCustomId('check-in-start-btn')
+        .setLabel('Yes')
+        .setStyle(ButtonStyle.Primary);
+    const laterBtn = new ButtonBuilder()
+        .setCustomId('check-in-later-btn')
+        .setLabel('Remind Me Later')
+        .setStyle(ButtonStyle.Secondary);
+    const notNowBtn = new ButtonBuilder()
+        .setCustomId('check-in-cancel-btn')
+        .setLabel('Not Today')
+        .setStyle(ButtonStyle.Secondary);
+
+    actions.addComponents(yesBtn, laterBtn, notNowBtn);
+
+    try {
+        await user.send({
+            content: reply,
+            components: [actions]
+        });
+
+    } catch (error) {
+        await user.send({
+            content: 'could not process command'
+        });
+    }
+
+};
+/**
+ * delete the past 100 messages
+ * @param {*} client 
+ * @param {*} interaction 
+ */
+const deleteAllDMs=async (client,interaction)=>{
+    let msgs=[]
+    let chan=await client.channels.fetch(interaction.channelId).then(
+        cha=>{cha.messages.fetch({ limit: 100 }).then(messages => {
+        console.log(`Received ${messages.size} messages`);
+        //Iterate through the messages here with the variable "messages".
+        messages.forEach(message => msgs.push(message))
+        for(let m of msgs){
+            m.delete()
+          }
+      })}
+    )
+}
 
 class ScheduleError extends Error {
     constructor(message) {
@@ -180,5 +249,7 @@ module.exports = {
     parseTime,
     mergeSchedules,
     displaySchedule,
+    sendMessage,
+    queue,
     ScheduleError
 };

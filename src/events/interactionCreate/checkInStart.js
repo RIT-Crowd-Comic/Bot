@@ -1,13 +1,15 @@
 /**
- * Author: Arthur Powers
- * Date: 5/22/2024
+ * Author: Arthur Powers & Victoria Parsonage Ueda
+ * Date: 5/22/2024, 6/3/2024
  * 
  * 
  * Handle when a user interacts with the check in notification
  */
-
+const dayjs = require('dayjs');
+const utc=require('dayjs/plugin/utc');
 const { ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, Client } = require("discord.js");
-
+const {sendMessage} = require('../../utils/schedule');
+dayjs.extend(utc);
 
 /**
  * 
@@ -58,11 +60,15 @@ module.exports = async (client, interaction) => {
         await interaction.showModal(checkInForm);
     }
 
+    //remind me later button -> snoozes message for 2h
     else if (interaction.customId === 'check-in-later-btn') {
+        setTimeout(()=>{sendMessage(client,interaction.user.id)},2*60*60*1000)//sends another reminder in 2 hours
+       interaction.message.delete()//deletes origional reminder message
+    
         await interaction.reply(
             {
                 ephemeral: true,
-                content: `Not yet implemented`
+                content: `The reminder has been snoozed for 2 hours`
             }
         );
     }
@@ -72,9 +78,10 @@ module.exports = async (client, interaction) => {
         await interaction.reply(
             {
                 ephemeral: true,
-                content: `Thanks for responding! Make sure to take short breaks and to drink plenty of water!`
+                content: `You have skipped today's check-in. Make sure to take short breaks and to drink plenty of water!`
             }
         );
+        interaction.message.delete()
     }
 
     else return; // user didn't interact with either of these buttons, do nothing

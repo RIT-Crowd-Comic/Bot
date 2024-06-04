@@ -5,19 +5,7 @@ const { PermissionFlagsBits, ButtonBuilder, ButtonStyle, ActionRowBuilder, TextI
  */
 
 const fakecheckInDatabase = {}
-const makeDefaultUserSettings = (userTag, userId) => {
-    return {
-        tag: userTag,
-        id: userId,
-        notificationDays: {
-            monday: { notify: false },
-            tuesday: { notify: false },
-            wednesday: { notify: false },
-            thursday: { notify: false },
-            friday: { notify: false },
-        }
-    }
-}
+
 
 module.exports = {
     callback: (client, interaction) => {
@@ -46,6 +34,5 @@ module.exports = {
     devOnly: false,
     testOnly: false,
     permissionsRequired: [PermissionFlagsBits.SendMessages],
-    fakecheckInDatabase,
-    makeDefaultUserSettings
+    fakecheckInDatabase
 }
