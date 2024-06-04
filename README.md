@@ -13,6 +13,7 @@
       - [.env Set Up](#env-set-up)
       - [Linting Rules](#lint-set-up)
       - [How to run your bot](#how-to-run-your-bot)
+      - [How to enable debugging](#how-to-enable-debugging)
       - [Resources](#resources)
       - [Code Structure](#code-structure)
       - [How to create a command](#how-to-create-a-command)
@@ -187,7 +188,12 @@ Example @stylistic/js rules
 
 Run `nodemon` in the root directory of your terminal. You should notice your bot is online.
 
-  
+#### How to enable debugging <a name="how-to-enable-debugging"></a>
+
+**Note:** these instructions only work for Visual Studio Code
+1. Open `index.js`
+2. Press f5
+3. Choose.Node.js
 
 #### Resources <a name="resources"></a>
 
