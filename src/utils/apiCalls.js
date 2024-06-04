@@ -1,5 +1,5 @@
 const { version } = require('../../config.json');
-const getBaseUrl = () => { return `https://discord.com/api/${version}`; };
+const baseUrl = `https://discord.com/api/${version}`;
 
 //helper method for discord get requests
 const getAPICall = async (url, body = {
@@ -16,6 +16,25 @@ const getAPICall = async (url, body = {
         } 
         return response.json();
         
+    });
+};
+
+//helper method for discord put requests
+const putAPICall = async (url, body = {
+    method: 'PUT',
+    headers: {
+        'Authorization': `Bot ${process.env.DISCORD_TOKEN}`,
+    },
+}) => {
+    return await fetch(url, body
+    ).then(response => {
+        // ? There's probably a better way to do this
+        if (Math.floor(response.status / 100) != 2) {
+            console.log(`There was an error: ${response.status} ${response.statusText}`);
+            return { status: 'Fail', description: `${response.status} ${response.statusText}` }
+        }
+        
+        return { status: 'Success' }
     });
 };
 
@@ -62,6 +81,21 @@ const getNumberMessages = async(channel, numberToSave, id) =>{
         : channel.messages.fetch({cache: false, limit: numberToSave});
 };
 
+const getRoles = async (serverId) => {
+
+    return await getAPICall(`${baseUrl}/guilds/${serverId}/roles`)
+}
+
+//returns a user from a specific server
+const getServerUser = async (serverId, userId) => {
+    return await getAPICall(`${baseUrl}/guilds/${serverId}/members/${userId}`)
+}
+
+//adds a role to a user
+const addRoleAPI = async (serverId, userId, roleId) => {
+    return await putAPICall(`${baseUrl}/guilds/${serverId}/members/${userId}/roles/${roleId}`)
+}
+
 
 module.exports = {
     getChannelObject,
@@ -70,5 +104,8 @@ module.exports = {
     getNumberMessages,
     getServers,
     getServer,
-    getServerChannels
+    getServerChannels,
+    getRoles,
+    getServerUser,
+    addRoleAPI
 };
