@@ -7,19 +7,48 @@ let availabilityChannel = undefined;
 const getAvailabilityChannel = async () => { return availabilityChannel; };
 const setAvailabilityChannel = (channel) => { availabilityChannel = channel; };
 
+/**
+ * Create Available object
+ * @param {Dayjs} start
+ * @param {Dayjs} end
+ * @param {string} days
+ * @returns {Object}
+ */
+const createAvailability = (start, end, days) => {
+    if(dayjs(start).isAfter(dayjs(end)))
+        throw new ScheduleError('End Date/Time must be after Start Date/Time');
+
+    return {from: start,
+            to: end,
+            days: days
+        };
+};
+
+/**
+ * Create Unavailable object
+ * @param {Dayjs} start
+ * @param {Dayjs} end
+ * @param {string} reason
+ * @returns {Object}
+ */
+const createUnavailability = (start, end, reason) => {
+    if(dayjs(start).isAfter(dayjs(end)))
+        throw new ScheduleError('End Date/Time must be after Start Date/Time');
+
+    return {
+            from: start,
+            to: end,
+            reason: reason
+        };
+};
+
 const saveUnavailability = (userId, userTag, unavail, path) => {
     //Get saved data from file and turn into array with objects
     let fileContent = null;
     fileContent = loadAvailability(path);
     
-    const userIndex = getUserIndex(fileContent.data, userId);
-
-    if(userIndex!=-1)
-        fileContent.data[userIndex].unavailable.push(unavail);
-    else{
-        fileContent.data.push(newAvailabilityEntry(userId, userTag));
-        fileContent.data[fileContent.data.length-1].unavailable.push(unavail);
-    }
+    fileContent[userId] ??= newAvailabilityEntry(userId, userTag);
+    fileContent[userId].unavailable.push(unavail);
 
     //Send data back to file
     fs.writeFile(path, JSON.stringify(fileContent, null, 2), (err) => err && console.error(err));
@@ -29,14 +58,8 @@ const saveAvailability = (userId, userTag, avail, path) => {
     let fileContent = null;
     fileContent = loadAvailability(path);
 
-    const userIndex = getUserIndex(fileContent.data, userId);
-
-    if(userIndex!=-1)
-        fileContent.data[userIndex].available = avail;
-    else{
-        fileContent.data.push(newAvailabilityEntry(userId, userTag));
-        fileContent.data.availabile = avail;
-    }
+    fileContent[userId] ??= newAvailabilityEntry(userId, userTag);
+    fileContent[userId].available = avail;
 
     //Send data back to file
     fs.writeFile(path, JSON.stringify(fileContent, null, 2), (err) => err && console.error(err));
@@ -62,23 +85,13 @@ const loadAvailability = (path) => {
     return data;
 }
 
-//Get the index of the user in the data
-const getUserIndex = (fileData, userId) => {
-    for(let i = 0, length=fileData?.length; i<length; i++ )
-    {
-        if(fileData[i].userId == userId) {
-            return i;
-        }
-    }
-    return -1;
-}
-
 module.exports = {
+    createAvailability,
+    createUnavailability,
     getAvailabilityChannel,
     setAvailabilityChannel,
     saveUnavailability,
     saveAvailability,
     newAvailabilityEntry,
-    loadAvailability,
-    getUserIndex
+    loadAvailability
 };

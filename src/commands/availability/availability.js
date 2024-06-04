@@ -2,13 +2,11 @@
 // import PermissionFlagsBits if you need permissions
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
-const { ScheduleError, createUnavailability, createAvailability } = require('../../utils/schedule');
+const { ScheduleError, parseDaysList } = require('../../utils/schedule');
 const { Dayjs } = require('dayjs');
 const fs = require('fs');
 const dayjs = require('dayjs');
-const {
-    saveUnavailability, saveAvailability, loadAvailability, getUserIndex
-} = require('../../utils/availability');
+const {createAvailability, createUnavailability, saveUnavailability, saveAvailability, loadAvailability} = require('../../utils/availability');
 const { start } = require('repl');
 const path = './src/savedAvailability.json';
 
@@ -72,7 +70,7 @@ module.exports = {
                         .setRequired(true))
                 .addStringOption(option =>
                     option.setName('days')
-                        .setDescription('Provide days you are available (Formats: Monday Tuesday..., M T W..., Monday-Friday')
+                        .setDescription('Provide work days (Can be abbreviated as "m t w (th or h) f sa su". Ex: "Monday w f" or "daily")')
                         .setRequired(false)))
         .addSubcommand(subcommand =>
             subcommand.setName('view-availability')
@@ -104,7 +102,7 @@ module.exports = {
             'set-unavailability':  () => setUnavail(interaction),
             'set-availability':    () => setAvail(interaction),
             'view-availability':   () => displayAvail(interaction),
-            'view-unavialability': () => displayUnavail(interaction)
+            'view-unavailability': () => displayUnavail(interaction)
         };
 
         try {
@@ -151,15 +149,9 @@ const setUnavail = async (interaction) => {
         if (timeTo && !timeFrom)
             throw new ScheduleError('Please select a start time.');
 
-        // Default times to 0:00 if empty
-        if (!timeFrom)
-            timeFrom = '0:00';
-        if (!timeTo)
-            timeTo = '23:59';
-
-        // Create a start and end dayjs obj
-        const startUnavail = dayjs(`${dateFrom} ${timeFrom}`).format('MM-DD hh:mm A');
-        const endUnavail = dayjs(`${dateTo} ${timeTo}`).format('MM-DD hh:mm A');
+        // Create a start and end dayjs obj (Default times to 0:00 if empty)
+        const startUnavail = dayjs(`${dateFrom} ${timeFrom?timeFrom:'0:00'}`).format('MM-DD hh:mm A');
+        const endUnavail = dayjs(`${dateTo} ${timeTo?timeTo:'23:59'}`).format('MM-DD hh:mm A');
 
         if (!dayjs(startUnavail).isValid && !dayjs(endUnavail).isValid)
             throw new ScheduleError('Enter dates and times in proper formats');
@@ -212,12 +204,15 @@ const setAvail = async (interaction) => {
     try {
         const timeFrom = interaction.options.get('time-from')?.value;
         const timeTo = interaction.options.get('time-to')?.value;
-        const days = interaction.options.get('days')?.value;
+        const rawDays = interaction.options.get('days')?.value;
 
         if (!timeFrom || !timeTo)
             throw new ScheduleError('Enter both start AND end times');
-        if (!days)
-            throw new ScheduleError('Enter available days');
+        // if (!rawDays)
+        //     throw new ScheduleError('Enter available days');
+
+        //Parse the day list into an array
+        const days = parseDaysList(rawDays?rawDays:'daily');
 
         // Create a start and end dayjs obj (arbitrary day used, does not affect time result)
         const startAvail = dayjs(`6-4 ${timeFrom}`).format('hh:mm A');
@@ -280,10 +275,9 @@ const displayAvail = async (interaction) => {
 
         // Get data saved from file
         const fileContent = loadAvailability(path);
-        const userIndex = getUserIndex(fileContent.data, targetMember.id);
 
         // If no matching user was found in the data, 
-        if (userIndex == -1) {
+        if (!fileContent[targetMember.id]) {
             console.log('no data');
             await interaction.editReply({
                 ephemeral: true,
@@ -292,7 +286,7 @@ const displayAvail = async (interaction) => {
             return;
         }
 
-        const availability = fileContent.data[userIndex].available;
+        const availability = fileContent[targetMember.id].available;
 
         // Create an embed to send to the user
         const embed = new EmbedBuilder()
@@ -332,10 +326,9 @@ const displayUnavail = async (interaction) => {
 
         // Get data saved from file
         const fileContent = loadAvailability(path);
-        const userIndex = getUserIndex(fileContent.data, targetMember.id);
 
         // If no matching user was found in the data, 
-        if (userIndex == -1) {
+        if (!fileContent[targetMember.id]) {
             await interaction.editReply({
                 ephemeral: true,
                 content:   'Requested member has no available data'
@@ -343,18 +336,19 @@ const displayUnavail = async (interaction) => {
             return;
         }
 
-        const unavailability = fileContent.data[userIndex].unavailable;
+        const unavailability = fileContent[targetMember.id].unavailable;
 
         // Create an embed to send to the user
         const embed = new EmbedBuilder()
             .setTitle(`${targetMember.username}'s Unavailability`);
         for (let i = 0, length = unavailability.length; i < length; i++) {
+            //Check for reason (leave empty if none)
+            const reason = unavailability[i].reason?`Reason: ${unavailability[i].reason}` : ` `;
             embed.addFields({
                 name:  `From ${unavailability[i].from} to ${unavailability[i].to}`,
-                value: `Reason: ${unavailability[i].reason}`
+                value: reason
             });
         }
-        console.log(embed);
         interaction.editReply({ embeds: [embed], ephemeral: true });
     } catch (error) {
         console.log(error);
