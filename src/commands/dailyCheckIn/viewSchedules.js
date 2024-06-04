@@ -1,37 +1,40 @@
-const { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, PermissionFlagsBits } = require('discord.js');
+const {
+    ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, PermissionFlagsBits, SlashCommandBuilder
+} = require('discord.js');
 const { displaySchedule } = require('../../utils/schedule');
 const scheduleCheckIn = require('./scheduleCheckIn');
 
 module.exports = {
-    name: 'view-check-in-schedules',
-    description: 'View your check-in schedules',
-    devOnly: false,
-    testOnly: false,
-    permissionsRequired: [PermissionFlagsBits.SendMessages],
+    data: new SlashCommandBuilder()
+        .setName('view-check-in-schedules')
+        .setDescription('View your check-in schedules')
+        .setDefaultMemberPermissions(PermissionFlagsBits.SendMessages),
+
+    options: {
+        devOnly:  false,
+        testOnly: false,
+        deleted:  false
+    },
 
     /**
      *  Remove a user's schedule
      * @param {Client} client 
      * @param {CommandInteraction} interaction 
      */
-    callback: async (client, interaction) => {
+    async execute (client, interaction) {
         const userId = interaction?.user?.id;
 
         await interaction.deferReply({ ephemeral: true });
 
         // command should include a user
         if (userId === undefined) {
-            await interaction.editReply({
-                content: '*Could not process command*'
-            });
+            await interaction.editReply({ content: '*Could not process command*' });
             return;
         }
 
         try {
             if (scheduleCheckIn.fakeScheduleEntry[userId] === undefined) {
-                await interaction.editReply({
-                    content: '*You have no schedules! Create one with `/schedule-check-in`*'
-                });
+                await interaction.editReply({ content: '*You have no schedules! Create one with `/schedule-check-in`*' });
                 return;
             }
 
@@ -47,34 +50,25 @@ module.exports = {
             const scheduleDropdown =
                 new StringSelectMenuBuilder()
                     .setCustomId('show-schedule-dropdown')
-                    .addOptions(
-                        schedules.map(s => (
-                            new StringSelectMenuOptionBuilder()
-                                .setLabel(s)
-                                .setValue(s)
-                        ))
-                    )
+                    .addOptions(schedules.map(s =>
+                        new StringSelectMenuOptionBuilder()
+                            .setLabel(s)
+                            .setValue(s)))
                     .setMinValues(0)
                     .setMaxValues(schedules.length);
 
             row1.addComponents(scheduleDropdown);
 
             await interaction.editReply({
-                content: `Here are your schedules`,
+                content:    `Here are your schedules`,
                 components: [row1]
             });
 
-        }
-        catch (error) {
+        } catch (error) {
             if (error.name === 'ScheduleError') {
-                await interaction.editReply({
-                    content: `*${error.message}*`,
-                });
-            }
-            else {
-                await interaction.editReply({
-                    content: `*Issue running command*`,
-                });
+                await interaction.editReply({ content: `*${error.message}*`, });
+            } else {
+                await interaction.editReply({ content: `*Issue running command*`, });
             }
         }
     }

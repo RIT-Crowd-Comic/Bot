@@ -1,22 +1,31 @@
-const { PermissionFlagsBits, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const {
+    PermissionFlagsBits, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder
+} = require('discord.js');
 const scheduleCheckIn = require('./scheduleCheckIn');
 const { displaySchedule } = require('../../utils/schedule');
 const { ActionRowBuilder } = require('@discordjs/builders');
 
 
 module.exports = {
-    name: 'remove-check-in-schedule',
-    description: 'See a list of schedules to remove',
-    devOnly: false,
-    testOnly: false,
-    permissionsRequired: [PermissionFlagsBits.SendMessages],
+
+    data: new SlashCommandBuilder()
+        .setName('remove-check-in-schedule')
+        .setDescription('See a list of schedules to remove')
+        .setDefaultMemberPermissions(PermissionFlagsBits.SendMessages),
+
+    options: {
+        devOnly:  false,
+        testOnly: false,
+        deleted:  false
+    },
+
 
     /**
      *  Remove a user's schedule
      * @param {Client} client 
      * @param {CommandInteraction} interaction 
      */
-    callback: async (client, interaction) => {
+    async execute (client, interaction) {
 
         const userId = interaction?.user?.id;
 
@@ -24,22 +33,18 @@ module.exports = {
 
         // command should include a user
         if (userId === undefined) {
-            await interaction.editReply({
-                content: '*Could not process command*'
-            });
+            await interaction.editReply({ content: '*Could not process command*' });
             return;
         }
 
         try {
             if (scheduleCheckIn.fakeScheduleEntry[userId] === undefined) {
-                await interaction.editReply({
-                    content: '*You have no schedules! Create one with `/schedule-check-in`*'
-                });
+                await interaction.editReply({ content: '*You have no schedules! Create one with `/schedule-check-in`*' });
                 return;
             }
             const schedules = scheduleCheckIn.fakeScheduleEntry[userId]?.schedules?.map(s => (
                 {
-                    name: displaySchedule(s),
+                    name:     displaySchedule(s),
                     schedule: s
                 }
             ));
@@ -49,13 +54,10 @@ module.exports = {
             const scheduleDropdown =
                 new StringSelectMenuBuilder()
                     .setCustomId('remove-schedule-dropdown')
-                    .addOptions(
-                        schedules.map((s, i) => (
-                            new StringSelectMenuOptionBuilder()
-                                .setLabel(s.name)
-                                .setValue(`${i}`)
-                        ))
-                    )
+                    .addOptions(schedules.map((s, i) =>
+                        new StringSelectMenuOptionBuilder()
+                            .setLabel(s.name)
+                            .setValue(`${i}`)))
                     .setMinValues(0)
                     .setMaxValues(schedules.length);
             const removeButton = new ButtonBuilder()
@@ -66,20 +68,14 @@ module.exports = {
             row2.addComponents(removeButton);
 
             await interaction.editReply({
-                content: `Select a schedule to remove`,
+                content:    `Select a schedule to remove`,
                 components: [row1, row2]
             });
-        }
-        catch (error) {
+        } catch (error) {
             if (error.name === 'ScheduleError') {
-                await interaction.editReply({
-                    content: `*${error.message}*`,
-                });
-            }
-            else {
-                await interaction.editReply({
-                    content: `*Issue running command*`,
-                });
+                await interaction.editReply({ content: `*${error.message}*`, });
+            } else {
+                await interaction.editReply({ content: `*Issue running command*`, });
             }
         }
     }
