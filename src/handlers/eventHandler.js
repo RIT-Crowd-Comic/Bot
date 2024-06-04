@@ -1,5 +1,5 @@
 const path = require('path');
-const getAllFiles = require("../utils/getAllFiles");
+const getAllFiles = require('../utils/getAllFiles');
 
 module.exports = (client) =>{
     //get all the folders with events in them
@@ -29,6 +29,6 @@ module.exports = (client) =>{
                     console.log(error);
                 }
             }
-        })
+        });
     }
 };

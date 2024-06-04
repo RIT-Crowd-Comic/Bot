@@ -4,7 +4,7 @@
  * Prompt the user to schedule a time for the bot to send a quick checkin survey.
  */
 
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, CommandInteraction, Client } = require("discord.js");
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, CommandInteraction, Client } = require('discord.js');
 
 /**
  * 
@@ -60,4 +60,4 @@ module.exports = async (client, interaction) => {
             });
         }
     }
-}
+};
