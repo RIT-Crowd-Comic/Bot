@@ -69,22 +69,30 @@ if (foo) bar();
 
 // brace styles 
 // space-before-blocks
-if (foo) {
+if (foo)
+{
     bar();
-} else if (fuz) {
+}
+else if (fuz)
+{
     bar();
-} else {
+}
+else
+{
     baz();
 }
 
-class Foo {
-    constructor() {
+class Foo
+{
+    constructor()
+    {
         this.foo = foo;
         this.fuz = fuz;
     }
 
     // computed property spacing for classes
-    [baz()] () {
+    [baz()] ()
+    {
         return this;
     }
 }
@@ -102,7 +110,8 @@ new Foo()
 new Foo().baz().baz();
 
 // switch-colon-spacing
-switch (foo) {
+switch (foo)
+{
 case 'foo': break;
 case 'bar': break;
 }

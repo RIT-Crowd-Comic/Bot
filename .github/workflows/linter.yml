@@ -1,0 +1,31 @@
+# This workflow will format your code on commit
+
+name: formatter
+run-name: Formatting code and checking for errors
+
+on: [push, pull_request]
+
+jobs:
+  format-code:
+    name: ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - run: npm run lint
+#      - name: Get changed files
+#        id: changed-files
+#        run: |
+#            if ${{ github.event_name == 'pull_request' }}; then
+#              echo "changed_files=$(git diff --name-only -r HEAD^1 HEAD | xargs)" >> $GITHUB_OUTPUT
+#            elif ${{ github.event_name == 'push' }}; then
+#              echo "changed_files=$(git diff --name-only ${{ github.event.before }}..${{ github.event.after }} -- | xargs)" >> $GITHUB_OUTPUT
+#            fi
+#      - name: Lint changed files
+#        run: |
+#            for file in ${{ steps.changed-files.outputs.changed_files }}; do
+#              npx eslint --fix file
+#            done

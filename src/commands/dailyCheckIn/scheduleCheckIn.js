@@ -1,5 +1,5 @@
 
-const { SlashCommandBuilder, PermissionFlagsBits, ApplicationCommandOptionType, Client, CommandInteraction, ApplicationCommandOptionWithChoicesMixin } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
 const weekday = require('dayjs/plugin/weekday');
@@ -9,8 +9,7 @@ dayjs.extend(weekday);
 dayjs.extend(localizedFormat);
 
 
-const fakeScheduleEntry = {
-};
+const fakeScheduleEntry = {};
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -20,6 +19,7 @@ module.exports = {
         .addStringOption(option =>
             option.setName('days')
                 .setDescription('The name of days can be abbreviated as "m t w (th or h) f sa su". Ex: "Monday w f" or "daily"')
+
             // choices: [
             //     { name: "monday", value: "monday" },
             //     { name: "tuesday", value: "tuesday" },
@@ -28,19 +28,17 @@ module.exports = {
             //     { name: "friday", value: "friday" },
             //     { name: "saturday", value: "saturday" },
             //     { name: "sunday", value: "sunday" }],
-                .setRequired(true),
-        )
+                .setRequired(true),)
         .addStringOption(option =>
             option.setName('time')
                 .setDescription('Time of day. Ex: 12:30 am')
-                .setRequired(true),
-        ),
+                .setRequired(true),),
 
     options:
     {
-        devOnly: false,
-        testOnly: false,
-        fakeScheduleEntry: fakeScheduleEntry      
+        devOnly:           false,
+        testOnly:          false,
+        fakeScheduleEntry: fakeScheduleEntry
     },
 
 
@@ -49,20 +47,23 @@ module.exports = {
      * @param {Client} client 
      * @param {CommandInteraction} interaction 
      */
-    async execute(client, interaction){
+    async execute(client, interaction)
+    {
 
         const userId = interaction?.user?.id;
         const userTag = interaction?.user?.tag;
 
         await interaction.deferReply({ ephemeral: true });
 
-        try {
+        try
+        {
 
             // command should include a user
-            if (userId === undefined || userTag === undefined) {
+            if (userId === undefined || userTag === undefined)
+            {
                 await interaction.editReply({
                     ephemeral: true,
-                    content: 'Could not process command'
+                    content:   'Could not process command'
                 });
                 return;
             }
@@ -70,25 +71,27 @@ module.exports = {
 
             const rawDays = interaction.options.get('days')?.value;
             const rawTime = interaction.options.get('time')?.value;
-            let parsedDays = [];
+            let parsedDays = []; // eslint-disable-line
             const validDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
             const abbreviations = {
-                'm': 'monday',
-                't': 'tuesday',
-                'w': 'wednesday',
+                'm':  'monday',
+                't':  'tuesday',
+                'w':  'wednesday',
                 'th': 'thursday',
-                'h': 'thursday',
-                'f': 'friday',
+                'h':  'thursday',
+                'f':  'friday',
                 'sa': 'saturday',
                 'su': 'sunday',
             };
             const daily = rawDays.toLocaleLowerCase().startsWith('daily');
 
             // split days by whitespace or comma
-            if (daily) {
+            if (daily)
+            {
                 parsedDays = validDays;
             }
-            else {
+            else
+            {
                 parsedDays = rawDays.split(/[\s,]+/i).map(s => s.toString().toLocaleLowerCase());
             }
 
@@ -96,10 +99,11 @@ module.exports = {
             parsedDays = parsedDays.map(d => abbreviations[d] ?? d);
 
             // check if parsed days are all valid
-            if (parsedDays.some(d => !validDays.includes(d))) {
+            if (parsedDays.some(d => !validDays.includes(d)))
+            {
                 await interaction.editReply({
                     ephemeral: true,
-                    content: 'Invalid list of days'
+                    content:   'Invalid list of days'
                 });
                 return;
             }
@@ -113,10 +117,11 @@ module.exports = {
             const timeFormats = ['Y h:mma', 'Y h:mmA', 'Y H:mm'];
             parsedTime = dayjs(`2024 ${parsedTime}`, timeFormats);
 
-            if (!parsedTime.isValid()) {
+            if (!parsedTime.isValid())
+            {
                 await interaction.editReply({
                     ephemeral: true,
-                    content: 'Invalid time'
+                    content:   'Invalid time'
                 });
                 return;
             }
@@ -134,18 +139,17 @@ module.exports = {
                     .minute(timeMinutes);
             const utcHour = firstScheduleDay.utc().hour();
             const utcMin = firstScheduleDay.utc().minute();
+
             // dayjs().day(1).hour(17)
 
             // Since times close to midnight can translate to the next day (or previous day)
             // in UTC, the following code will shift the user's day schedule accordingly
 
-            const utcDays = parsedDays.map(day => {
+            const utcDays = parsedDays.map(day =>
+            {
                 const dayIndex = validDays.indexOf(day); // dayjs() uses index
                 return validDays[firstScheduleDay.day(dayIndex).utc().day()];
             });
-
-            const formattedTimeMin = timeMinutes.toString().length === 1 ? `0${timeMinutes}` : timeMinutes;
-
 
             // update the database
 
@@ -156,12 +160,12 @@ module.exports = {
 
             // update user's entries
             fakeScheduleEntry[userId] = {
-                id: userId,
-                tag: userTag,
+                id:        userId,
+                tag:       userTag,
                 schedules: [
                     {
-                        days: utcDays,
-                        utcTime: [utcHour, utcMin],
+                        days:            utcDays,
+                        utcTime:         [utcHour, utcMin],
                         displaySchedule: `${parsedDays} ${firstScheduleDay.format('LT')}`
                     }
                 ]
@@ -182,13 +186,14 @@ module.exports = {
 
             await interaction.editReply({
                 ephemeral: true,
-                content: reply
+                content:   reply
             });
         }
-        catch {
+        catch
+        {
             await interaction.editReply({
                 ephemeral: true,
-                content: `issue running command`
+                content:   `issue running command`
             });
         }
     }
