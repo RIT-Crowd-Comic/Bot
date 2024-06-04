@@ -1,47 +1,42 @@
-﻿﻿
+﻿﻿﻿
 # CrowdComic Bot
 
 ## Table of Contents
-
-1. [Introduction](#introduction)
-
-2. [Developer Set Up](#setup)
-
-- [CrowdComic Bot](#crowdcomic-bot)
-  - [Table of Contents](#table-of-contents)
-  - [Introduction ](#introduction-)
+  - [Introduction ](#introduction)
     - [Enable Developer Mode](#enable-developer-mode)
-  - [Developer Set Up ](#developer-set-up-)
-    - [Build Your Own Bot ](#build-your-own-bot-)
-      - [Initialize Your Bot ](#initialize-your-bot-)
-      - [Add the bot to your server ](#add-the-bot-to-your-server-)
-    - [Project Installation ](#project-installation-)
-      - [Node Dependencies ](#node-dependencies-)
-      - [.env Set Up ](#env-set-up-)
-      - [Lint Set Up ](#lint-set-up-)
-      - [How to run your bot ](#how-to-run-your-bot-)
-      - [Resources ](#resources-)
-      - [Code Structure ](#code-structure-)
+  - [Developer Set Up](#developer-set-up)
+    - [Build Your Own Bot](#build-your-own-bot)
+      - [Initialize Your Bot ](#initialize-your-bot)
+      - [Add the bot to your server](#add-the-bot-to-your-server)
+    - [Project Installation](#project-installation)
+      - [Node Dependencies](#node-dependencies)
+      - [.env Set Up](#env-set-up)
+      - [Lint Set Up](#lint-set-up)
+      - [How to run your bot](#how-to-run-your-bot)
+      - [Resources](#resources)
+      - [Code Structure](#code-structure)
       - [How to create a command](#how-to-create-a-command)
-      - [How to create a subcommand ](#how-to-create-a-subcommand-)
-      - [How to add an event ](#how-to-add-an-event-)
-  - [Command Documentation ](#command-documentation-)
+      - [How to create a subcommand](#how-to-create-a-subcommand)
+      - [How to add an event](#how-to-add-an-event)
+  - [Command Documentation](#command-documentation)
     - [/help](#help)
-    - [/help-remember ](#help-remember-)
-    - [/check-in-interface ](#check-in-interface-)
-    - [/schedule-check-in ](#schedule-check-in-)
-    - [/remember subcommands ](#remember-subcommands-)
-      - [message ](#message-)
-      - [clear-messages ](#clear-messages-)
-      - [past ](#past-)
-      - [recall ](#recall-)
-      - [number ](#number-)
-      - [range ](#range-)
-      - [start-remembering ](#start-remembering-)
-      - [stop-remembering ](#stop-remembering-)
+    - [/help-remember](#help-remember)
+    - [/check-in-interface](#check-in-interface)
+    - [/schedule-check-in](#schedule-check-in)
+    - [/remember subcommands](#remember-subcommands)
+      - [message](#message)
+      - [clear-messages](#clear-messages)
+      - [past](#past)
+      - [recall](#recall)
+      - [number](#number)
+      - [range](#range)
+      - [start-remembering](#start-remembering)
+      - [stop-remembering](#stop-remembering)
 ## Introduction <a name="introduction"></a>
 
-### Enable Developer Mode
+**UPDATE ME**
+
+### Enable Developer Mode <a name="enable-developer-mode"></a>
 
 This bot requires developer mode to be enabled as both a developer and a user.
 
@@ -49,19 +44,15 @@ This bot requires developer mode to be enabled as both a developer and a user.
 
   
 
-**UPDATE ME**
+## Developer Set Up <a name="developer-set-up"></a>
 
-  
-
-## Developer Set Up <a name="setup"></a>
-
-### Build Your Own Bot <a name="build-bot"></a>
+### Build Your Own Bot <a name="build-your-own-bot"></a>
 
 It's highly recommended to make your own version of the bot for testing purposes. A brief tutorial on how is written below. If you would like a visual representation, follow [this video (0:00 - 3:30)](https://www.youtube.com/watch?v=KZ3tIGHU314&list=PLpmb-7WxPhe0ZVpH9pxT5MtC4heqej8Es).
 
   
 
-#### Initialize Your Bot <a name="init-bot"></a>
+#### Initialize Your Bot <a name="initialize-your-bot"></a>
 
 1. Go to [this website](https://discord.com/developers/applications)
 
@@ -76,10 +67,8 @@ It's highly recommended to make your own version of the bot for testing purposes
 6. Enable `Presence Intent`, `Server Members Intent`, `Message Content Intent` under `Privileged Gateway Intents`
 
 7. Save your changes
-
   
-
-#### Add the bot to your server <a name="add-bot"></a>
+#### Add the bot to your server <a name="add-the-bot-to-your-server"></a>
 
 1. Still in your bot's application, click on `OAuth2`
 
@@ -99,11 +88,11 @@ It's highly recommended to make your own version of the bot for testing purposes
 
   
 
-### Project Installation <a name="project-init"></a>
+### Project Installation <a name="project-installation"></a>
 
   
 
-#### Node Dependencies <a name="node-depend"></a>
+#### Node Dependencies <a name="node-dependencies"></a>
 
 This project uses Node.js with the following dependencies and versions:
 
@@ -125,7 +114,7 @@ This project uses Node.js with the following dependencies and versions:
 
   
 
-#### .env Set Up <a name="env"></a>
+#### .env Set Up <a name="env-set-up"></a>
 
 1. Create a duplicate of `example.env` and rename it to `.env`
 
@@ -145,7 +134,7 @@ Note: anything related to ids should be added to `.env` for privacy
 
   
 
-#### Lint Set Up <a name="lint"></a>
+#### Lint Set Up <a name="lint-set-up"></a>
 
 With the addition of [Git hooks](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks) to our project, developers can automate the
 
@@ -159,7 +148,7 @@ npm run setup
 
   
 
-#### How to run your bot <a name="run-bot"></a>
+#### How to run your bot <a name="how-to-run-your-bot"></a>
 
 Run `nodemon` in the root directory of your terminal. You should notice your bot is online.
 
@@ -177,7 +166,7 @@ Here is the documentation, and some video tutorials that the bot's structure is 
 
 - [Discord Developer Portal](https://discord.com/developers/applications)
 
-####  Code Structure <a name="stop-remembering"></a>
+####  Code Structure <a name="code-structure"></a>
 The entry point for the program is `index.js`. It imports the `discord.js` library and starts the bot. It also calls `eventHandler.js` to start listening for and handling events. 
 
 Events are handled by `eventHandler.js`. Which looks through all the folders within  `/events` and sets them up to run whenever a specified event happens. 
@@ -203,10 +192,7 @@ When a command is invoked, `commandHandler.js` handles the command. It checks pe
 
 -`availiabilty.js` contains availability helper functions.
 
-
-
-
-#### How to create a command<a name="creating-command"></a>
+#### How to create a command <a name="how-to-create-a-command"></a>
 Commands are made using the [slashCommandBuilder](https://v13.discordjs.guide/popular-topics/builders.html#commands)
 Check out  `./commands/example/exampleCommand.js` for an example.
 1. Under `/commands` make a folder for the new command or place it in an existing folder that makes sense.
@@ -243,7 +229,7 @@ Check out  `./commands/example/exampleCommand.js` for an example.
 	```
 7. `client` and `interaction` are required parameters for the function. `client` refers to the bot itself, while `interaction` is the data behind the command (such as channel, user, other options...). `client` does not need to be used, but `interaction` does have to be replied to. Examples of such exist in every command.
 
-#### How to create a subcommand <a name="creating-subcommand"></a>
+#### How to create a subcommand <a name="how-to-create-a-subcommand"></a>
 1. Make a command following the above instructions. Once again look at `/commands/example/exampleCommand.js`
 
 3. Add a subcommand via `.addSubCommand`.  `subCommands` and options such as `addStringOption` are mutually exclusive. You cannot have both on a main command. Subcommands can still have options. Set up a name, description and options for each subcommand created.
@@ -259,7 +245,7 @@ Check out  `./commands/example/exampleCommand.js` for an example.
 	```
 	Which subcommand was used can be easily gotten from the `interaction`.
 	`const  subcommand  =  interaction.options.getSubcommand();` 	
-#### How to add an event <a name="event-creation"></a>
+#### How to add an event <a name="how-to-add-an-event"></a>
 1.	 Make a new folder corresponding to the event you wish to add or place your file in an existing `/events/event` folder such as `events/ready`.  For adding a new folder, add one under  `/events`  and name it with the event name you wish to have. The **name** of the folder is very important. It must match the event name from discord such as  `ready`.
 
 2.	Add a file to the chosen or created folder. Give it a relevant name. The file must export a function with the parameters of at least `client`, with an optional second parameter that depends on the nature of the event. `ready` just needs client, but `interactionCreate` has`client` and `interaction`
@@ -267,9 +253,9 @@ Check out  `./commands/example/exampleCommand.js` for an example.
 
 **Note:** The eventHandler sorts the events in each folder by number, so 1 has greater priority than 2. Example:  `01registerCommands.js`  comes before  `02example.js`.
 
-## Command Documentation <a name="commands"></a>
+## Command Documentation <a name="command-documentation"></a>
 
-### /help
+### /help <a name="help"></a>
 
 Show all of the commands along with a brief description
 
