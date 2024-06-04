@@ -3,7 +3,7 @@ let availabilityChannel = undefined;
 const getAvailabilityChannel = async () => { return availabilityChannel; };
 const setAvailabilityChannel = channel => { availabilityChannel = channel; };
 
-const availability = async newChannel => {
+const updateAvailabilityChannel = async newChannel => {
     const oldChannel = await getAvailabilityChannel();
 
     // check if new id is the same as the current one
@@ -19,5 +19,5 @@ const availability = async newChannel => {
 module.exports = {
     getAvailabilityChannel,
     setAvailabilityChannel,
-    availability
+    updateAvailabilityChannel
 };

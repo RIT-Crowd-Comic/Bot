@@ -1,5 +1,5 @@
 const { ChannelType, SlashCommandBuilder } = require('discord.js');
-const { availability } = require('../../utils/availability');
+const { updateAvailabilityChannel } = require('../../utils/availability');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('set-availability-channel')
@@ -15,7 +15,7 @@ module.exports = {
             await interaction.deferReply({ ephemeral: false });
 
             const newChannel = interaction.options.getChannel('channel');
-            const reply = await availability(newChannel);
+            const reply = await updateAvailabilityChannel(newChannel);
 
             interaction.editReply(reply);
 
