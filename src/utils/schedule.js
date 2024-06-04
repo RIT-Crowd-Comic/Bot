@@ -171,8 +171,6 @@ class ScheduleError extends Error {
 
 module.exports = {
     createSchedule,
-    createUnavailability,
-    createAvailability,
     parseDaysList,
     parseTime,
     mergeSchedules,

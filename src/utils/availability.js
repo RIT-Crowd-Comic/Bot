@@ -1,7 +1,6 @@
-const { Dayjs } = require('dayjs');
 const fs = require('fs');
 const dayjs = require('dayjs');
-const availability = require('../commands/availability/availability');
+const { ScheduleError } = require('./schedule.js');
 
 let availabilityChannel = undefined;
 const getAvailabilityChannel = async () => { return availabilityChannel; };
@@ -15,13 +14,14 @@ const setAvailabilityChannel = (channel) => { availabilityChannel = channel; };
  * @returns {Object}
  */
 const createAvailability = (start, end, days) => {
-    if(dayjs(start).isAfter(dayjs(end)))
+    if (dayjs(start).isAfter(dayjs(end)))
         throw new ScheduleError('End Date/Time must be after Start Date/Time');
 
-    return {from: start,
-            to: end,
-            days: days
-        };
+    return {
+        from: start,
+        to:   end,
+        days: days
+    };
 };
 
 /**
@@ -32,47 +32,47 @@ const createAvailability = (start, end, days) => {
  * @returns {Object}
  */
 const createUnavailability = (start, end, reason) => {
-    if(dayjs(start).isAfter(dayjs(end)))
+    if (dayjs(start).isAfter(dayjs(end)))
         throw new ScheduleError('End Date/Time must be after Start Date/Time');
 
     return {
-            from: start,
-            to: end,
-            reason: reason
-        };
+        from:   start,
+        to:     end,
+        reason: reason
+    };
 };
 
 const saveUnavailability = (userId, userTag, unavail, path) => {
-    //Get saved data from file and turn into array with objects
-    let fileContent = null;
-    fileContent = loadAvailability(path);
-    
+
+    // Get saved data from file and turn into array with objects
+    let fileContent = loadAvailability(path);
+
     fileContent[userId] ??= newAvailabilityEntry(userId, userTag);
     fileContent[userId].unavailable.push(unavail);
 
-    //Send data back to file
+    // Send data back to file
     fs.writeFile(path, JSON.stringify(fileContent, null, 2), (err) => err && console.error(err));
 };
 
 const saveAvailability = (userId, userTag, avail, path) => {
-    let fileContent = null;
-    fileContent = loadAvailability(path);
+    let fileContent = loadAvailability(path);
 
     fileContent[userId] ??= newAvailabilityEntry(userId, userTag);
     fileContent[userId].available = avail;
 
-    //Send data back to file
+    // Send data back to file
     fs.writeFile(path, JSON.stringify(fileContent, null, 2), (err) => err && console.error(err));
-}
+};
 
 const newAvailabilityEntry = (userId, userTag) => {
     return {
-        userId: userId,
-        userTag: userTag,
+        userId:    userId,
+        userTag:   userTag,
         available: {
-            //Random day used for object creation, has no effect on result
-            from: dayjs('6-4 09:00').format('hh:mm A'),
-            to: dayjs('6-4 17:00').format('hh:mm A'),
+
+            // Random day used for object creation, has no effect on result
+            from: JSON.stringify(dayjs('6-4 09:00')),
+            to:   JSON.stringify(dayjs('6-4 17:00')),
             days: 'Monday-Friday'
         },
         unavailable: []
@@ -80,10 +80,10 @@ const newAvailabilityEntry = (userId, userTag) => {
 };
 
 const loadAvailability = (path) => {
-    let data = fs.readFileSync(path, {encoding: 'utf8'});
+    let data = fs.readFileSync(path, { encoding: 'utf8' });
     data = JSON.parse(data);
     return data;
-}
+};
 
 module.exports = {
     createAvailability,

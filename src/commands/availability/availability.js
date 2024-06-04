@@ -3,32 +3,38 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 const { ScheduleError, parseDaysList } = require('../../utils/schedule');
-const { Dayjs } = require('dayjs');
-const fs = require('fs');
 const dayjs = require('dayjs');
-const {createAvailability, createUnavailability, saveUnavailability, saveAvailability, loadAvailability} = require('../../utils/availability');
-const { start } = require('repl');
+const {
+    createAvailability, createUnavailability, saveUnavailability, saveAvailability, loadAvailability
+} = require('../../utils/availability');
 const path = './src/savedAvailability.json';
 
 // Availability Data Schema
-// [
-//     {
-//       "userID": "123",
-//       "userTag": "member",
-//       "available": {
-//         "from": "DayJS object",
-//         "to": "DayJS object",
-//         "days": "Monday-Friday"
-//       },
-//       "unavailable": [
-//         {
-//           "from": "DayJS object",
-//           "to": "DayJS object",
-//           "reason": "sick"
-//         }
+// {
+//   "id": {
+//     "userId": "1223334444",
+//     "userTag": "servermember",
+//     "available": {
+//       "from": "2024-05-20T14:00:00.000Z",
+//       "to": "2024-08-09T22:00:00.000Z",
+//       "days": [
+//         "monday",
+//         "tuesday"
 //       ]
-//     }
-// ]
+//     },
+//     "unavailable": [
+//       {
+//         "from": "2024-07-03T05:00:00.000Z",
+//         "to": "2024-07-06T04:59:00.000Z",
+//         "reason": "Holiday"
+//       },
+//       {
+//         "from": "2024-08-01T20:00:00.000Z",
+//         "to": "2024-08-02T17:30:00.000Z"
+//       }
+//     ]
+//   }
+// }
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -150,8 +156,8 @@ const setUnavail = async (interaction) => {
             throw new ScheduleError('Please select a start time.');
 
         // Create a start and end dayjs obj (Default times to 0:00 if empty)
-        const startUnavail = dayjs(`${dateFrom} ${timeFrom?timeFrom:'0:00'}`).format('MM-DD hh:mm A');
-        const endUnavail = dayjs(`${dateTo} ${timeTo?timeTo:'23:59'}`).format('MM-DD hh:mm A');
+        const startUnavail = dayjs(`2024 ${dateFrom} ${timeFrom ? timeFrom : '0:00'}`);
+        const endUnavail = dayjs(`2024 ${dateTo} ${timeTo ? timeTo : '23:59'}`);
 
         if (!dayjs(startUnavail).isValid && !dayjs(endUnavail).isValid)
             throw new ScheduleError('Enter dates and times in proper formats');
@@ -208,15 +214,16 @@ const setAvail = async (interaction) => {
 
         if (!timeFrom || !timeTo)
             throw new ScheduleError('Enter both start AND end times');
+
         // if (!rawDays)
         //     throw new ScheduleError('Enter available days');
 
-        //Parse the day list into an array
-        const days = parseDaysList(rawDays?rawDays:'daily');
+        // Parse the day list into an array
+        const days = parseDaysList(rawDays ? rawDays : 'daily');
 
         // Create a start and end dayjs obj (arbitrary day used, does not affect time result)
-        const startAvail = dayjs(`6-4 ${timeFrom}`).format('hh:mm A');
-        const endAvail = dayjs(`6-4 ${timeTo}`).format('hh:mm A');
+        const startAvail = dayjs(`2024 5-20 ${timeFrom}`);
+        const endAvail = dayjs(`2024 8-9 ${timeTo}`);
 
         if (!dayjs(startAvail).isValid && !dayjs(endAvail).isValid)
             throw new ScheduleError('Enter times in proper formats');
@@ -291,7 +298,7 @@ const displayAvail = async (interaction) => {
         // Create an embed to send to the user
         const embed = new EmbedBuilder()
             .setTitle(`${targetMember.username}'s Availability`)
-            .setDescription(`Available from ${availability.from}-${availability.to} ${availability.days}`);
+            .setDescription(`Available from ${dayjs(availability.from).format('hh:mm A')}-${dayjs(availability.to).format('hh:mm A')} on ${availability.days.join(', ')}`);
         interaction.editReply({ embeds: [embed], ephemeral: true });
     } catch (error) {
         console.log(error);
@@ -342,10 +349,11 @@ const displayUnavail = async (interaction) => {
         const embed = new EmbedBuilder()
             .setTitle(`${targetMember.username}'s Unavailability`);
         for (let i = 0, length = unavailability.length; i < length; i++) {
-            //Check for reason (leave empty if none)
-            const reason = unavailability[i].reason?`Reason: ${unavailability[i].reason}` : ` `;
+
+            // Check for reason (leave empty if none)
+            const reason = unavailability[i].reason ? `Reason: ${unavailability[i].reason}` : ` `;
             embed.addFields({
-                name:  `From ${unavailability[i].from} to ${unavailability[i].to}`,
+                name:  `From ${dayjs(unavailability[i].from).format('MM-DD hh:mm A')} to ${dayjs(unavailability[i].to).format('MM-DD hh:mm A')}`,
                 value: reason
             });
         }
