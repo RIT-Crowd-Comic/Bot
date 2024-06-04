@@ -10,18 +10,17 @@ const { displaySchedule } = require('../../utils/schedule');
  */
 module.exports = async (client, interaction) => {
 
-    const userId = interaction?.user?.id;
-
-    // command should include a user
-    if (userId === undefined) {
-        await interaction.editReply({
-            content: '*Could not process command.*'
-        });
-        return;
-    }
-
     if (interaction.customId === 'remove-schedule-dropdown') {
+
+        const userId = interaction?.user?.id;
+
         try {
+            // make sure unintended schedules aren't deleted when the remove-schedules dropdown changes
+            checkIn.fakeScheduleEntry[userId].schedules.forEach(s => {
+                s.remove = false;
+            });
+
+            // select schedules to remove
             interaction.values.forEach(v => {
                 checkIn.fakeScheduleEntry[userId].schedules[v].remove = true;
             });
@@ -39,6 +38,9 @@ module.exports = async (client, interaction) => {
         }
     }
     else if (interaction.customId === 'remove-schedule-btn') {
+
+        const userId = interaction?.user?.id;
+
         try {
             const schedules = checkIn.fakeScheduleEntry[userId].schedules;
 
@@ -60,11 +62,6 @@ module.exports = async (client, interaction) => {
                 reply = [
                     'Removed schedules',
                     removedSchedules.map(s => `- ${s}`).join('\n'),
-                    '',
-                    '[debug]',
-                    '```',
-                    `${JSON.stringify(checkIn.fakeScheduleEntry, undefined, 2)}`,
-                    '```'
                 ].join('\n');
             }
 
