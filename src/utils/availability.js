@@ -7,26 +7,18 @@ let availabilityChannel = undefined;
 const getAvailabilityChannel = async () => { return availabilityChannel; };
 const setAvailabilityChannel = (channel) => { availabilityChannel = channel; };
 
-const saveUnavailability = (userId, userTag, unavail, path) => {
+const saveUnavailability = async (userId, userTag, unavail, path) => {
     //Get saved data from file and turn into array with objects
-    let fileContent = fs.readFile(path);
-    fileContent = JSON.parse(fileContent);
+    let fileContent = null;
+    fileContent = loadAvailability(path);
     
-    let savedIndex = -1;
-    //Check if array contains the user already
-    for(let i = 0, length=fileContent.length; i<length; i++ )
-    {
-        if(fileContent[i].userId == userId) {
-            savedIndex = i;
-            continue;
-        }
-    }
+    const savedIndex = getUserIndex(fileContet.data, userId);
 
     if(savedIndex!=-1)
-        fileContent[savedIndex].unavailable.push(unavail);
+        fileContent.data[savedIndex].unavailable.push(unavail);
     else{
-        fileContent.push(newAvailabilityEntry(userId, userTag));
-        fileContent[fileContent.length-1].unavailable.push(unavail);
+        fileContent.data.push(newAvailabilityEntry(userId, userTag));
+        fileContent.data[fileContent.data.length-1].unavailable.push(unavail);
     }
 
     //Send data back to file
@@ -38,17 +30,37 @@ const newAvailabilityEntry = (userId, userTag) => {
         userId: userId,
         userTag: userTag,
         available: {
-            from: dayjs('09:00').format('hh:mm'),
-            to: dayjs('17:00').format('hh:mm'),
+            //Random day used for object creation, has no effect on result
+            from: dayjs('6-4 09:00').format('hh:mm A'),
+            to: dayjs('6-4 17:00').format('hh:mm A'),
             days: 'Monday-Friday'
         },
         unavailable: []
     };
 };
 
+const loadAvailability = (path) => {
+    let data = fs.readFileSync(path, {encoding: 'utf8'});
+    data = JSON.parse(fileContent);
+    return data;
+}
+
+//Get the index of the user in the data
+const getUserIndex = (fileData, userId) => {
+    for(let i = 0, length=fileData?.length; i<length; i++ )
+    {
+        if(fileData[i].userId == userId) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 module.exports = {
     getAvailabilityChannel,
     setAvailabilityChannel,
     saveUnavailability,
-    newAvailabilityEntry
+    newAvailabilityEntry,
+    loadAvailability,
+    getUserIndex
 };

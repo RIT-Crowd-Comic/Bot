@@ -129,7 +129,6 @@ const setUnavail = async (interaction) => {
     }
 
     try {
-        //const scheduleDays = interaction.options.get('schedule-days')?.value;
         const dateFrom = interaction.options.get('date-from')?.value;
         const dateTo = interaction.options.get('date-to')?.value;
         let timeFrom = interaction.options.get('time-from')?.value;
@@ -145,7 +144,7 @@ const setUnavail = async (interaction) => {
         if(!timeFrom)
             timeFrom = '0:00';
         if(!timeTo)
-            timeTo = '0:00';
+            timeTo = '23:59';
 
         //Create a start and end dayjs obj
         const startUnavail = dayjs(`${dateFrom} ${timeFrom}`).format('MM-DD hh:mm A');
@@ -188,6 +187,52 @@ const setUnavail = async (interaction) => {
     }
 };
 
+//set-availability
 const setAvail = async (interaction) => {
+    const userId = interaction?.user?.id;
+    const userTag = interaction?.user?.tag;
 
-}
+    await interaction.deferReply({ ephemeral: true });
+
+    // command should include a user
+    if (userId === undefined || userTag === undefined) {
+        await interaction.editReply({
+            ephemeral: true,
+            content: 'Could not process command'
+        });
+        return;
+    }
+
+    try {
+        const timeFrom = interaction.options.get('time-from')?.value;
+        const timeTo = interaction.options.get('time-to')?.value;
+        const days = interaction.option.get('days')?.value;
+
+        if(!timeFrom || !timeTo)
+            throw new ScheduleError('Enter both start AND end times');
+        if(!days)
+            throw new ScheduleError('Enter available days');
+
+        //Create a start and end dayjs obj
+        const startAvail = dayjs(`${dateFrom} ${timeFrom}`).format('hh:mm A');
+        const endAvail = dayjs(`${dateTo} ${timeTo}`).format('hh:mm A');
+
+        if(!dayjs(startAvail).isValid&&!dayjs(endAvail).isValid)
+            throw new ScheduleError('Enter times in proper formats');
+
+    } catch (error) {
+        if (error.name === 'ScheduleError') {
+            await interaction.editReply({
+                ephemeral: true,
+                content: `*${error.message}*`
+            });
+        }
+        else {
+            console.log(error);
+            await interaction.editReply({
+                ephemeral: true,
+                content: `*Issue running command*`
+            });
+        }
+    }
+};
