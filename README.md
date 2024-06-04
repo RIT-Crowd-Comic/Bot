@@ -169,33 +169,19 @@ Here is the documentation, and some video tutorials that the bot's structure is 
 ####  Code Structure <a name="code-structure"></a>
 The entry point for the program is `index.js`. It imports the `discord.js` library and starts the bot. It also calls `eventHandler.js` to start listening for and handling events. 
 
-Events are handled by `eventHandler.js`. Which looks through all the folders within  `/events` and sets them up to run whenever a specified event happens. 
+`eventHandler.js` looks through all the folders within `/events` and sets them up to run whenever a specified event happens. 
 
-Example: On the `ready` event, all of the files within the `/events/ready` folder are registered to run when  `ready` happens. 
+- Example: On the `ready` event, all of the files within the `/events/ready` folder are registered to run when  `ready` happens. 
 
 
 Commands are where the bulk of the structure lies. The `/commands` folder is where all the commands are stored. At the startup of the bot, `01registerCommands` registers all the commands within these folders on the server. 
 
-When a command is invoked, `commandHandler.js` handles the command. It checks permissions and other options regarding the command, and then calls the associated function for the command.
-
-`utils` contains many useful helper functions for the project.
-
--`apiCalls.js` handles functions that get data from discord.
-
--`rememberMessages` contains all of the remember helper functions and the remember data.
-
--`getCommands` contains helpers for getting local or current server commands.
-
--`getAllFiles` is used to grab files from specified folders and is used for registering events and commands.
-
--`mathUtils` contains useful reusable math functions.
-
--`availiabilty.js` contains availability helper functions.
+When a command is invoked, `commandHandler.js` checks permissions and other options regarding the command, and then calls the associated function for the command.
 
 #### How to create a command <a name="how-to-create-a-command"></a>
 Commands are made using the [slashCommandBuilder](https://v13.discordjs.guide/popular-topics/builders.html#commands)
 Check out  `./commands/example/exampleCommand.js` for an example.
-1. Under `/commands` make a folder for the new command or place it in an existing folder that makes sense.
+1. Under `/commands`, make a folder for the new command or place it in an existing folder that makes sense.
 
 2. Add a new file to that folder, name is `yourCommandNameHere.js`
 3.  The command file has to export a `command` object. There a at least 3 main components of a command. `data`, `options` and `execute`.
@@ -208,7 +194,7 @@ Check out  `./commands/example/exampleCommand.js` for an example.
 		option.setName('example-option)
 		options.setDescription('this is an example)
 	),
-5. `options` contains options for the command. `deleted` specifies to not place this command on the server. `devOnly` specifies developers are only allowed to run the command. `testOnly` specifies the command can only be run in a specific test server.  **Note:** `options` is optional.
+5. `options` contains options for the command. `deleted` specifies to not place this command on the server. `devOnly` specifies developers are only allowed to run the command. `testOnly` specifies the command can only be run in a specific test server.  **Note:** `options` is optional and all of the variables inside will default to `false` if not provided.
 
 	```js	
 	options:
@@ -244,9 +230,12 @@ Check out  `./commands/example/exampleCommand.js` for an example.
     )
 	```
 	Which subcommand was used can be easily gotten from the `interaction`.
-	`const  subcommand  =  interaction.options.getSubcommand();` 	
+
+	```js 
+	const  subcommand  =  interaction.options.getSubcommand();
+	``` 	
 #### How to add an event <a name="how-to-add-an-event"></a>
-1.	 Make a new folder corresponding to the event you wish to add or place your file in an existing `/events/event` folder such as `events/ready`.  For adding a new folder, add one under  `/events`  and name it with the event name you wish to have. The **name** of the folder is very important. It must match the event name from discord such as  `ready`.
+1. Make a new folder corresponding to the event you wish to add or place your file in an existing `/events/event` folder such as `events/ready`.  For adding a new folder, add one under  `/events`  and name it with the event name you wish to have. The **name** of the folder is very important. It must match the event name from discord such as  `ready`.
 
 2.	Add a file to the chosen or created folder. Give it a relevant name. The file must export a function with the parameters of at least `client`, with an optional second parameter that depends on the nature of the event. `ready` just needs client, but `interactionCreate` has`client` and `interaction`
 3.	Add logic to the function.
