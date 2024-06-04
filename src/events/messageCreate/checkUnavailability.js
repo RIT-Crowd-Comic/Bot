@@ -12,53 +12,112 @@ module.exports = async (client, message) => {
     
         const response = await openAiClient.chat.completions.create({
             model: "gpt-3.5-turbo",
-            messages: messages,
+            messages: [{
+                "role": "user",
+                "content": message.content
+            }],
             tools: tools,
             tool_choice: "auto",
         }).catch((error) => console.log('OpenAI Error ' + error));
         
-        const from = response.function_call.arguments;
-        const to = response.function_call.arguments;
-        const reason = response.function_call.arguments;
-         
+        const output = response.choices[0].message;
+        console.log(output);
+
+        const calledFunction = output.tool_calls[0].function;
+        console.log(calledFunction.name);
+
+        const action = {
+            'rememberUnavailability'  : () => rememberUnavailability(message, JSON.parse(calledFunction.arguments)["from"],JSON.parse(calledFunction.arguments)["to"],JSON.parse(calledFunction.arguments)["reason"]),
+            'rememberAvailability'    : () => rememberAvailability(message, JSON.parse(calledFunction.arguments)["from"],JSON.parse(calledFunction.arguments)["to"]),
+            'unableToParse'           : () => unableToParse(message),
+        };
+
+
+        action[calledFunction.name](); 
 
     } catch (error) {
-        //! might want to make it so this is sent to a channel, but it's not guaranteed the availability channel was set up correctly
         console.log(error)
     }
 }
 
 
-const messages = [{"role": "user", "content": "I am busy between 1 pm and 3pm on this upcoming 5th"}];
+const messagesTest = [{"role": "user", "content": "I am a good person"}];
 
 const tools = [
     {
       "type": "function",
       "function": {
-        "name": "remember_unavailability",
+        "name": "rememberUnavailability",
         "description": "Determines if the user is busy between certain times ",
         "parameters": {
           "type": "object",
           "properties": {
             "from": {
               "type": "string",
-              "description": "The start date and time that the user is unavailable",
+              "description": "The start date and time that the user is unavailable. In UTC.",
             },
             "to":{
                 "type" : "string",
-                "description": "The end date and time that the user is unavailable",
+                "description": "The end date and time that the user is unavailable. In UTC.",
             },
             "reason":{
                 "type" : "string",
-                "description": "The reason for the unavailability",
+                "description": "The reason why the user unavailable at those times.",
             }
           },
           "required": ["from", "to"],
-        }
-      }
-    }
+        },
+      },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "rememberAvailability",
+            "description": "Determines if the user is available between certain times",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                  "from": {
+                    "type": "string",
+                    "description": "The start date and time that the user is available. In UTC.",
+                  },
+                  "to":{
+                      "type" : "string",
+                      "description": "The end date and time that the user is available. In UTC.",
+                  },
+                },
+                "required": ["from", "to"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "unableToParse",
+            "description": "If the user inputs data that cannot be interpreted",
+            "parameters": {},
+        },
+    },
 ];
 
+
+const rememberUnavailability = (message, from, to, reason = 'a mystery event') =>{
+    message.reply({
+        content: `${message.author.globalName} is unavailable from ${to} to ${from} for ${reason}`
+    })
+}
+
+const rememberAvailability = (message, from, to) =>{
+    message.reply({
+        content: `${message.author.globalName} is available from ${to} to ${from}`
+    })
+}
+
+const unableToParse = (message) =>{
+    message.reply({
+        content: `${message.author.globalName} did not give data that could be parsed`
+    })
+}
 
 /*{
   from: <etc>,
