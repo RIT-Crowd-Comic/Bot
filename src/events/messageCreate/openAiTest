@@ -1,4 +1,4 @@
-const openAiClient = require('../../openAi/init')
+const {openAiClient} = require('../../openAi/init')
 
 module.exports = async (client, message) => {
     if(!message.mentions.users.has(client.user.id)) return;
@@ -9,9 +9,16 @@ module.exports = async (client, message) => {
             {
                 role: 'system',
                 content: 'You are a helpful assistant.'
+            },
+            {
+                role: 'user',
+                content: `${message.content}`
             }
         ]
     }).catch((error) => console.log('OpenAI Error ' + error));
 
-    message.reply(response.choices[0]);
+    const stringResponse = response.choices[0].message.content;
+    message.reply({
+        content: stringResponse
+    });
 }
