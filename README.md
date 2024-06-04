@@ -1,4 +1,4 @@
-﻿
+﻿﻿
 # CrowdComic Bot
 
 ## Table of Contents
@@ -292,32 +292,18 @@ Check in with how your are feeling for the day
 Create a schedule for receiving check in notifications
 
 | Parameters | Description |
-
 | --- | --- |
-
 | days | List days to notify. This can be comma or space separated. Not case sensitive |
-
 | time | Time of day to be notified. When sending verbose to the user, this time is converted to 24 hour time. Ex: "1:00" (infers am), "15:00", "3:00pm" |
 
-  
-  
-
 | Days | Valid Inputs |
-
 | ----------- | ----------- |
-
 | Monday | monday, m |
-
 | Tuesday | tuesday, t |
-
 | Wednesday | wednesday, w |
-
 | Thursday | thursday, th, h |
-
 | Friday | friday, f |
-
 | Saturday | saturday, sa |
-
 | Sunday | sunday, su |
 
 ### /remember subcommands <a name="remember-subcommands"></a>
@@ -331,9 +317,7 @@ All of the following commands append the word `/remember` with a space afterward
 Remember and save a specific message
 
 | Parameters | Description |
-
 | --- | --- |
-
 | message-id | The id of the message that will be saved |
 
 #### clear-messages <a name="clear-messages"></a>
@@ -347,17 +331,11 @@ Clear all messages currently saved in remembrance
 Saves messages from past set amount of "hours" and "minutes" in a specific channel
 
 | Parameters | Description |
-
 | --- | --- |
-
 | hours | The number of hours to save. Max 5. |
-
 | minutes | The number of minutes to save to save. Max 59. |
-
 | channel (optional) | The channel that messages will be saved from. If not provided, the text channel that the command was sent from will be chosen. |
-
 | speed | Speed of the Search. Lower value is more accurate but slower. Range 25-100 inclusive |
-
 | exclude-bot-messages (optional) | If bot messages should be excluded in the message collection. Default is `true` |
 
 #### recall <a name="recall"></a>
@@ -370,16 +348,10 @@ Creates and sends a JSON of all the saved message
 
 Saves a number of the most recent messages from a specific channel.
 
-  
-
 | Parameters | Description |
-
 | --- | --- |
-
 | number-of-messages | The number of messages to save. 1 - 1000 inclusively. |
-
 | channel (optional) | The channel that messages will be saved from. If not provided, the text channel that the command was sent from will be chosen. |
-
 | exclude-bot-messages (optional) | If bot messages should be excluded in the message collection. Default is `true` |
 
 #### range <a name="range"></a>
@@ -387,15 +359,10 @@ Saves a number of the most recent messages from a specific channel.
 Remember all messages between two specific messages inclusively
 
 | Parameters | Description |
-
 | --- | --- |
-
 | start-message-id | The first message's id |
-
 | end-message-id | The second message's id |
-
 | channel (optional) | The channel that messages will be saved from. If not provided, the text channel that the command was sent from will be chosen. |
-
 | exclude-bot-messages (optional) | If bot messages should be excluded in the message collection. Default is `true` |
 
 #### start-remembering <a name="start-remembering"></a>
@@ -403,11 +370,8 @@ Remember all messages between two specific messages inclusively
 Start remembering messages in a specific channel
 
 | Parameters | Description |
-
 | --- | --- |
-
 | channel (optional) | The channel that messages will be saved from. If not provided, the text channel that the command was sent from will be chosen.|
-
 | exclude-bot-messages (optional) | If bot messages should be excluded in the message collection. Default is true |
 
   
