@@ -38,6 +38,25 @@ const putAPICall = async (url, body = {
     });
 };
 
+//helper method for discord delete requests
+const deleteAPICall = async (url, body = {
+    method: "DELETE",
+    headers: {
+        'Authorization': `Bot ${process.env.DISCORD_TOKEN}`,
+    },
+}) => {
+    return await fetch(url, body
+    ).then(response => {
+        // ? There's probably a better way to do this
+        if (Math.floor(response.status / 100) != 2) {
+            console.log(`There was an error: ${response.status} ${response.statusText}`);
+            return { status: 'Fail', description: `${response.status} ${response.statusText}` }
+        }
+        
+        return { status: 'Success' }
+    });
+}
+
 const getChannelObject = async (channelId) => {
     return await getAPICall(`${baseUrl}/channels/${channelId}`);
 }
@@ -92,8 +111,12 @@ const getServerUser = async (serverId, userId) => {
 }
 
 //adds a role to a user
-const addRoleAPI = async (serverId, userId, roleId) => {
+const addRole = async (serverId, userId, roleId) => {
     return await putAPICall(`${baseUrl}/guilds/${serverId}/members/${userId}/roles/${roleId}`)
+}
+
+const removeRole = async (serverId, userId, roleId) => {
+    return await deleteAPICall(`${baseUrl}/guilds/${serverId}/members/${userId}/roles/${roleId}`)
 }
 
 
@@ -107,5 +130,6 @@ module.exports = {
     getServerChannels,
     getRoles,
     getServerUser,
-    addRoleAPI
+    addRole,
+    removeRole
 };
