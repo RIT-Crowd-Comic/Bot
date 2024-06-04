@@ -1,4 +1,4 @@
-﻿﻿﻿
+﻿﻿
 # CrowdComic Bot
 
 ## Table of Contents
@@ -34,7 +34,7 @@
       - [stop-remembering](#stop-remembering)
 ## Introduction <a name="introduction"></a>
 
-**UPDATE ME**
+This is a discord bot that is used to help run the Crowd Comic team in their server. It allows many quality of life features such as checking in on users for the day to see how they are feeling overall, remembering meeting notes, and marking people as unavailable if they are on vacation.
 
 ### Enable Developer Mode <a name="enable-developer-mode"></a>
 
