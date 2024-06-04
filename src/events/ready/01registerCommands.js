@@ -60,7 +60,8 @@ module.exports = async client => {
 
         console.log('Successfully reloaded application (/) commands.');
 
-    } catch (error) {
+    }
+    catch (error) {
         console.log(`There was an error: ${error}`);
     }
 };

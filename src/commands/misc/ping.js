@@ -7,10 +7,8 @@ module.exports = {
         .setDescription('Replies with bot ping'),
 
 
-
     // logic, 
     async execute(client, interaction) {
-
         try {
             await interaction.deferReply();
 
@@ -19,7 +17,8 @@ module.exports = {
             const ping = reply.createdTimestamp - interaction.createdTimestamp;
 
             interaction.editReply(`Client ${ping}ms | Websocket: ${client.ws.ping}ms`);
-        } catch (error) {
+        }
+        catch (error) {
             await interaction.editReply({
                 content:   `Something went wrong. ${error}`,
                 ephemeral: false,

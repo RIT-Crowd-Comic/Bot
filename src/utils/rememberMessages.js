@@ -23,6 +23,55 @@ const parseMessage = message => {
     };
 };
 
+// continues saving messages until their time is lesser than given
+// we are going into the past to fetch old messages by their timestamps(ms)
+const getMessagesByTime = async (channel, pastTime, excludeBotMessages, chunkSize) => {
+    let messages = [];
+    let startId;
+    let messageTime;
+    chunkSize = clamp(0, 100, chunkSize);
+
+    do {
+
+        // if startId use it //chunks of 100 is more efficient
+        const message = startId ?
+            await apiCalls.getNumberMessages(channel, chunkSize, startId) :
+            await apiCalls.getNumberMessages(channel, 1);
+
+        // add the message
+        // parse the message
+        message.forEach(msg => {
+            startId = msg.id; // save the message id so we can start there next interaction
+            messageTime = msg.createdTimestamp; // save timestamp for comparison
+
+            // exclude bot messages if option is enabled
+            if (!(excludeBotMessages && msg.author.bot)) {
+                const parsedMessage = parseMessage(msg);
+
+                // save the message
+                messages.push(parsedMessage);
+            }
+        });
+    } while (messageTime >= pastTime); // loop until the message timestamp is lower/=  than the past time
+    return messages;
+};
+
+// grabs a number of messages and saves them to an array, while also returning the last id
+const getMessagesAndReturnId = async(messagesToSave, channel, num, excludeBotMessages, startId) =>{
+    const messageObjArray = [...await apiCalls.getNumberMessages(channel, num, startId)];
+
+    // return if no array, or if there is not enough messages in the server
+    if (!messageObjArray || messageObjArray.length == 0) {
+        return undefined;
+    }
+
+    messageObjArray
+        .filter(([_, msg]) => !(excludeBotMessages && msg.author.bot))
+        .map(([_, msg]) => messagesToSave.push(parseMessage(msg)));
+
+    return messageObjArray.at(-1)[1].id;
+};
+
 // remembers all messages between two messages.
 const rememberRangeGrab = async (channelId, startMessageId, endMessageId, excludeBotMessages) => {
     try {
@@ -112,7 +161,8 @@ const rememberRangeGrab = async (channelId, startMessageId, endMessageId, exclud
 
         return { status: 'Success' };
 
-    } catch (error) {
+    }
+    catch (error) {
         return {
             status:      'Fail',
             description: `"Error: ${error}`
@@ -178,7 +228,7 @@ const rememberNumber = async (numberOfMessages, channel, excludeBotMessages) =>{
         }
 
         if (num > 0)
-            startId = await getMessagesAndReturnId(messagesToSave, channel, num, excludeBotMessages, startId);
+            await getMessagesAndReturnId(messagesToSave, channel, num, excludeBotMessages, startId);
     }
     else {
         await getMessagesAndReturnId(messagesToSave, channel, num, excludeBotMessages);
@@ -252,53 +302,4 @@ module.exports = {
     rememberNumber,
     startRemembering,
     stopRemembering
-};
-
-// continues saving messages until their time is lesser than given
-// we are going into the past to fetch old messages by their timestamps(ms)
-const getMessagesByTime = async (channel, pastTime, excludeBotMessages, chunkSize) => {
-    let messages = [];
-    let startId;
-    let messageTime;
-    chunkSize = clamp(0, 100, chunkSize);
-
-    do {
-
-        // if startId use it //chunks of 100 is more efficient
-        const message = startId ?
-            await apiCalls.getNumberMessages(channel, chunkSize, startId) :
-            await apiCalls.getNumberMessages(channel, 1);
-
-        // add the message
-        // parse the message
-        message.forEach(msg => {
-            startId = msg.id; // save the message id so we can start there next interaction
-            messageTime = msg.createdTimestamp; // save timestamp for comparison
-
-            // exclude bot messages if option is enabled
-            if (!(excludeBotMessages && msg.author.bot)) {
-                const parsedMessage = parseMessage(msg);
-
-                // save the message
-                messages.push(parsedMessage);
-            }
-        });
-    } while (messageTime >= pastTime); // loop until the message timestamp is lower/=  than the past time
-    return messages;
-};
-
-// grabs a number of messages and saves them to an array, while also returning the last id
-const getMessagesAndReturnId = async(messagesToSave, channel, num, excludeBotMessages, startId) =>{
-    const messageObjArray = [...await apiCalls.getNumberMessages(channel, num, startId)];
-
-    // return if no array, or if there is not enough messages in the server
-    if (!messageObjArray || messageObjArray.length == 0) {
-        return;
-    }
-
-    messageObjArray
-        .filter(([_, msg]) => !(excludeBotMessages && msg.author.bot))
-        .map(([_, msg]) => messagesToSave.push(parseMessage(msg)));
-
-    return messageObjArray.at(-1)[1].id;
 };

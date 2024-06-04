@@ -71,9 +71,11 @@ if (foo) bar();
 // space-before-blocks
 if (foo) {
     bar();
-} else if (fuz) {
+}
+else if (fuz) {
     bar();
-} else {
+}
+else {
     baz();
 }
 

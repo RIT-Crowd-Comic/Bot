@@ -34,7 +34,7 @@ export default [
             'no-unused-vars':                [2, { 'argsIgnorePattern': '^_$' }],
             'no-use-before-define':          [2, { 'functions': false, 'classes': true, 'allowNamedExports': true }],
             'no-useless-assignment':         1,
-            'require-atomic-updates':        2,
+            'require-atomic-updates':        0, // this causes false positives
             'consistent-return':             2,
             'no-else-return':                1,
             'space-unary-ops':               2
@@ -51,7 +51,7 @@ export default [
             'arrow-parens':          [0, 'as-needed'],
             'array-bracket-newline': [1, { 'multiline': true }],
             'block-spacing':         [1, 'always'],
-            'brace-style':           [1, '1tbs', { 'allowSingleLine': true }],
+            'brace-style':           [1, 'stroustrup', { 'allowSingleLine': true }],
             'comma-dangle':          [
                 0,
                 'always',

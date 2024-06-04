@@ -138,12 +138,18 @@ Note: anything related to ids should be added to `.env` for privacy
 
 #### Linting Rules <a name="lint-set-up"></a>
 
+To enable git hooks for your local repository, run the following command. (Note: `npm start` will automatically set up git hooks)
+```
+npm run setup
+```
+
 We use [ESLint](https://eslint.org/) for code suggestions and formatting.
 As a developer, you can utilize the following commands:
 
 
 | Command | Description |
 | --- | --- |
+| `npm run setup`                | Setup git hooks for your repository |
 | `npm run lint`                 | Use ESLint for code suggestions |
 | `npm run lint:fix`             | Use ESLint to format your code |
 | `npx eslint file/or/directory` | Use ESLint to check a specific file or directory |

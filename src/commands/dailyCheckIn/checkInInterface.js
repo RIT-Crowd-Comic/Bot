@@ -1,4 +1,6 @@
-const { SlashCommandBuilder, PermissionFlagsBits, ButtonBuilder, ButtonStyle, ActionRowBuilder} = require('discord.js');
+const {
+    SlashCommandBuilder, PermissionFlagsBits, ButtonBuilder, ButtonStyle, ActionRowBuilder
+} = require('discord.js');
 
 /**
  * Initiate a prompt allowing users to create a scheduler.
@@ -7,14 +9,14 @@ const { SlashCommandBuilder, PermissionFlagsBits, ButtonBuilder, ButtonStyle, Ac
 const fakecheckInDatabase = {};
 const makeDefaultUserSettings = (userTag, userId) => {
     return {
-        tag: userTag,
-        id: userId,
+        tag:              userTag,
+        id:               userId,
         notificationDays: {
-            monday: { notify: false },
-            tuesday: { notify: false },
+            monday:    { notify: false },
+            tuesday:   { notify: false },
             wednesday: { notify: false },
-            thursday: { notify: false },
-            friday: { notify: false },
+            thursday:  { notify: false },
+            friday:    { notify: false },
         }
     };
 };
@@ -27,17 +29,16 @@ module.exports = {
 
     options:
     {
-        devOnly: false,
-        testOnly: false,
-        deleted: false,
-        fakecheckInDatabase: fakecheckInDatabase,
-        makeDefaultUserSettings : makeDefaultUserSettings
+        devOnly:                 false,
+        testOnly:                false,
+        deleted:                 false,
+        fakecheckInDatabase:     fakecheckInDatabase,
+        makeDefaultUserSettings: makeDefaultUserSettings
     },
 
 
-    //logic, 
+    // logic, 
     async execute(client, interaction) {
-
         try {
             await interaction.deferReply();
             const actions = new ActionRowBuilder();
@@ -49,13 +50,13 @@ module.exports = {
             actions.addComponents(testBtn);
 
             interaction.editReply({
-                content: `Hello, I am ${client.user.username}. I am here to help users stay on task and maintain a healthy workflow.\n\n__Schedule feedback__\n\nClick below to force a check in as if it were scheduled for now.`,
+                content:    `Hello, I am ${client.user.username}. I am here to help users stay on task and maintain a healthy workflow.\n\n__Schedule feedback__\n\nClick below to force a check in as if it were scheduled for now.`,
                 components: [actions]
             });
         }
         catch (error) {
             await interaction.editReply({
-                content: `Something went wrong. ${error}`,
+                content:   `Something went wrong. ${error}`,
                 ephemeral: false,
             });
         }

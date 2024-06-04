@@ -34,7 +34,8 @@ const getApplicationCommands = async(client, guildId)=>{
     if (guildId) {
         const guild = await client.guilds.fetch(guildId);
         applicationCommands = guild.commands;
-    } else {
+    }
+    else {
         applicationCommands = await client.application.commands;
     }
     await applicationCommands.fetch();

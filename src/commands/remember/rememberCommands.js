@@ -8,149 +8,6 @@ const fs = require('fs');
 const { defaultExcludeBotMessages, ephemeral } = require('../../../config.json');
 const { clamp } = require(`../../utils/mathUtils`);
 
-// remembers a message based on a message id parameter
-module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('remember')
-        .setDescription('Stores messages in a variety of ways')
-        .setDefaultMemberPermissions(PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ReadMessageHistory)
-
-        // remember message
-        .addSubcommand(subcommand =>
-            subcommand.setName('message')
-                .setDescription('Stores a message from the current channel based on its message-id')
-                .addStringOption(option =>
-                    option.setName('message-id')
-                        .setDescription('The id of the message')
-                        .setRequired(true))
-                .addChannelOption(option => option
-                    .setName('channel')
-                    .setDescription('text channel')
-                    .addChannelTypes(ChannelType.GuildText)))
-
-        // remember past
-        .addSubcommand(subcommand =>
-            subcommand.setName('past')
-                .setDescription('Saves messages from past set amount of "hours" and "minutes" in the current channel.')
-                .addNumberOption(option =>
-                    option.setName('hours')
-                        .setDescription('The number of hours to save. Max 5.')
-                        .setRequired(true))
-                .addNumberOption(option =>
-                    option.setName('minutes')
-                        .setDescription('The number of minutes to save to save. Max 59.')
-                        .setRequired(true))
-                .addChannelOption(option => option
-                    .setName('channel')
-                    .setDescription('text channel')
-                    .addChannelTypes(ChannelType.GuildText))
-                .addNumberOption(option =>
-                    option.setName('speed')
-                        .setDescription('Speed of the Search. Lower value is more accurate but slower. Range 25-100 inclusive'))
-                .addBooleanOption(option =>
-                    option.setName('exclude-bot-messages')
-                        .setDescription(`If bot messages should be excluded in the message collection. Default is ${defaultExcludeBotMessages.rememberPast}`)))
-
-        // remember recall
-        .addSubcommand(subcommand =>
-            subcommand.setName('recall')
-                .setDescription('Creates a JSON of all the saved message'))
-
-        // remember clear
-        .addSubcommand(subcommand =>
-            subcommand.setName('clear-messages')
-                .setDescription('Clear all messages currently saved in remembrance'))
-
-        // remember number
-        .addSubcommand(subcommand =>
-            subcommand.setName('number')
-                .setDescription('Saves the last x messages from the current channel. Has an option to save from a specific channel.')
-                .addNumberOption(option =>
-                    option.setName('number-of-messages')
-                        .setDescription('The number of messages to save. Min 1, Max 1000.')
-                        .setRequired(true))
-                .addChannelOption(option => option
-                    .setName('channel')
-                    .setDescription('text channel')
-                    .addChannelTypes(ChannelType.GuildText))
-                .addBooleanOption(option =>
-                    option.setName('exclude-bot-messages')
-                        .setDescription(`If bot messages should be excluded in the message collection. Default is ${defaultExcludeBotMessages.rememberNumber}`)))
-
-        // remember range
-        .addSubcommand(subcommand =>
-            subcommand.setName('range')
-                .setDescription('Remember all messages between two specific messages (inclusively)')
-                .addStringOption(option =>
-                    option.setName('start-message-id')
-                        .setDescription("The first message's id")
-                        .setRequired(true))
-                .addStringOption(option =>
-                    option.setName('end-message-id')
-                        .setDescription("the second message's id")
-                        .setRequired(true))
-                .addChannelOption(option => option
-                    .setName('channel')
-                    .setDescription('text channel')
-                    .addChannelTypes(ChannelType.GuildText))
-                .addBooleanOption(option =>
-                    option.setName('exclude-bot-messages')
-                        .setDescription(`If bot messages should be excluded in the message collection. Default is ${defaultExcludeBotMessages.rememberRangeGrab}`)))
-        .addSubcommand(subcommand =>
-            subcommand.setName('start-remembering')
-                .setDescription('Start remembering messages in a specific channel')
-                .addChannelOption(option => option
-                    .setName('channel')
-                    .setDescription('text channel')
-                    .addChannelTypes(ChannelType.GuildText))
-                .addBooleanOption(option =>
-                    option.setName('exclude-bot-messages')
-                        .setDescription(`If bot messages should be excluded in the message collection. Default is ${defaultExcludeBotMessages.startRemember}`)))
-
-        .addSubcommand(subcommand =>
-            subcommand.setName('stop-remembering')
-                .setDescription('Stop remembering messages in a specific channel')
-        ),
-
-
-    options:
-    {
-        devOnly:  false,
-        testOnly: false,
-        deleted:  false,
-    },
-
-
-    // logic, 
-    async execute(client, interaction) {
-
-
-        const action = {
-            'message':           () => rememberMessage(interaction),
-            'past':              () => rememberPastMessages(client, interaction),
-            'recall':            () => rememberRecall(interaction),
-            'clear-messages':    () => rememberClear(interaction),
-            'number':            () => rememberNumberMessages(client, interaction),
-            'range':             () => rememberRange(interaction),
-            'start-remembering': () => startRemember(client, interaction),
-            'stop-remembering':  () => stopRemember(client, interaction)
-        };
-
-        try {
-
-            // get the used subcommand
-            const subcommand = interaction.options.getSubcommand();
-
-            action[subcommand]();
-        } catch (error) {
-            await interaction.editReply({
-                content:   `Something went wrong. ${error}`,
-                ephemeral: false,
-            });
-        }
-    }
-};
-
 // Callbacks
 // remember message 
 const rememberMessage = async interaction => {
@@ -254,7 +111,7 @@ const rememberRange = async interaction=>{
     interaction.editReply({ content: rememberRangeGrabResponse.status });
 };
 
-const startRemember = async(client, interaction)=>{
+const startRemember = async(client, interaction)=> {
     await interaction.deferReply({ ephemeral: ephemeral.startRemember });
 
     // start remembering messages from the last message in the channel
@@ -278,4 +135,147 @@ const stopRemember = async(client, interaction)=>{
     client.user.setActivity(null);
     const reply = await stopRemembering();
     interaction.editReply(reply);
+};
+
+// remembers a message based on a message id parameter
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName('remember')
+        .setDescription('Stores messages in a variety of ways')
+        .setDefaultMemberPermissions(PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ReadMessageHistory)
+
+        // remember message
+        .addSubcommand(subcommand =>
+            subcommand.setName('message')
+                .setDescription('Stores a message from the current channel based on its message-id')
+                .addStringOption(option =>
+                    option.setName('message-id')
+                        .setDescription('The id of the message')
+                        .setRequired(true))
+                .addChannelOption(option => option
+                    .setName('channel')
+                    .setDescription('text channel')
+                    .addChannelTypes(ChannelType.GuildText)))
+
+        // remember past
+        .addSubcommand(subcommand =>
+            subcommand.setName('past')
+                .setDescription('Saves messages from past set amount of "hours" and "minutes" in the current channel.')
+                .addNumberOption(option =>
+                    option.setName('hours')
+                        .setDescription('The number of hours to save. Max 5.')
+                        .setRequired(true))
+                .addNumberOption(option =>
+                    option.setName('minutes')
+                        .setDescription('The number of minutes to save to save. Max 59.')
+                        .setRequired(true))
+                .addChannelOption(option => option
+                    .setName('channel')
+                    .setDescription('text channel')
+                    .addChannelTypes(ChannelType.GuildText))
+                .addNumberOption(option =>
+                    option.setName('speed')
+                        .setDescription('Speed of the Search. Lower value is more accurate but slower. Range 25-100 inclusive'))
+                .addBooleanOption(option =>
+                    option.setName('exclude-bot-messages')
+                        .setDescription(`If bot messages should be excluded in the message collection. Default is ${defaultExcludeBotMessages.rememberPast}`)))
+
+        // remember recall
+        .addSubcommand(subcommand =>
+            subcommand.setName('recall')
+                .setDescription('Creates a JSON of all the saved message'))
+
+        // remember clear
+        .addSubcommand(subcommand =>
+            subcommand.setName('clear-messages')
+                .setDescription('Clear all messages currently saved in remembrance'))
+
+        // remember number
+        .addSubcommand(subcommand =>
+            subcommand.setName('number')
+                .setDescription('Saves the last x messages from the current channel. Has an option to save from a specific channel.')
+                .addNumberOption(option =>
+                    option.setName('number-of-messages')
+                        .setDescription('The number of messages to save. Min 1, Max 1000.')
+                        .setRequired(true))
+                .addChannelOption(option => option
+                    .setName('channel')
+                    .setDescription('text channel')
+                    .addChannelTypes(ChannelType.GuildText))
+                .addBooleanOption(option =>
+                    option.setName('exclude-bot-messages')
+                        .setDescription(`If bot messages should be excluded in the message collection. Default is ${defaultExcludeBotMessages.rememberNumber}`)))
+
+        // remember range
+        .addSubcommand(subcommand =>
+            subcommand.setName('range')
+                .setDescription('Remember all messages between two specific messages (inclusively)')
+                .addStringOption(option =>
+                    option.setName('start-message-id')
+                        .setDescription("The first message's id")
+                        .setRequired(true))
+                .addStringOption(option =>
+                    option.setName('end-message-id')
+                        .setDescription("the second message's id")
+                        .setRequired(true))
+                .addChannelOption(option => option
+                    .setName('channel')
+                    .setDescription('text channel')
+                    .addChannelTypes(ChannelType.GuildText))
+                .addBooleanOption(option =>
+                    option.setName('exclude-bot-messages')
+                        .setDescription(`If bot messages should be excluded in the message collection. Default is ${defaultExcludeBotMessages.rememberRangeGrab}`)))
+        .addSubcommand(subcommand =>
+            subcommand.setName('start-remembering')
+                .setDescription('Start remembering messages in a specific channel')
+                .addChannelOption(option => option
+                    .setName('channel')
+                    .setDescription('text channel')
+                    .addChannelTypes(ChannelType.GuildText))
+                .addBooleanOption(option =>
+                    option.setName('exclude-bot-messages')
+                        .setDescription(`If bot messages should be excluded in the message collection. Default is ${defaultExcludeBotMessages.startRemember}`)))
+
+        .addSubcommand(subcommand =>
+            subcommand.setName('stop-remembering')
+                .setDescription('Stop remembering messages in a specific channel')),
+
+
+    options:
+    {
+        devOnly:  false,
+        testOnly: false,
+        deleted:  false,
+    },
+
+
+    // logic, 
+    async execute(client, interaction) {
+
+
+        const action = {
+            'message':           () => rememberMessage(interaction),
+            'past':              () => rememberPastMessages(client, interaction),
+            'recall':            () => rememberRecall(interaction),
+            'clear-messages':    () => rememberClear(interaction),
+            'number':            () => rememberNumberMessages(client, interaction),
+            'range':             () => rememberRange(interaction),
+            'start-remembering': () => startRemember(client, interaction),
+            'stop-remembering':  () => stopRemember(client, interaction)
+        };
+
+        try {
+
+            // get the used subcommand
+            const subcommand = interaction.options.getSubcommand();
+
+            action[subcommand]();
+        }
+        catch (error) {
+            await interaction.editReply({
+                content:   `Something went wrong. ${error}`,
+                ephemeral: false,
+            });
+        }
+    }
 };

@@ -26,7 +26,8 @@ module.exports = client =>{
 
                 try {
                     await eventFunction(client, arg);
-                } catch (error) {
+                }
+                catch (error) {
                     console.log(error);
                 }
             }

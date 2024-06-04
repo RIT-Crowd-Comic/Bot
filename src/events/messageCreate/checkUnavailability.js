@@ -9,7 +9,8 @@ module.exports = async (client, message) => {
         }
 
         client.channels.cache.get(availabilityChannel.id).send(message.content);
-    } catch (error) {
+    }
+    catch (error) {
 
         // ! might want to make it so this is sent to a channel, but it's not guaranteed the availability channel was set up correctly
         console.log(error);
