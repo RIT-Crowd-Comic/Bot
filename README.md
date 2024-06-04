@@ -218,7 +218,7 @@ Check out  `./commands/example/exampleCommand.js` for an example.
 #### How to create a subcommand <a name="how-to-create-a-subcommand"></a>
 1. Make a command following the above instructions. Once again look at `/commands/example/exampleCommand.js`
 
-3. Add a subcommand via `.addSubCommand`.  `subCommands` and options such as `addStringOption` are mutually exclusive. You cannot have both on a main command. Subcommands can still have options. Set up a name, description and options for each subcommand created.
+3. Add a subcommand via `.addSubCommand`. Slash commands with subcommands are not allowed to have options, but subcommands can still have options. Set up a name, description and options for each subcommand created.
 	```js
 	 .addSubcommand(subcommand =>
         subcommand.setName('subcommand')
