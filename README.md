@@ -39,37 +39,6 @@
       - [range ](#range-)
       - [start-remembering ](#start-remembering-)
       - [stop-remembering ](#stop-remembering-)
-
-3. [Command Documentation](#commands)
-
-- [/help](#help)
-
-- [/help-remember](#help-remember)
-
-- [/check-in-interface](#check-in-interface)
-
-- [/schedule-check-in](#schedule-check-in)
-
-- [/remember subcommands](#remember-subcommands)
-
-- [message](#message)
-
-- [clear-messages](#clear-messages)
-
-- [past](#past)
-
-- [recall](#recall)
-
-- [number](#number)
-
-- [range](#range)
-
-- [start-remembering](#start-remembering)
-
-- [stop-remembering](#stop-remembering)
-
-  
-
 ## Introduction <a name="introduction"></a>
 
 ### Enable Developer Mode
