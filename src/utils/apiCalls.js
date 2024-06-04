@@ -73,7 +73,7 @@ const getMessageObject = async (channelId, messageId) =>
 // if {addFirstMessage} is true, the message with the id of {afterId} will be added (does not count towards limit)
 const getMessagesAfterId = async (channelId, limit, afterId, addFirstMessage = false) =>
 {
-    const messages = await getAPICall(`${getBaseUrl()}/channels/${channelId}/messages?limit=${limit}&after=${afterId}`);
+    const messages = await getAPICall(`${baseUrl}/channels/${channelId}/messages?limit=${limit}&after=${afterId}`);
     if (addFirstMessage)
     {
         const firstMessage = await getMessageObject(channelId, afterId);

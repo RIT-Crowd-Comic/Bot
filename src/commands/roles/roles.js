@@ -3,6 +3,42 @@ const path = require('path');
 const rolesUtils = require('../../utils/roles');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
+
+const addRole = async (interaction) =>
+{
+    try
+    {
+
+        // if the user wasn't given, assume the user is the person calling the command
+        const user = interaction.options.getUser('user') ?? interaction.member.user;
+        const response = await rolesUtils.addUnavailableRole(user);
+        const content = response.status === 'Success' ? 'Success' : response.description;
+        interaction.editReply({ content: content });
+    }
+
+    catch (error)
+    {
+        interaction.editReply({ content: `${error}` });
+    }
+};
+
+const removeRole = async (interaction) =>
+{
+    try
+    {
+
+        // if a user wasn't given, assume it was the person who ran the command
+        const user = interaction.options.getUser('user') ?? interaction.member.user;
+        const response = await rolesUtils.removeUnavailableRole(user);
+        const content = response.status === 'Success' ? 'Success' : response.description;
+        interaction.editReply({ content: content });
+    }
+    catch (error)
+    {
+        interaction.editReply({ content: `${error}` });
+    }
+};
+
 // Shows buttons for roles on command
 // NOTE the bot has to have a higher role than others to properly assign roles
 module.exports = {
@@ -56,40 +92,5 @@ module.exports = {
                 ephemeral: false,
             });
         }
-    }
-};
-
-const addRole = async (interaction) =>
-{
-    try
-    {
-
-        // if the user wasn't given, assume the user is the person calling the command
-        const user = interaction.options.getUser('user') ?? interaction.member.user;
-        const response = await rolesUtils.addUnavailableRole(user);
-        const content = response.status === 'Success' ? 'Success' : response.description;
-        interaction.editReply({ content: content });
-    }
-
-    catch (error)
-    {
-        interaction.editReply({ content: `${error}` });
-    }
-};
-
-const removeRole = async (interaction) =>
-{
-    try
-    {
-
-        // if a user wasn't given, assume it was the person who ran the command
-        const user = interaction.options.getUser('user') ?? interaction.member.user;
-        const response = await rolesUtils.removeUnavailableRole(user);
-        const content = response.status === 'Success' ? 'Success' : response.description;
-        interaction.editReply({ content: content });
-    }
-    catch (error)
-    {
-        interaction.editReply({ content: `${error}` });
     }
 };
