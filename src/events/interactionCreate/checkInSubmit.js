@@ -1,14 +1,9 @@
 /**
- * Author: Arthur Powers
- * Date: 5/22/2024
- * 
  * 
  * Handle when a user submits the check in modal survey. 
  * 
- * TODO: store the result in a database
  */
 
-const { CommandInteraction, Client } = require('discord.js');
 
 let formResult = {};
 

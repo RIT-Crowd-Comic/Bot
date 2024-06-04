@@ -7,7 +7,7 @@
  */
 
 const {
-    ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, Client
+    ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder
 } = require('discord.js');
 
 

@@ -1,7 +1,4 @@
 const { SlashCommandBuilder, } = require('discord.js');
-const {
-    getServerUser, addRoleAPI, getRoles, removeRoleAPI
-} = require('../../utils/apiCalls');
 const path = require('path');
 const rolesUtils = require('../../utils/roles');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });

@@ -1,4 +1,4 @@
-const { ApplicationCommandOptionType, ChannelType, SlashCommandBuilder } = require('discord.js');
+const { ChannelType, SlashCommandBuilder } = require('discord.js');
 const { getAvailabilityChannel, setAvailabilityChannel } = require('../../utils/availability');
 module.exports = {
     data: new SlashCommandBuilder()

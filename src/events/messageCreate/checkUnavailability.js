@@ -1,5 +1,4 @@
 const { getAvailabilityChannel } = require('../../utils/availability');
-const { getChannelObject } = require('../../utils/apiCalls');
 module.exports = async (client, message) =>
 {
     try

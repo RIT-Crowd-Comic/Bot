@@ -1,7 +1,5 @@
 
-const {
-    SlashCommandBuilder, PermissionFlagsBits, ApplicationCommandOptionType, Client, CommandInteraction, ApplicationCommandOptionWithChoicesMixin
-} = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
 const weekday = require('dayjs/plugin/weekday');
@@ -73,7 +71,7 @@ module.exports = {
 
             const rawDays = interaction.options.get('days')?.value;
             const rawTime = interaction.options.get('time')?.value;
-            let parsedDays = [];
+            let parsedDays = []; // eslint-disable-line
             const validDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
             const abbreviations = {
                 'm':  'monday',
@@ -152,9 +150,6 @@ module.exports = {
                 const dayIndex = validDays.indexOf(day); // dayjs() uses index
                 return validDays[firstScheduleDay.day(dayIndex).utc().day()];
             });
-
-            const formattedTimeMin = timeMinutes.toString().length === 1 ? `0${timeMinutes}` : timeMinutes;
-
 
             // update the database
 
