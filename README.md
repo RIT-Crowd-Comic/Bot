@@ -214,7 +214,7 @@ Check out  `./commands/example/exampleCommand.js` for an example.
 2. Add a new file to that folder, name is `yourCommandNameHere.js`
 3.  The command file has to export a `command` object. There a at least 3 main components of a command. `data`, `options` and `execute`.
 4.  `data` represents the   data of the command, specifically the `slashCommandBuilder`. It contains the name, description, options and permissions of the command. 
-	```
+	```js
 	data:  new  SlashCommandBuilder()
 	.setName('example')
 	.setDescription('test')
@@ -224,7 +224,7 @@ Check out  `./commands/example/exampleCommand.js` for an example.
 	),
 5. `options` contains options for the command. `deleted` specifies to not place this command on the server. `devOnly` specifies developers are only allowed to run the command. `testOnly` specifies the command can only be run in a specific test server.  **Note:** `options` is optional.
 
-	```	
+	```js	
 	options:
 	{
 		deleted:  false,
@@ -233,7 +233,7 @@ Check out  `./commands/example/exampleCommand.js` for an example.
 	},
 	```
 6. `execute` contains the callback function that is run when the command is called. Place the commands execution logic in here. A good pattern to follow is to make a helper function for the command logic, then inside the execute, grab the needed data and call the helper. 
-	```
+	```js
 	async execute(client, interaction){
 		interaction.reply('hello');
 		//or
@@ -247,7 +247,7 @@ Check out  `./commands/example/exampleCommand.js` for an example.
 1. Make a command following the above instructions. Once again look at `/commands/example/exampleCommand.js`
 
 3. Add a subcommand via `.addSubCommand`.  `subCommands` and options such as `addStringOption` are mutually exclusive. You cannot have both on a main command. Subcommands can still have options. Set up a name, description and options for each subcommand created.
-	```
+	```js
 	 .addSubcommand(subcommand =>
         subcommand.setName('subcommand')
             .setDescription('testing')
