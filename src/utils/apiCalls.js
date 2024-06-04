@@ -13,9 +13,9 @@ const getAPICall = async (url, body = {
         if (response.status != 200) {
             console.log(`There was an error: ${response.status} ${response.statusText}`);
             return undefined;
-        } 
+        }
         return response.json();
-        
+
     });
 };
 
@@ -33,7 +33,7 @@ const putAPICall = async (url, body = {
             console.log(`There was an error: ${response.status} ${response.statusText}`);
             return { status: 'Fail', description: `${response.status} ${response.statusText}` }
         }
-        
+
         return { status: 'Success' }
     });
 };
@@ -52,7 +52,7 @@ const deleteAPICall = async (url, body = {
             console.log(`There was an error: ${response.status} ${response.statusText}`);
             return { status: 'Fail', description: `${response.status} ${response.statusText}` }
         }
-        
+
         return { status: 'Success' }
     });
 }
@@ -94,10 +94,10 @@ const getServerChannels = (serverId) => {
 }
 
 //returns the id of the message at the final index
-const getNumberMessages = async(channel, numberToSave, id) =>{
+const getNumberMessages = async (channel, numberToSave, id) => {
     return id
-        ? channel.messages.fetch({cache: false, limit: numberToSave, before: id})
-        : channel.messages.fetch({cache: false, limit: numberToSave});
+        ? channel.messages.fetch({ cache: false, limit: numberToSave, before: id })
+        : channel.messages.fetch({ cache: false, limit: numberToSave });
 };
 
 const getRoles = async (serverId) => {
