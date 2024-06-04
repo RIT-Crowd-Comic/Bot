@@ -19,6 +19,7 @@
       - [How to create a command](#how-to-create-a-command)
       - [How to create a subcommand](#how-to-create-a-subcommand)
       - [How to add an event](#how-to-add-an-event)
+      - [Unit Tests]
   - [Command Documentation](#command-documentation)
     - [/help](#help)
     - [/help-remember](#help-remember)
@@ -95,7 +96,7 @@ It's highly recommended to make your own version of the bot for testing purposes
 
 This project uses Node.js with the following dependencies and versions:
 
-  
+ **dependencies**
 
 ```
 
@@ -111,6 +112,14 @@ This project uses Node.js with the following dependencies and versions:
 
 ```
 
+**devDependencies**
+```
+    "@eslint/js": "^9.3.0",
+    "@stylistic/eslint-plugin-js": "^2.1.0",
+    "eslint": "^9.3.0",
+    "globals": "^15.3.0",
+    "jest": "^29.7.0"
+```
   
 
 #### .env Set Up <a name="env-set-up"></a>
