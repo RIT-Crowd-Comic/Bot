@@ -120,7 +120,7 @@ module.exports = {
         )
         .addSubcommand(subcommand =>
             subcommand.setName('start-remembering')
-                .setDescription('Start remembering messages in a specific channels')
+                .setDescription('Start remembering messages in a specific channel')
                 .addChannelOption(option => option
                     .setName('channel')
                     .setDescription('text channel')
@@ -134,7 +134,7 @@ module.exports = {
 
         .addSubcommand(subcommand =>
             subcommand.setName('stop-remembering')
-                .setDescription('Stop remembering messages in a specific channels')
+                .setDescription('Stop remembering messages in a specific channel')
         ),
 
 
