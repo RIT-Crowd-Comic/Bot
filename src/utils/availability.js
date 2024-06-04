@@ -7,15 +7,15 @@ let availabilityChannel = undefined;
 const getAvailabilityChannel = async () => { return availabilityChannel; };
 const setAvailabilityChannel = (channel) => { availabilityChannel = channel; };
 
-const saveUnavailability = async (userId, userTag, unavail, path) => {
+const saveUnavailability = (userId, userTag, unavail, path) => {
     //Get saved data from file and turn into array with objects
     let fileContent = null;
     fileContent = loadAvailability(path);
     
-    const savedIndex = getUserIndex(fileContet.data, userId);
+    const userIndex = getUserIndex(fileContent.data, userId);
 
-    if(savedIndex!=-1)
-        fileContent.data[savedIndex].unavailable.push(unavail);
+    if(userIndex!=-1)
+        fileContent.data[userIndex].unavailable.push(unavail);
     else{
         fileContent.data.push(newAvailabilityEntry(userId, userTag));
         fileContent.data[fileContent.data.length-1].unavailable.push(unavail);
@@ -24,6 +24,23 @@ const saveUnavailability = async (userId, userTag, unavail, path) => {
     //Send data back to file
     fs.writeFile(path, JSON.stringify(fileContent, null, 2), (err) => err && console.error(err));
 };
+
+const saveAvailability = (userId, userTag, avail, path) => {
+    let fileContent = null;
+    fileContent = loadAvailability(path);
+
+    const userIndex = getUserIndex(fileContent.data, userId);
+
+    if(userIndex!=-1)
+        fileContent.data[userIndex].available = avail;
+    else{
+        fileContent.data.push(newAvailabilityEntry(userId, userTag));
+        fileContent.data.availabile = avail;
+    }
+
+    //Send data back to file
+    fs.writeFile(path, JSON.stringify(fileContent, null, 2), (err) => err && console.error(err));
+}
 
 const newAvailabilityEntry = (userId, userTag) => {
     return {
@@ -41,7 +58,7 @@ const newAvailabilityEntry = (userId, userTag) => {
 
 const loadAvailability = (path) => {
     let data = fs.readFileSync(path, {encoding: 'utf8'});
-    data = JSON.parse(fileContent);
+    data = JSON.parse(data);
     return data;
 }
 
@@ -60,6 +77,7 @@ module.exports = {
     getAvailabilityChannel,
     setAvailabilityChannel,
     saveUnavailability,
+    saveAvailability,
     newAvailabilityEntry,
     loadAvailability,
     getUserIndex
