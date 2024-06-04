@@ -1,8 +1,10 @@
-const { SlashCommandBuilder, ActionRowBuilder, ButtonStyle, ButtonBuilder} = require('discord.js');
+const {
+    SlashCommandBuilder, ActionRowBuilder, ButtonStyle, ButtonBuilder
+} = require('discord.js');
 const { roles } = require('../../../config.json');
 
-//Shows buttons for roles on command
-//NOTE the bot has to have a higher role than others to properly assign roles
+// Shows buttons for roles on command
+// NOTE the bot has to have a higher role than others to properly assign roles
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('roles')
@@ -10,34 +12,38 @@ module.exports = {
 
     options:
     {
-        devOnly: true,
+        devOnly:  true,
         testOnly: false,
-        deleted: false,
+        deleted:  false,
     },
 
-    //logic, 
-    async execute(_, interaction) {
+    // logic, 
+    async execute(_, interaction)
+    {
         await interaction.deferReply();
         await interaction.editReply(`Sending Roles...`);
-        try {
+        try
+        {
             const channel = await interaction.channel;
-            if(!channel) return;
-    
+            if (!channel) return;
+
             const row = new ActionRowBuilder();
-    
-            roles.forEach((role) =>{
-                row.components.push(
-                    new ButtonBuilder().setCustomId(role.id).setLabel(role.label).setStyle(ButtonStyle.Primary)
-                );
+
+            roles.forEach((role) =>
+            {
+                row.components.push(new ButtonBuilder().setCustomId(role.id).setLabel(role.label)
+                    .setStyle(ButtonStyle.Primary));
             });
-    
+
             await channel.send({
-                content: 'Claim a role below.',
+                content:    'Claim a role below.',
                 components: [row],
             });
-            
-    
-        } catch(error) {
+
+
+        }
+        catch (error)
+        {
             await interaction.editReply(`Something went wrong ${error}`);
         }
     }

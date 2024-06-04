@@ -4,7 +4,9 @@
  * Prompt the user to schedule a time for the bot to send a quick checkin survey.
  */
 
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, CommandInteraction, Client } = require('discord.js');
+const {
+    ActionRowBuilder, ButtonBuilder, ButtonStyle, CommandInteraction, Client
+} = require('discord.js');
 
 /**
  * 
@@ -12,12 +14,14 @@ const { ActionRowBuilder, ButtonBuilder, ButtonStyle, CommandInteraction, Client
  * @param {CommandInteraction} interaction 
  * @returns 
  */
-module.exports = async (client, interaction) => {
+module.exports = async (client, interaction) =>
+{
 
 
 
     // only deal with the check in button, ignore all other button presses
-    if (interaction.customId?.startsWith('check-in-btn')) {
+    if (interaction.customId?.startsWith('check-in-btn'))
+    {
         await interaction.deferReply({ ephemeral: true });
         const userId = interaction.user.id;
         let reply = [
@@ -48,16 +52,17 @@ module.exports = async (client, interaction) => {
 
         actions.addComponents(yesBtn, laterBtn, notNowBtn);
 
-        try {
+        try
+        {
             await interaction.editReply({
-                content: reply,
+                content:    reply,
                 components: [actions]
             });
 
-        } catch (error) {
-            await interaction.editReply({
-                content: 'could not process command'
-            });
+        }
+        catch (error)
+        {
+            await interaction.editReply({ content: 'could not process command' });
         }
     }
 };

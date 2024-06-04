@@ -18,7 +18,8 @@ let formResult = {};
  * @param {CommandInteraction} interaction 
  * @returns 
  */
-module.exports = async (client, interaction) => {
+module.exports = async (client, interaction) =>
+{
 
     // only handle when the user submits the check in form
     if (!interaction?.isModalSubmit()) return;
@@ -27,14 +28,17 @@ module.exports = async (client, interaction) => {
     const userId = interaction?.user?.id;
     const userTag = interaction?.user?.tag;
 
-    await interaction.deferReply({ephemeral: true});
+    await interaction.deferReply({ ephemeral: true });
 
-    if (userId === undefined || userTag === undefined) {
+    if (userId === undefined || userTag === undefined)
+    {
         await interaction.editReply(`Could not process form data`);
         return;
     }
 
-    try {
+    try
+    {
+
         // TODO: save to a database and provide feedback
         const roseResponse = interaction.fields?.getTextInputValue('check-in-form-roses') ?? '';
         const thornResponse = interaction.fields?.getTextInputValue('check-in-form-thorns') ?? '';
@@ -42,8 +46,8 @@ module.exports = async (client, interaction) => {
         formResult = {
             roseResponse,
             thornResponse,
-            id: userId,
-            tag: userTag,
+            id:         userId,
+            tag:        userTag,
             submitDate: interaction.createdAt
         };
 
@@ -58,14 +62,13 @@ module.exports = async (client, interaction) => {
         ].join('\n');
 
         // user finished form, give them words of encouragement
-        await interaction.editReply(
-            {
-                ephemeral: true,
-                content: reply
-            }
-        );
+        await interaction.editReply({
+            ephemeral: true,
+            content:   reply
+        });
     }
-    catch (error) {
+    catch (error)
+    {
         console.log(error);
     }
 };
