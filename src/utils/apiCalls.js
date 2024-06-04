@@ -66,7 +66,7 @@ const getMessageObject = async (channelId, messageId) => {
 // get {limit} (max 100) messages in channel with {channelId} after messages with {afterId}
 // if {addFirstMessage} is true, the message with the id of {afterId} will be added (does not count towards limit)
 const getMessagesAfterId = async (channelId, limit, afterId, addFirstMessage = false) => {
-    const messages = await getAPICall(`${getBaseUrl()}/channels/${channelId}/messages?limit=${limit}&after=${afterId}`);
+    const messages = await getAPICall(`${baseUrl}/channels/${channelId}/messages?limit=${limit}&after=${afterId}`);
     if (addFirstMessage) {
         const firstMessage = await getMessageObject(channelId, afterId);
         if (!firstMessage) {
@@ -81,16 +81,16 @@ const getMessagesAfterId = async (channelId, limit, afterId, addFirstMessage = f
 
 // returns an array of servers this bot is in
 const getServers = () => {
-    return getAPICall(`${getBaseUrl()}/users/@me/guilds`);
+    return getAPICall(`${baseUrl}/users/@me/guilds`);
 };
 
 // returns a server object given the id 
 const getServer = serverId => {
-    return getAPICall(`${getBaseUrl()}/guilds/${serverId}`);
+    return getAPICall(`${baseUrl}/guilds/${serverId}`);
 };
 
 const getServerChannels = serverId => {
-    return getAPICall(`${getBaseUrl()}/guilds/${serverId}/channels`);
+    return getAPICall(`${baseUrl}/guilds/${serverId}/channels`);
 };
 
 // returns the id of the message at the final index
