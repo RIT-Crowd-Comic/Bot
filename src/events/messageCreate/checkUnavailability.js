@@ -77,7 +77,6 @@ module.exports = async (client, message) =>
 {
     try
     {
-
         const availabilityChannel = await getAvailabilityChannel();
 
         // only send a message if it's not from a bot and it's from the available channel
@@ -101,8 +100,12 @@ module.exports = async (client, message) =>
         const output = response.choices[0].message;
         console.log(output);
 
+        if (!output.tool_calls)
+        {
+            message.reply('Unable to parse message');
+            return;
+        }
         const calledFunction = output.tool_calls[0].function;
-        console.log(calledFunction.name);
 
         const action = {
             'rememberUnavailability': () => rememberUnavailability(message, JSON.parse(calledFunction.arguments)['from'], JSON.parse(calledFunction.arguments)['to'], JSON.parse(calledFunction.arguments)['reason']),
@@ -110,18 +113,8 @@ module.exports = async (client, message) =>
             'unableToParse':          () => unableToParse(message),
         };
 
-
         action[calledFunction.name]();
-
     }
-    catch (error)
-    {
-        console.log(error);
-    }
+    catch (error) { console.log(error); }
 };
 
-/* {
-  from: <etc>,
-  to: <etc>,
-  reason: 'fourth'
-}*/
