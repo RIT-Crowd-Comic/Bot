@@ -88,7 +88,7 @@ const tools = [
         'type':     'function',
         'function': {
             'name':        'unableToParse',
-            'description': 'If the user inputs data that cannot be interpreted',
+            'description': 'If the user inputs content that cannot be used in the other functions.',
             'parameters':  {},
         },
     },
@@ -126,7 +126,7 @@ module.exports = async (client, message) =>
                 }
             ],
             tools:       tools,
-            tool_choice: 'auto',
+            tool_choice: 'required',
         }).catch((error) => console.log('OpenAI Error ' + error));
 
         const output = response.choices[0].message;
