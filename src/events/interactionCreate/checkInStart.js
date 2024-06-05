@@ -5,13 +5,11 @@
  * 
  * Handle when a user interacts with the check in notification
  */
-const dayjs = require('dayjs');
-const utc = require('dayjs/plugin/utc');
 const {
     ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, Client
 } = require('discord.js');
 const { sendCheckInReminder } = require('../../utils/schedule');
-dayjs.extend(utc);
+
 
 /**
  * 
@@ -63,7 +61,8 @@ module.exports = async (client, interaction) => {
         try {
 
             await interaction.message.delete();// deletes origional reminder message
-        } catch (error) {
+        }
+        catch (error) {
             await interaction.reply({
                 ephemeral: true,
                 content:   `*Issue running command*`
@@ -83,5 +82,6 @@ module.exports = async (client, interaction) => {
             content:   `You have skipped today's check-in. Make sure to take short breaks and to drink plenty of water!`
         });
         interaction.message.delete();
-    } else return; // user didn't interact with either of these buttons, do nothing
+    }
+    else return; // user didn't interact with either of these buttons, do nothing
 };

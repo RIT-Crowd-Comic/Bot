@@ -1,14 +1,9 @@
 /**
- * Author: Arthur Powers
- * Date: 5/22/2024
- * 
  * 
  * Handle when a user submits the check in modal survey. 
  * 
- * TODO: store the result in a database
  */
 
-const { CommandInteraction, Client } = require('discord.js');
 
 let formResult = {};
 
@@ -27,7 +22,7 @@ module.exports = async (client, interaction) => {
     const userId = interaction?.user?.id;
     const userTag = interaction?.user?.tag;
 
-    await interaction.deferReply({ephemeral: true});
+    await interaction.deferReply({ ephemeral: true });
 
     if (userId === undefined || userTag === undefined) {
         await interaction.editReply(`Could not process form data`);
@@ -35,6 +30,7 @@ module.exports = async (client, interaction) => {
     }
 
     try {
+
         // TODO: save to a database and provide feedback
         const roseResponse = interaction.fields?.getTextInputValue('check-in-form-roses') ?? '';
         const thornResponse = interaction.fields?.getTextInputValue('check-in-form-thorns') ?? '';
@@ -42,13 +38,14 @@ module.exports = async (client, interaction) => {
         formResult = {
             roseResponse,
             thornResponse,
-            id: userId,
-            tag: userTag,
+            id:         userId,
+            tag:        userTag,
             submitDate: interaction.createdAt
         };
 
         let reply = [
             'Thanks for responding! Make sure to take short breaks and to drink plenty of water!',
+
             // '',
             // '',
             // '[debug]',
@@ -58,12 +55,10 @@ module.exports = async (client, interaction) => {
         ].join('\n');
 
         // user finished form, give them words of encouragement
-        await interaction.editReply(
-            {
-                ephemeral: true,
-                content: reply
-            }
-        );
+        await interaction.editReply({
+            ephemeral: true,
+            content:   reply
+        });
     }
     catch (error) {
         console.log(error);

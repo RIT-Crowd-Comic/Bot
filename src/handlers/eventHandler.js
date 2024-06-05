@@ -1,7 +1,7 @@
 const path = require('path');
 const getAllFiles = require('../utils/getAllFiles');
 
-module.exports = (client) =>{
+module.exports = client =>{
 
     // get all the folders with events in them
     // move up a spot then check events, only want the folders
@@ -20,14 +20,15 @@ module.exports = (client) =>{
         const eventName = eventFolder.replace(/\\/g, '/').split('/').pop(); // get the name using regex
 
         // get functions out of the files and call them
-        client.on(eventName, async (arg) =>{
+        client.on(eventName, async arg =>{
             for (const eventFile of eventFiles) {
                 const eventFunction = require(eventFile);
 
                 try {
                     if (typeof eventFunction === 'function')
                         await eventFunction(client, arg);
-                } catch (error) {
+                }
+                catch (error) {
                     console.log(error);
                 }
             }

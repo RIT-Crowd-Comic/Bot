@@ -16,6 +16,7 @@ module.exports = {
             option.setName('days')
                 .setDescription('The name of days can be abbreviated as "m t w (th or h) f sa su". Ex: "Monday w f" or "daily"')
 
+
             // choices: [
             //     { name: "monday", value: "monday" },
             //     { name: "tuesday", value: "tuesday" },
@@ -24,12 +25,13 @@ module.exports = {
             //     { name: "friday", value: "friday" },
             //     { name: "saturday", value: "saturday" },
             //     { name: "sunday", value: "sunday" }],
-                .setRequired(true),)
-        .addStringOption(option =>
-            option.setName('time')
-                .setDescription('Time of day. Ex: 12:30 am')
-                .setRequired(true),),
+                .setRequired(true)
+                .setRequired(true)
 
+                .addStringOption(option =>{ option.setName('time'); })
+                .setDescription('Time of day. Ex: 12:30 am')
+                .setRequired(true)
+                .setRequired(true)),
     options:
     {
         devOnly:  false,
@@ -91,13 +93,15 @@ module.exports = {
                 ephemeral: true,
                 content:   reply
             });
-        } catch (error) {
+        }
+        catch (error) {
             if (error.name === 'ScheduleError') {
                 await interaction.editReply({
                     ephemeral: true,
                     content:   error.message
                 });
-            } else {
+            }
+            else {
                 console.log(error);
                 await interaction.editReply({
                     ephemeral: true,

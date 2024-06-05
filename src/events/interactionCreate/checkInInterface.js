@@ -4,7 +4,7 @@
  * Prompt the user to schedule a time for the bot to send a quick checkin survey.
  */
 
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, CommandInteraction, Client } = require('discord.js');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 
 /**
  * 
@@ -50,14 +50,13 @@ module.exports = async (client, interaction) => {
 
         try {
             await interaction.editReply({
-                content: reply,
+                content:    reply,
                 components: [actions]
             });
 
-        } catch (error) {
-            await interaction.editReply({
-                content: 'could not process command'
-            });
+        }
+        catch {
+            await interaction.editReply({ content: 'could not process command' });
         }
     }
 };
