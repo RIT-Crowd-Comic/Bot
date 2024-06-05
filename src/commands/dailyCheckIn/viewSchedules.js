@@ -33,7 +33,7 @@ module.exports = {
         }
 
         try {
-            if (scheduleCheckIn.fakeScheduleEntry[userId] === undefined) {
+            if (!scheduleCheckIn.fakeScheduleEntry[userId] || scheduleCheckIn.fakeScheduleEntry[userId]?.schedules?.length === 0) {
                 await interaction.editReply({ content: '*You have no schedules! Create one with `/schedule-check-in`*' });
                 return;
             }
