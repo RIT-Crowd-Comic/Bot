@@ -3,12 +3,12 @@ const { openAiClient } = require('../../openAi/init');
 
 const rememberUnavailability = (message, from, to, reason = 'a mystery event') =>
 {
-    message.reply({ content: `${message.author.globalName} is unavailable from ${to} to ${from} for ${reason}` });
+    message.reply({ content: `${message.author.globalName} is unavailable from ${from} to ${to} for ${reason}` });
 };
 
 const rememberAvailability = (message, from, to) =>
 {
-    message.reply({ content: `${message.author.globalName} is available from ${to} to ${from}` });
+    message.reply({ content: `${message.author.globalName} is available from ${from} to ${to}` });
 };
 
 const unableToParse = (message) =>
