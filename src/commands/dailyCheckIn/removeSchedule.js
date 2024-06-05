@@ -66,8 +66,6 @@ module.exports = {
             row1.addComponents(scheduleDropdown);
             row2.addComponents(removeButton);
 
-            getQueue();
-
             await interaction.editReply({
                 content:    `Select a schedule to remove`,
                 components: [row1, row2]

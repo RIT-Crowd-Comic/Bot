@@ -13,7 +13,6 @@ dayjs.extend(localizedFormat);
 // const scheduleCheckIn = require('../commands/dailyCheckIn/scheduleCheckIn');
 const fakeScheduleEntry = {};
 const queue = [];
-const structuredTimes = {};
 const validDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 const abbreviations = {
     'm':  'monday',
@@ -184,9 +183,9 @@ const parseTime = (time) => {
 /**
  * sends DM to user with check-in reminder interface
  * @param {*} client 
- * @param {*} id user id
+ * @param {string} id user id
  */
-const sendMessage = async (client, id)=>{
+const sendCheckInReminder = async (client, id)=>{
 
     let user = await client.users.cache.get(id);
     if (!user) { // checks if user is already in cache
@@ -230,79 +229,63 @@ const sendMessage = async (client, id)=>{
 };
 
 /**
- * delete the past 100 messages in a given channel
- * @param {*} client 
- * @param {*} interaction 
+ * creates a reminder object to add to the que then inserts it in the correct chronological placement
+ * @param {array} days array of schedule days
+ * @param {array} hour utc reminder [hour,min]
+ * @param {string} id user id
+ * @param {bool} toRemove wheather or not you want to remove (default=false)
  */
-const deleteAllDMs = async (client, interaction)=>{
-    let msgs = [];
-    let chan = await client.channels.fetch(interaction.channelId).then(cha=>{
-        cha.messages.fetch({ limit: 100 }).then(messages => {
-            console.log(`Received ${messages.size} messages`);
+const updateQueue = (days, utcTime, id, toRemove = false)=>{
+    const hour = utcTime[0];
+    const min = utcTime[1];
 
-            // Iterate through the messages here with the variable "messages".
-            messages.forEach(message => msgs.push(message));
-            for (let m of msgs) {
-                m.delete();
+    const reminder = {
+        'id':   id,
+        'hour': hour,
+        'min':  min
+    };
+
+    // if affects today's queue
+    if (days.includes(checkCurrentDay())) {
+        let index = queue.indexOf(reminder);
+        if (index && toRemove) { // if it exists in the queue and we want to remove
+            queue.splice(index, 1);
+        } else if (index == -1 && queue.length == 0) { // if queue is empty
+            queue.push(reminder);
+        } else { // inserting into queue
+            for (let t = 0; t < queue.length; t++) {
+                const time = queue[t];
+                const same = time.id == id && time.hour == hour && time.min == min;
+                if (hour <= time.hour && min <= time.min && !same) {
+                    queue.splice(t, 0, reminder);
+                    return;
+                } else if (t == queue.length - 1 && !same) {
+                    queue.push(reminder);
+                    return;
+                }
             }
-        });
-    });
+        }
+
+    }
 };
-
-
 
 /**
  * gets the current day's scheduled times & users
  * orders them chronologically in the queue[]
- * @param {*} day 
  */
-const getDayOrder = (day)=>{
-    let times = [];
+const getDayOrder = ()=>{
 
     /**
     * checks to see if users have a scheduled day today
-    * creates and adds a user object with the time to the times array
+    * creates and adds a reminder object with the time and user id to the queue using updateQueue()
     */
     for (let user in fakeScheduleEntry) {
         for (let schedule of fakeScheduleEntry[user].schedules) {
-            if (schedule.utcDays.includes(day)) {
-                times.push({
-                    id:   user,
-                    hour: schedule.utcTime[0],
-                    min:  schedule.utcTime[1]
-                });
-            }
+            updateQueue(schedule.utcDays, schedule.utcTime[0], schedule.utcTime[1], user);
+
         }
     }
 
-    /**
-     * runs through the times array and creates an object with unique times
-     * this orders them in chronological order in the structuredTimes object
-    */
-    for (let t of times) {
-        if (t.hour in structuredTimes) {
-            if (t.min in structuredTimes[t.hour]) {
-                structuredTimes[t.hour][t.min].push(t);
-            } else {
-                structuredTimes[t.hour][t.min] = [t];
-            }
-        } else {
-            structuredTimes[t.hour] = { [t.min]: [t] };
-        }
-    }
-
-    /**
-     * takes all of the values in structured times object 
-     * => adds it to the queue
-    */
-    for (let h in structuredTimes) {
-        for (let m in structuredTimes[h]) {
-            structuredTimes[h][m].forEach((reminder)=>{
-                queue.push(reminder);
-            });
-        }
-    }
-    console.log(queue);
 };
 
 
@@ -325,6 +308,8 @@ const getQueue = ()=>{
     getDayOrder(checkCurrentDay());
 };
 
+
+
 class ScheduleError extends Error {
     constructor(message) {
         super(message);
@@ -338,8 +323,9 @@ module.exports = {
     parseTime,
     mergeSchedules,
     displaySchedule,
-    sendMessage,
+    sendCheckInReminder,
     getQueue,
+    updateQueue,
     fakeScheduleEntry,
     queue,
     ScheduleError

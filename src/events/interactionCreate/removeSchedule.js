@@ -1,6 +1,6 @@
 
 // const checkIn = require('../../commands/dailyCheckIn/scheduleCheckIn');
-const { fakeScheduleEntry, displaySchedule } = require('../../utils/schedule');
+const { fakeScheduleEntry, displaySchedule, updateQueue } = require('../../utils/schedule');
 
 /**
  * 
@@ -48,6 +48,7 @@ module.exports = async (client, interaction) => {
             for (let i = schedules.length - 1; i >= 0; i--) {
                 if (schedules[i].remove) {
                     removedSchedules.push(displaySchedule(schedules[i]));
+                    updateQueue(schedules[i].utcDays, schedules[i].utcTime, userId, true);
                     schedules.splice(i, 1);
                 }
             }
