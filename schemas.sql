@@ -2,8 +2,8 @@
 -- keep track of all users (id, tag, name)
 
 CREATE TABLE users (
-    _id SERIAL PRIMARY KEY, 
-    user_id VARCHAR NOT NULL, 
+    _id SERIAL PRIMARY KEY,
+    user_id VARCHAR NOT NULL,
     user_tag VARCHAR NOT NULL,
     user_name VARCHAR NOT NULL
 );
@@ -29,7 +29,6 @@ CREATE TABLE checkin_schedules (
     local_time INT[2]
 );
 
-
 -- -
 -- -
 -- - I HAVE NOTHING FOR AVAILABILITY YET
@@ -42,4 +41,15 @@ CREATE TABLE unavailabe_schedules (
     from: VARCHAR,
     to: VARCHAR,
     reason: VARCHAR
-)
+);
+
+
+CREATE TABLE checkin_queue
+(
+    _id UUID PRIMARY KEY,
+    time_inserted TIMESTAMP,
+    payload JSON
+);
+
+CREATE INDEX checkin_time_inserted_id
+    ON checkin_queue (time_inserted ASC);
