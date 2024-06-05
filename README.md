@@ -34,9 +34,9 @@
       - [range](#range)
       - [start-remembering](#start-remembering)
       - [stop-remembering](#stop-remembering)
-  - [/role](#role)
-    - [add](#add)
-    - [remove](#remove)
+	- [/role](#role)
+		- [add](#add)
+		- [remove](#remove)
 ## Introduction <a name="introduction"></a>
 
 This is a discord bot that is used to help run the Crowd Comic team in their server. It allows many quality of life features such as checking in on users for the day to see how they are feeling overall, remembering meeting notes, and marking people as unavailable if they are on vacation.
@@ -405,7 +405,6 @@ Start remembering messages in a specific channel
 
 Stop remembering messages in a specific channel
 ### /role <a name="role"></a>
-Add/remove the unavailable role from a user
 
 #### add <a name="add"></a>
 Adds the unavailable role to a specific user
