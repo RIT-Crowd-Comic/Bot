@@ -5,63 +5,60 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { ScheduleError, parseDaysList } = require('../../utils/schedule');
 const dayjs = require('dayjs');
 const {
-    createAvailability, createUnavailability, saveUnavailability, saveAvailability, loadAvailability
+    createAvailability, createUnavailability, saveUnavailability, saveAvailability, loadAvailability,
+    getSUData, setUnavail
 } = require('../../utils/availability');
 const path = './src/savedAvailability.json';
 
 // Callbacks
 // set-unavailability
-const setUnavail = async (interaction) => {
-    try {
-        const userId = interaction?.user?.id;
-        const userTag = interaction?.user?.tag;
-
+const callSetUnavail = async (interaction) => {
+    // try {
         await interaction.deferReply({ ephemeral: true });
 
-        const dateFrom = interaction.options.get('date-from')?.value;
-        const dateTo = interaction.options.get('date-to')?.value;
-        let timeFrom = interaction.options.get('time-from')?.value;
-        let timeTo = interaction.options.get('time-to')?.value;
-        const reason = interaction.options.get('reason')?.value;
+        let reply = setUnavail(interaction?.user?.id,interaction?.user?.tag,interaction.options.get('date-from')?.value,interaction.options.get('date-to')?.value,
+        interaction.options.get('time-from')?.value,interaction.options.get('time-to')?.value,interaction.options.get('reason')?.value, path);
+        
+        await interaction.editReply({content: reply});
 
-        if (dateTo && !dateFrom)
-            throw new ScheduleError('Please select a start date.');
-        if (timeTo && !timeFrom)
-            throw new ScheduleError('Please select a start time.');
+        // if (dateTo && !dateFrom)
+        //     throw new ScheduleError('Please select a start date.');
+        // if (timeTo && !timeFrom)
+        //     throw new ScheduleError('Please select a start time.');
 
-        // Create a start and end dayjs obj (Default times to 0:00 if empty)
-        const startUnavail = dayjs(`2024 ${dateFrom} ${timeFrom ? timeFrom : '0:00'}`);
-        const endUnavail = dayjs(`2024 ${dateTo} ${timeTo ? timeTo : '23:59'}`);
+        // // Create a start and end dayjs obj (Default times to 0:00 if empty)
+        // const startUnavail = dayjs(`2024 ${dateFrom} ${timeFrom ? timeFrom : '0:00'}`);
+        // const endUnavail = dayjs(`2024 ${dateTo} ${timeTo ? timeTo : '23:59'}`);
 
-        const unavail = createUnavailability(startUnavail, endUnavail, reason);
+        // const unavail = createUnavailability(startUnavail, endUnavail, reason);
 
-        // Print data for now
-        let reply = [
-            '```',
-            JSON.stringify(unavail, undefined, 2),
-            '```',
-        ].join('\n');
+        // // Print data for now
+        // let toPrint = [
+        //     '```',
+        //     JSON.stringify(unavail, undefined, 2),
+        //     '```',
+        // ].join('\n');
 
-        await interaction.editReply({ content: reply });
+        // await interaction.editReply({ content: reply });
 
-        // Save data to file
-        saveUnavailability(userId, userTag, unavail, path);
-    }
-    catch (error) {
-        if (error.name === 'ScheduleError') {
-            await interaction.editReply({
-                ephemeral: true,
-                content:   `*${error.message}*`
-            });
-        }
-        else {
-            console.log(error);
-            await interaction.editReply({
-                ephemeral: true,
-                content:   `*Issue running command*`
-            });
-        }
-    }
+        // // Save data to file
+        // saveUnavailability(userId, userTag, unavail, path);
+    // }
+    // catch (error) {
+    //     if (error.name === 'ScheduleError') {
+    //         await interaction.editReply({
+    //             ephemeral: true,
+    //             content:   `*${error.message}*`
+    //         });
+    //     }
+    //     else {
+    //         console.log(error);
+    //         await interaction.editReply({
+    //             ephemeral: true,
+    //             content:   `*Issue running command*`
+    //         });
+    //     }
+    // }
 };
 
 // set-availability
@@ -98,7 +95,6 @@ const setAvail = async (interaction) => {
 
         // Save data to file
         saveAvailability(userId, userTag, avail, path);
-
     }
     catch (error) {
         if (error.name === 'ScheduleError') {
@@ -262,7 +258,7 @@ module.exports = {
 
 
         const action = {
-            'set-unavailability':  () => setUnavail(interaction),
+            'set-unavailability':  () => callSetUnavail(interaction),
             'set-availability':    () => setAvail(interaction),
             'view-availability':   () => displayAvail(interaction),
             'view-unavailability': () => displayUnavail(interaction)

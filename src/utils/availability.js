@@ -1,6 +1,6 @@
 const fs = require('fs');
 const dayjs = require('dayjs');
-const { ScheduleError } = require('./schedule.js');
+const { ScheduleError, parseDaysList } = require('./schedule.js');
 
 let availabilityChannel = undefined;
 const getAvailabilityChannel = async () => { return availabilityChannel; };
@@ -19,9 +19,9 @@ const newAvailabilityEntry = (userId, userTag) => {
         available: {
 
             // Random day used for object creation, has no effect on result
-            from: JSON.stringify(dayjs('6-4 09:00')),
-            to:   JSON.stringify(dayjs('6-4 17:00')),
-            days: 'Monday-Friday'
+            from: JSON.stringify(dayjs('2024 5-20 09:00')),
+            to:   JSON.stringify(dayjs('2024 8-9 17:00')),
+            days: parseDaysList('daily')
         },
         unavailable: []
     };
@@ -76,7 +76,7 @@ const saveUnavailability = (userId, userTag, unavail, path) => {
     fileContent[userId].unavailable.push(unavail);
 
     // Send data back to file
-    fs.writeFile(path, JSON.stringify(fileContent, null, 2), (err) => err && console.error(err));
+    fs.writeFileSync(path, JSON.stringify(fileContent, null, 2), (err) => err && console.error(err));
 };
 
 const saveAvailability = (userId, userTag, avail, path) => {
@@ -102,6 +102,58 @@ const updateAvailabilityChannel = async newChannel => {
 
     return { content: `<#${newChannel.id}> is the new availability channel` };
 };
+
+const getSUData = (interaction, path) => {
+    return {
+        userId: interaction?.user?.id,
+        userTag: interaction?.user?.tag,
+        dateFrom: interaction.options.get('date-from')?.value,
+        dateTo: interaction.options.get('date-to')?.value,
+        timeFrom: interaction.options.get('time-from')?.value,
+        timeTo: interaction.options.get('time-to')?.value,
+        reason: interaction.options.get('reason')?.value,
+        path: path
+    }
+
+};
+
+//Command Functions
+const setUnavail = (userId,userTag,dateFrom,dateTo,timeFrom,timeTo,reason,path) => {
+    try {
+        if (dateTo && !dateFrom)
+            throw new ScheduleError('Please select a start date.');
+        if (timeTo && !timeFrom)
+            throw new ScheduleError('Please select a start time.');
+    
+        // Create a start and end dayjs obj (Default times to 0:00 if empty)
+        const startUnavail = dayjs(`2024 ${dateFrom} ${timeFrom ? timeFrom : '0:00'}`);
+        const endUnavail = dayjs(`2024 ${dateTo} ${timeTo ? timeTo : '23:59'}`);
+    
+        const unavail = createUnavailability(startUnavail, endUnavail, reason);
+    
+        // Print data for now
+        let reply = [
+            '```',
+            JSON.stringify(unavail, undefined, 2),
+            '```',
+        ].join('\n');
+    
+        //await interaction.editReply({ content: reply });
+    
+        // Save data to file
+        saveUnavailability(userId, userTag, unavail, path);
+    
+        return reply;
+    } catch (error) {
+        if (error.name === 'ScheduleError')
+            return `*${error.message}*`;
+        else {
+            console.log(error);
+            return `*Issue running command*`;
+        }
+    }
+}
+
 module.exports = {
     createAvailability,
     createUnavailability,
@@ -112,4 +164,6 @@ module.exports = {
     saveAvailability,
     newAvailabilityEntry,
     loadAvailability,
+    getSUData,
+    setUnavail
 };
