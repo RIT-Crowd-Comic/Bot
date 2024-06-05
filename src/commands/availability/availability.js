@@ -9,33 +9,6 @@ const {
 } = require('../../utils/availability');
 const path = './src/savedAvailability.json';
 
-// Availability Data Schema
-// {
-//   "id": {
-//     "userId": "1223334444",
-//     "userTag": "servermember",
-//     "available": {
-//       "from": "2024-05-20T14:00:00.000Z",
-//       "to": "2024-08-09T22:00:00.000Z",
-//       "days": [
-//         "monday",
-//         "tuesday"
-//       ]
-//     },
-//     "unavailable": [
-//       {
-//         "from": "2024-07-03T05:00:00.000Z",
-//         "to": "2024-07-06T04:59:00.000Z",
-//         "reason": "Holiday"
-//       },
-//       {
-//         "from": "2024-08-01T20:00:00.000Z",
-//         "to": "2024-08-02T17:30:00.000Z"
-//       }
-//     ]
-//   }
-// }
-
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('availability')
@@ -92,16 +65,8 @@ module.exports = {
                     option.setName('member')
                         .setDescription('User you want to see the unavailability of')
                         .setRequired(false))),
-
-
-    options:
+    async execute(client, interaction)
     {
-        devOnly:  false,
-        testOnly: false,
-        deleted:  false,
-    },
-
-    async execute(client, interaction) {
 
 
         const action = {
@@ -111,13 +76,16 @@ module.exports = {
             'view-unavailability': () => displayUnavail(interaction)
         };
 
-        try {
+        try
+        {
 
             // get the used subcommand
             const subcommand = interaction.options.getSubcommand();
 
             action[subcommand]();
-        } catch (error) {
+        }
+        catch (error)
+        {
             await interaction.editReply({
                 content:   `Something went wrong. ${error}`,
                 ephemeral: false,
@@ -128,22 +96,15 @@ module.exports = {
 
 // Callbacks
 // set-unavailability
-const setUnavail = async (interaction) => {
-    const userId = interaction?.user?.id;
-    const userTag = interaction?.user?.tag;
+const setUnavail = async (interaction) =>
+{
+    try
+    {
+        const userId = interaction?.user?.id;
+        const userTag = interaction?.user?.tag;
 
-    await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ ephemeral: true });
 
-    // command should include a user
-    if (userId === undefined || userTag === undefined) {
-        await interaction.editReply({
-            ephemeral: true,
-            content:   'Could not process command'
-        });
-        return;
-    }
-
-    try {
         const dateFrom = interaction.options.get('date-from')?.value;
         const dateTo = interaction.options.get('date-to')?.value;
         let timeFrom = interaction.options.get('time-from')?.value;
@@ -159,9 +120,6 @@ const setUnavail = async (interaction) => {
         const startUnavail = dayjs(`2024 ${dateFrom} ${timeFrom ? timeFrom : '0:00'}`);
         const endUnavail = dayjs(`2024 ${dateTo} ${timeTo ? timeTo : '23:59'}`);
 
-        if (!dayjs(startUnavail).isValid && !dayjs(endUnavail).isValid)
-            throw new ScheduleError('Enter dates and times in proper formats');
-
         const unavail = createUnavailability(startUnavail, endUnavail, reason);
 
         // Print data for now
@@ -175,13 +133,18 @@ const setUnavail = async (interaction) => {
 
         // Save data to file
         saveUnavailability(userId, userTag, unavail, path);
-    } catch (error) {
-        if (error.name === 'ScheduleError') {
+    }
+    catch (error)
+    {
+        if (error.name === 'ScheduleError')
+        {
             await interaction.editReply({
                 ephemeral: true,
                 content:   `*${error.message}*`
             });
-        } else {
+        }
+        else
+        {
             console.log(error);
             await interaction.editReply({
                 ephemeral: true,
@@ -192,22 +155,14 @@ const setUnavail = async (interaction) => {
 };
 
 // set-availability
-const setAvail = async (interaction) => {
-    const userId = interaction?.user?.id;
-    const userTag = interaction?.user?.tag;
+const setAvail = async (interaction) =>
+{
+    try
+    {
+        const userId = interaction?.user?.id;
+        const userTag = interaction?.user?.tag;
 
-    await interaction.deferReply({ ephemeral: true });
-
-    // command should include a user
-    if (userId === undefined || userTag === undefined) {
-        await interaction.editReply({
-            ephemeral: true,
-            content:   'Could not process command'
-        });
-        return;
-    }
-
-    try {
+        await interaction.deferReply({ ephemeral: true });
         const timeFrom = interaction.options.get('time-from')?.value;
         const timeTo = interaction.options.get('time-to')?.value;
         const rawDays = interaction.options.get('days')?.value;
@@ -215,18 +170,12 @@ const setAvail = async (interaction) => {
         if (!timeFrom || !timeTo)
             throw new ScheduleError('Enter both start AND end times');
 
-        // if (!rawDays)
-        //     throw new ScheduleError('Enter available days');
-
         // Parse the day list into an array
         const days = parseDaysList(rawDays ? rawDays : 'daily');
 
         // Create a start and end dayjs obj (arbitrary day used, does not affect time result)
         const startAvail = dayjs(`2024 5-20 ${timeFrom}`);
         const endAvail = dayjs(`2024 8-9 ${timeTo}`);
-
-        if (!dayjs(startAvail).isValid && !dayjs(endAvail).isValid)
-            throw new ScheduleError('Enter times in proper formats');
 
         const avail = createAvailability(startAvail, endAvail, days, userId, userTag);
 
@@ -242,13 +191,18 @@ const setAvail = async (interaction) => {
         // Save data to file
         saveAvailability(userId, userTag, avail, path);
 
-    } catch (error) {
-        if (error.name === 'ScheduleError') {
+    }
+    catch (error)
+    {
+        if (error.name === 'ScheduleError')
+        {
             await interaction.editReply({
                 ephemeral: true,
                 content:   `*${error.message}*`
             });
-        } else {
+        }
+        else
+        {
             console.log(error);
             await interaction.editReply({
                 ephemeral: true,
@@ -258,22 +212,11 @@ const setAvail = async (interaction) => {
     }
 };
 
-const displayAvail = async (interaction) => {
-    const userId = interaction?.user?.id;
-    const userTag = interaction?.user?.tag;
-
-    await interaction.deferReply({ ephemeral: true });
-
-    // command should include a user
-    if (userId === undefined || userTag === undefined) {
-        await interaction.editReply({
-            ephemeral: true,
-            content:   'Could not process command'
-        });
-        return;
-    }
-
-    try {
+const displayAvail = async (interaction) =>
+{
+    try
+    {
+        await interaction.deferReply({ ephemeral: true });
         let targetMember = interaction.options.get('member')?.value;
 
         // Check if the user requested a different member's data, if not, set target to user that used command
@@ -284,7 +227,8 @@ const displayAvail = async (interaction) => {
         const fileContent = loadAvailability(path);
 
         // If no matching user was found in the data, 
-        if (!fileContent[targetMember.id]) {
+        if (!fileContent[targetMember.id])
+        {
             console.log('no data');
             await interaction.editReply({
                 ephemeral: true,
@@ -300,7 +244,9 @@ const displayAvail = async (interaction) => {
             .setTitle(`${targetMember.username}'s Availability`)
             .setDescription(`Available from ${dayjs(availability.from).format('hh:mm A')}-${dayjs(availability.to).format('hh:mm A')} on ${availability.days.join(', ')}`);
         interaction.editReply({ embeds: [embed], ephemeral: true });
-    } catch (error) {
+    }
+    catch (error)
+    {
         console.log(error);
         await interaction.editReply({
             ephemeral: true,
@@ -309,22 +255,11 @@ const displayAvail = async (interaction) => {
     }
 };
 
-const displayUnavail = async (interaction) => {
-    const userId = interaction?.user?.id;
-    const userTag = interaction?.user?.tag;
-
-    await interaction.deferReply({ ephemeral: true });
-
-    // command should include a user
-    if (userId === undefined || userTag === undefined) {
-        await interaction.editReply({
-            ephemeral: true,
-            content:   'Could not process command'
-        });
-        return;
-    }
-
-    try {
+const displayUnavail = async (interaction) =>
+{
+    try
+    {
+        await interaction.deferReply({ ephemeral: true });
         let targetMember = interaction.options.get('member')?.value;
 
         // Check if the user requested a different member's data, if not, set target to user that used command
@@ -335,7 +270,8 @@ const displayUnavail = async (interaction) => {
         const fileContent = loadAvailability(path);
 
         // If no matching user was found in the data, 
-        if (!fileContent[targetMember.id]) {
+        if (!fileContent[targetMember.id])
+        {
             await interaction.editReply({
                 ephemeral: true,
                 content:   'Requested member has no available data'
@@ -348,7 +284,8 @@ const displayUnavail = async (interaction) => {
         // Create an embed to send to the user
         const embed = new EmbedBuilder()
             .setTitle(`${targetMember.username}'s Unavailability`);
-        for (let i = 0, length = unavailability.length; i < length; i++) {
+        for (let i = 0, length = unavailability.length; i < length; i++)
+        {
 
             // Check for reason (leave empty if none)
             const reason = unavailability[i].reason ? `Reason: ${unavailability[i].reason}` : ` `;
@@ -358,7 +295,9 @@ const displayUnavail = async (interaction) => {
             });
         }
         interaction.editReply({ embeds: [embed], ephemeral: true });
-    } catch (error) {
+    }
+    catch (error)
+    {
         console.log(error);
         await interaction.editReply({
             ephemeral: true,

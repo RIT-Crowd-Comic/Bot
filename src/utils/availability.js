@@ -14,6 +14,8 @@ const setAvailabilityChannel = (channel) => { availabilityChannel = channel; };
  * @returns {Object}
  */
 const createAvailability = (start, end, days) => {
+    if (!dayjs(start).isValid && !dayjs(end).isValid)
+        throw new ScheduleError('Enter times in proper formats');
     if (dayjs(start).isAfter(dayjs(end)))
         throw new ScheduleError('End Date/Time must be after Start Date/Time');
 
@@ -32,6 +34,8 @@ const createAvailability = (start, end, days) => {
  * @returns {Object}
  */
 const createUnavailability = (start, end, reason) => {
+    if (!dayjs(startUnavail).isValid && !dayjs(endUnavail).isValid)
+        throw new ScheduleError('Enter dates and times in proper formats');
     if (dayjs(start).isAfter(dayjs(end)))
         throw new ScheduleError('End Date/Time must be after Start Date/Time');
 
