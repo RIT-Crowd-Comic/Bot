@@ -17,15 +17,13 @@ const {
  * @param {CommandInteraction} interaction 
  * @returns 
  */
-module.exports = async (client, interaction) =>
-{
+module.exports = async (client, interaction) => {
 
     // only handling button interactions with the check in interface
     if (!interaction?.isButton()) return;
 
     // user clicked yes, start the survey
-    if (interaction.customId === 'check-in-start-btn')
-    {
+    if (interaction.customId === 'check-in-start-btn') {
         const checkInForm = new ModalBuilder()
             .setCustomId('check-in-form-modal')
             .setTitle('How are you doing?');
@@ -55,8 +53,7 @@ module.exports = async (client, interaction) =>
 
         await interaction.showModal(checkInForm);
     }
-    else if (interaction.customId === 'check-in-later-btn')
-    {
+    else if (interaction.customId === 'check-in-later-btn') {
         await interaction.reply({
             ephemeral: true,
             content:   `Not yet implemented`
@@ -64,8 +61,7 @@ module.exports = async (client, interaction) =>
     }
 
     // user clicked no, stop bothering them
-    else if (interaction.customId === 'check-in-cancel-btn')
-    {
+    else if (interaction.customId === 'check-in-cancel-btn') {
         await interaction.reply({
             ephemeral: true,
             content:   `Thanks for responding! Make sure to take short breaks and to drink plenty of water!`

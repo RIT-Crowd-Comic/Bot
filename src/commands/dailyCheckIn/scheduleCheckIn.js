@@ -47,20 +47,16 @@ module.exports = {
      * @param {Client} client 
      * @param {CommandInteraction} interaction 
      */
-    async execute(client, interaction)
-    {
-
+    async execute(client, interaction) {
         const userId = interaction?.user?.id;
         const userTag = interaction?.user?.tag;
 
         await interaction.deferReply({ ephemeral: true });
 
-        try
-        {
+        try {
 
             // command should include a user
-            if (userId === undefined || userTag === undefined)
-            {
+            if (userId === undefined || userTag === undefined) {
                 await interaction.editReply({
                     ephemeral: true,
                     content:   'Could not process command'
@@ -86,12 +82,10 @@ module.exports = {
             const daily = rawDays.toLocaleLowerCase().startsWith('daily');
 
             // split days by whitespace or comma
-            if (daily)
-            {
+            if (daily) {
                 parsedDays = validDays;
             }
-            else
-            {
+            else {
                 parsedDays = rawDays.split(/[\s,]+/i).map(s => s.toString().toLocaleLowerCase());
             }
 
@@ -99,8 +93,7 @@ module.exports = {
             parsedDays = parsedDays.map(d => abbreviations[d] ?? d);
 
             // check if parsed days are all valid
-            if (parsedDays.some(d => !validDays.includes(d)))
-            {
+            if (parsedDays.some(d => !validDays.includes(d))) {
                 await interaction.editReply({
                     ephemeral: true,
                     content:   'Invalid list of days'
@@ -117,8 +110,7 @@ module.exports = {
             const timeFormats = ['Y h:mma', 'Y h:mmA', 'Y H:mm'];
             parsedTime = dayjs(`2024 ${parsedTime}`, timeFormats);
 
-            if (!parsedTime.isValid())
-            {
+            if (!parsedTime.isValid()) {
                 await interaction.editReply({
                     ephemeral: true,
                     content:   'Invalid time'
@@ -145,8 +137,7 @@ module.exports = {
             // Since times close to midnight can translate to the next day (or previous day)
             // in UTC, the following code will shift the user's day schedule accordingly
 
-            const utcDays = parsedDays.map(day =>
-            {
+            const utcDays = parsedDays.map(day => {
                 const dayIndex = validDays.indexOf(day); // dayjs() uses index
                 return validDays[firstScheduleDay.day(dayIndex).utc().day()];
             });
@@ -189,8 +180,7 @@ module.exports = {
                 content:   reply
             });
         }
-        catch
-        {
+        catch {
             await interaction.editReply({
                 ephemeral: true,
                 content:   `issue running command`

@@ -13,8 +13,7 @@ let formResult = {};
  * @param {CommandInteraction} interaction 
  * @returns 
  */
-module.exports = async (client, interaction) =>
-{
+module.exports = async (client, interaction) => {
 
     // only handle when the user submits the check in form
     if (!interaction?.isModalSubmit()) return;
@@ -25,14 +24,12 @@ module.exports = async (client, interaction) =>
 
     await interaction.deferReply({ ephemeral: true });
 
-    if (userId === undefined || userTag === undefined)
-    {
+    if (userId === undefined || userTag === undefined) {
         await interaction.editReply(`Could not process form data`);
         return;
     }
 
-    try
-    {
+    try {
 
         // TODO: save to a database and provide feedback
         const roseResponse = interaction.fields?.getTextInputValue('check-in-form-roses') ?? '';
@@ -62,8 +59,7 @@ module.exports = async (client, interaction) =>
             content:   reply
         });
     }
-    catch (error)
-    {
+    catch (error) {
         console.log(error);
     }
 };

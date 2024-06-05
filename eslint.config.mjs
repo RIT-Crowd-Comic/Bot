@@ -51,7 +51,7 @@ export default [
             'arrow-parens':          [0, 'as-needed'],
             'array-bracket-newline': [1, { 'multiline': true }],
             'block-spacing':         [1, 'always'],
-            'brace-style':           [1, 'allman', { 'allowSingleLine': true }],
+            'brace-style':           [1, 'stroustrup', { 'allowSingleLine': true }],
             'comma-dangle':          [
                 0,
                 'always',
