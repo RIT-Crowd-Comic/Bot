@@ -25,6 +25,11 @@ const abbreviations = {
     'su': 'sunday',
 };
 
+/**
+ * creates a string of the users schedule in their local time
+ * @param {schedule object} schedule 
+ * @returns 
+ */
 const displaySchedule = (schedule) => {
     const everyDay = validDays.every(d => schedule.localDays.includes(d));
     const days = everyDay ? 'every day' : `[${schedule.localDays.join(', ')}]`;
@@ -146,7 +151,8 @@ const parseDaysList = (days) => {
     // split days by regex [,\s|]
     if (daily) {
         parsedDays = validDays;
-    } else {
+    }
+    else {
         parsedDays = days.split(/[\s,|]+/i).map(s => s.toString().toLocaleLowerCase());
     }
 
@@ -222,7 +228,8 @@ const sendCheckInReminder = async (client, id)=>{
             components: [actions]
         });
 
-    } catch (error) {
+    }
+    catch (error) {
         await user.send({ content: 'could not process command' });
     }
 
@@ -230,10 +237,10 @@ const sendCheckInReminder = async (client, id)=>{
 
 /**
  * creates a reminder object to add to the que then inserts it in the correct chronological placement
- * @param {array} days array of schedule days
- * @param {array} hour utc reminder [hour,min]
+ * @param {string[]} days array of schedule days
+ * @param {int[]} utcTime utc reminder [hour,min]
  * @param {string} id user id
- * @param {bool} toRemove wheather or not you want to remove (default=false)
+ * @param {bool} toRemove whether or not you want to remove (default=false)
  */
 const updateQueue = (days, utcTime, id, toRemove = false)=>{
     const hour = utcTime[0];
@@ -250,16 +257,19 @@ const updateQueue = (days, utcTime, id, toRemove = false)=>{
         let index = queue.indexOf(reminder);
         if (index && toRemove) { // if it exists in the queue and we want to remove
             queue.splice(index, 1);
-        } else if (index == -1 && queue.length == 0) { // if queue is empty
+        }
+        else if (index == -1 && queue.length == 0) { // if queue is empty
             queue.push(reminder);
-        } else { // inserting into queue
+        }
+        else { // inserting into queue
             for (let t = 0; t < queue.length; t++) {
                 const time = queue[t];
                 const same = time.id == id && time.hour == hour && time.min == min;
                 if (hour <= time.hour && min <= time.min && !same) {
                     queue.splice(t, 0, reminder);
                     return;
-                } else if (t == queue.length - 1 && !same) {
+                }
+                else if (t == queue.length - 1 && !same) {
                     queue.push(reminder);
                     return;
                 }
@@ -292,7 +302,7 @@ const getDayOrder = ()=>{
 /**
  * gets the current utc day of week number
  * converts number to name of day
- * @returns current utc day of the week
+ * @returns {string} currentDayOfWeek: current utc day of the week
  */
 const checkCurrentDay = ()=>{
     const now = dayjs.utc();// .format()
