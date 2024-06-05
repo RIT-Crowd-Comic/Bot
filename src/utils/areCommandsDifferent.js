@@ -56,3 +56,4 @@ module.exports = (existingCommand, localCommand) => {
 
     return false;
 };
+
