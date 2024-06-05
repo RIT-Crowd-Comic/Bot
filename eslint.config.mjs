@@ -32,12 +32,14 @@ export default [
             'no-template-curly-in-string':   1,
             'no-unreachable-loop':           1,
             'no-unused-vars':                [2, { 'argsIgnorePattern': '^_$' }],
-            'no-use-before-define':          [2, { 'functions': false, 'classes': true, 'allowNamedExports': true }],
-            'no-useless-assignment':         1,
-            'require-atomic-updates':        0, // this causes false positives
-            'consistent-return':             2,
-            'no-else-return':                1,
-            'space-unary-ops':               2
+
+            // disabled because of false positives such as `const a = () => {}` (this is hoisted)
+            'no-use-before-define':   [0, { 'functions': false, 'classes': true, 'allowNamedExports': true }],
+            'no-useless-assignment':  1,
+            'require-atomic-updates': 0, // this causes false positives
+            'consistent-return':      2,
+            'no-else-return':         1,
+            'space-unary-ops':        2
         }
     },
     {
