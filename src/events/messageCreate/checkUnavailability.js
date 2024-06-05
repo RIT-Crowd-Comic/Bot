@@ -1,14 +1,23 @@
 const { getAvailabilityChannel } = require('../../utils/availability');
 const { openAiClient } = require('../../openAi/init');
 
-const rememberUnavailability = (message, from, to, reason = 'a mystery event') =>
+const rememberUnavailability = (message,times) =>
 {
-    message.reply({ content: `${message.author.globalName} is unavailable from ${from} to ${to} for ${reason}` });
+        // Loop through the array and print each time range
+        times.times.forEach(timeRange => {
+            let {start, end, reason } = timeRange;
+            reason = reason ?? 'a mystery event';
+            message.reply({ content: `${message.author.globalName} is unavailable from ${start} to ${end} for ${reason}` });
+        });
 };
 
-const rememberAvailability = (message, from, to) =>
+const rememberAvailability = (message, times) =>
 {
-    message.reply({ content: `${message.author.globalName} is available from ${from} to ${to}` });
+    // Loop through the array and print each time range
+    times.times.forEach(timeRange => {
+        const {start, end} = timeRange;
+        message.reply({ content: `${message.author.globalName} is available from ${start} to ${end}` });
+    });
 };
 
 const unableToParse = (message) =>
@@ -21,24 +30,30 @@ const tools = [
         'type':     'function',
         'function': {
             'name':        'rememberUnavailability',
-            'description': 'Determines if the user is busy between certain times ',
+            'description': 'Determines if the user is busy between certain times.',
             'parameters':  {
                 'type':       'object',
                 'properties': {
-                    'from': {
-                        'type':        'string',
-                        'description': 'The start date and time that the user is unavailable. In UTC.',
-                    },
-                    'to': {
-                        'type':        'string',
-                        'description': 'The end date and time that the user is unavailable. In UTC.',
-                    },
-                    'reason': {
-                        'type':        'string',
-                        'description': 'The reason why the user unavailable at those times.',
-                    }
+                    'times' :{
+                        'type' : 'array',
+                        'description' : 'An array of {start, end, reason} dates and times the user is unavailable. In UTC',
+                        "items":{
+                            'from': {
+                                'type':        'string',
+                                'description': 'The start date and time that the user is unavailable. Returns a date in UTC.',
+                            },
+                            'to': {
+                                'type':        'string',
+                                'description': 'The end date and time that the user is unavailable. Returns a date in UTC',
+                            },
+                            'reason': {
+                                'type':        'string',
+                                'description': 'The reason why the user unavailable at those times.',
+                            }
+                        }
+                }
                 },
-                'required': ['from', 'to'],
+                'required': ['times'],
             },
         },
     },
@@ -46,20 +61,26 @@ const tools = [
         'type':     'function',
         'function': {
             'name':        'rememberAvailability',
-            'description': 'Determines if the user is available between certain times',
+            'description': 'Determines if the user is available between certain times. Based on the current date passed to the api.',
             'parameters':  {
                 'type':       'object',
                 'properties': {
-                    'from': {
-                        'type':        'string',
-                        'description': 'The start date and time that the user is available. In UTC.',
-                    },
-                    'to': {
-                        'type':        'string',
-                        'description': 'The end date and time that the user is available. In UTC.',
-                    },
+                    'times' :{
+                        'type' : 'array',
+                        'description' : 'An array of {start, end} dates and times the user is available. In UTC.',
+                        "items":{
+                            'from': {
+                                'type':        'string',
+                                'description': 'The start date and time that the user is available. Returns a date in UTC.',
+                            },
+                            'to': {
+                                'type':        'string',
+                                'description': 'The end date and time that the user is available. Returns a date in UTC.',
+                            },
+                        }
+                }
                 },
-                'required': ['from', 'to'],
+                'required': ['times'],
             },
         },
     },
@@ -73,6 +94,15 @@ const tools = [
     },
 ];
 
+const parseResults = (message, calledFunction) =>{
+    const action = {
+        'rememberUnavailability': () => rememberUnavailability(message, JSON.parse(calledFunction.arguments)),
+        'rememberAvailability':   () => rememberAvailability(message, JSON.parse(calledFunction.arguments)),
+        'unableToParse':          () => unableToParse(message),
+    };
+    action[calledFunction.name]();
+}
+
 module.exports = async (client, message) =>
 {
     try
@@ -84,12 +114,15 @@ module.exports = async (client, message) =>
             return;
         }
 
+        const date = new Date(message.createdTimestamp).toISOString()
+
         const response = await openAiClient.chat.completions.create({
             model:    'gpt-3.5-turbo',
             messages: [
                 {
                     'role':    'user',
-                    'content': message.content
+                    'content': message.content + `the current date is ${date}`,
+                    'date': date
                 }
             ],
             tools:       tools,
@@ -97,22 +130,15 @@ module.exports = async (client, message) =>
         }).catch((error) => console.log('OpenAI Error ' + error));
 
         const output = response.choices[0].message;
-        console.log(output);
 
         if (!output.tool_calls)
         {
             message.reply('Unable to parse message');
             return;
         }
-        const calledFunction = output.tool_calls[0].function;
-
-        const action = {
-            'rememberUnavailability': () => rememberUnavailability(message, JSON.parse(calledFunction.arguments)['from'], JSON.parse(calledFunction.arguments)['to'], JSON.parse(calledFunction.arguments)['reason']),
-            'rememberAvailability':   () => rememberAvailability(message, JSON.parse(calledFunction.arguments)['from'], JSON.parse(calledFunction.arguments)['to']),
-            'unableToParse':          () => unableToParse(message),
-        };
-
-        action[calledFunction.name]();
+        output.tool_calls.forEach(tool => {
+            parseResults(message, tool.function)
+        })
     }
     catch (error) { console.log(error); }
 };
