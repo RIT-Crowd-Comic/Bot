@@ -25,12 +25,10 @@ module.exports = {
             //     { name: "friday", value: "friday" },
             //     { name: "saturday", value: "saturday" },
             //     { name: "sunday", value: "sunday" }],
-                .setRequired(true)
-                .setRequired(true)
-
-                .addStringOption(option =>{ option.setName('time'); })
+                .setRequired(true),)
+        .addStringOption(option =>
+            option.setName('time')
                 .setDescription('Time of day. Ex: 12:30 am')
-                .setRequired(true)
                 .setRequired(true)),
     options:
     {
