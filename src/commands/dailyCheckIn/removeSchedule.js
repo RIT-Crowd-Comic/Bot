@@ -1,7 +1,7 @@
 const {
     PermissionFlagsBits, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder
 } = require('discord.js');
-const { fakeScheduleEntry, displaySchedule, getQueue } = require('../../utils/schedule');
+const { fakeScheduleEntry, displaySchedule } = require('../../utils/schedule');
 const { ActionRowBuilder } = require('@discordjs/builders');
 
 
@@ -70,10 +70,12 @@ module.exports = {
                 content:    `Select a schedule to remove`,
                 components: [row1, row2]
             });
-        } catch (error) {
+        }
+        catch (error) {
             if (error.name === 'ScheduleError') {
                 await interaction.editReply({ content: `*${error.message}*`, });
-            } else {
+            }
+            else {
                 await interaction.editReply({ content: `*Issue running command*`, });
             }
         }

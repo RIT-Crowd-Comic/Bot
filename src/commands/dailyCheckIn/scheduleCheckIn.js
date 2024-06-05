@@ -1,7 +1,7 @@
 
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const {
-    fakeScheduleEntry, queue, parseDaysList, parseTime, createSchedule, displaySchedule, updateQueue
+    fakeScheduleEntry, parseDaysList, parseTime, createSchedule, displaySchedule, updateQueue
 } = require('../../utils/schedule');
 
 

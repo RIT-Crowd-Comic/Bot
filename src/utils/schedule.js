@@ -2,15 +2,13 @@ const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
 const weekday = require('dayjs/plugin/weekday');
 const localizedFormat = require('dayjs/plugin/localizedFormat');
-const {
-    ActionRowBuilder, ButtonBuilder, ButtonStyle, CommandInteraction, Client
-} = require('discord.js');
-const { Dayjs } = dayjs;
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+
+// const { Dayjs } = dayjs;
 dayjs.extend(utc);
 dayjs.extend(weekday);
 dayjs.extend(localizedFormat);
 
-// const scheduleCheckIn = require('../commands/dailyCheckIn/scheduleCheckIn');
 const fakeScheduleEntry = {};
 const queue = [];
 const validDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
@@ -98,7 +96,7 @@ const createSchedule = (daysList, time) => {
  * @param {*} schedules 
  * @returns 
  */
-const mergeSchedules = (schedules) => {
+const mergeSchedules = (/* schedules*/) => {
 
     // current issue:
     // displaySchedule will not update after schedules are 
@@ -106,6 +104,7 @@ const mergeSchedules = (schedules) => {
     throw new Error('Not yet implemented');
 
     // clone 2 levels deep
+    /*
     const mergedSchedules = [];
     schedules.forEach(s => {
         let duplicate = false;
@@ -135,6 +134,7 @@ const mergeSchedules = (schedules) => {
         }
     });
     return mergedSchedules;
+    */
 };
 
 
@@ -230,6 +230,7 @@ const sendCheckInReminder = async (client, id)=>{
 
     }
     catch (error) {
+        console.log(error);
         await user.send({ content: 'could not process command' });
     }
 

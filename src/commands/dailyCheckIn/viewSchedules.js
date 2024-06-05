@@ -64,10 +64,12 @@ module.exports = {
                 components: [row1]
             });
 
-        } catch (error) {
+        }
+        catch (error) {
             if (error.name === 'ScheduleError') {
                 await interaction.editReply({ content: `*${error.message}*`, });
-            } else {
+            }
+            else {
                 await interaction.editReply({ content: `*Issue running command*`, });
             }
         }

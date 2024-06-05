@@ -27,14 +27,16 @@ module.exports = async (client, interaction) => {
             });
             await interaction.deferUpdate();
 
-        } catch {
+        }
+        catch {
             await interaction.reply({
                 ephemeral: true,
                 content:   '*Issue selecting schedule.*'
             });
             return;
         }
-    } else if (interaction.customId === 'remove-schedule-btn') {
+    }
+    else if (interaction.customId === 'remove-schedule-btn') {
 
         const userId = interaction?.user?.id;
 
@@ -67,7 +69,8 @@ module.exports = async (client, interaction) => {
                 ephemeral: true,
                 content:   reply
             });
-        } catch {
+        }
+        catch {
             await interaction.reply({
                 ephemeral: true,
                 content:   '*Issue deleting schedules*'

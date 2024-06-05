@@ -5,7 +5,6 @@
  */
 
 
-let formResult = {};
 
 /**
  * 
@@ -32,16 +31,10 @@ module.exports = async (client, interaction) => {
     try {
 
         // TODO: save to a database and provide feedback
-        const roseResponse = interaction.fields?.getTextInputValue('check-in-form-roses') ?? '';
-        const thornResponse = interaction.fields?.getTextInputValue('check-in-form-thorns') ?? '';
+        // const roseResponse = interaction.fields?.getTextInputValue('check-in-form-roses') ?? '';
+        // const thornResponse = interaction.fields?.getTextInputValue('check-in-form-thorns') ?? '';
 
-        formResult = {
-            roseResponse,
-            thornResponse,
-            id:         userId,
-            tag:        userTag,
-            submitDate: interaction.createdAt
-        };
+
 
         let reply = [
             'Thanks for responding! Make sure to take short breaks and to drink plenty of water!',

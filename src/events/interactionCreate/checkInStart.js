@@ -6,7 +6,7 @@
  * Handle when a user interacts with the check in notification
  */
 const {
-    ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, Client
+    ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder
 } = require('discord.js');
 const { sendCheckInReminder } = require('../../utils/schedule');
 
@@ -65,7 +65,7 @@ module.exports = async (client, interaction) => {
         catch (error) {
             await interaction.reply({
                 ephemeral: true,
-                content:   `*Issue running command*`
+                content:   `*Issue running command* error:${error.name}`
             });
         }
         await interaction.reply({

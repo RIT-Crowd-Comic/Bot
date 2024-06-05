@@ -5,7 +5,7 @@
  */
 const deleteAllDMs = async (client, interaction)=>{
     let msgs = [];
-    const chan = await client.channels.fetch(interaction.channelId).then(cha=>{
+    await client.channels.fetch(interaction.channelId).then(cha=>{
         cha.messages.fetch({ limit: 100 }).then(messages => {
             console.log(`Received ${messages.size} messages`);
 
