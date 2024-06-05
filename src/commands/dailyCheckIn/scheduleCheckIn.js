@@ -4,13 +4,13 @@ const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
 const weekday = require('dayjs/plugin/weekday');
 const localizedFormat = require('dayjs/plugin/localizedFormat');
+const { getQueue } = require('../../utils/schedule');
 dayjs.extend(utc);
 dayjs.extend(weekday);
 dayjs.extend(localizedFormat);
 
 
-const fakeScheduleEntry = {
-};
+const fakeScheduleEntry={}
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -166,6 +166,8 @@ module.exports = {
                     }
                 ]
             };
+
+            getQueue();//updates the day's queue
 
             // respond to the user to confirm schedule
             const daysResponse = daily ? 'every day' : `[${parsedDays.join(', ')}]`;

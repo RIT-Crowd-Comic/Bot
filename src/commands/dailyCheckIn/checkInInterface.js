@@ -11,8 +11,8 @@ module.exports = {
 
     options:
     {
-        devOnly:  false,
-        testOnly: false,
+        devOnly:  true,
+        testOnly: true,
         deleted:  false,
     },
 

@@ -8,7 +8,10 @@ dayjs.extend(utc);
 dayjs.extend(weekday);
 dayjs.extend(localizedFormat);
 
+const scheduleCheckIn = require('../commands/dailyCheckIn/scheduleCheckIn');
+// const fakeScheduleEntry = {};
 const queue=[]
+const structuredTimes={};
 const validDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 const abbreviations = {
     'm': 'monday',
@@ -236,6 +239,81 @@ const deleteAllDMs=async (client,interaction)=>{
     )
 }
 
+
+
+/**
+ * gets the current day's scheduled times & users
+ * orders them chronologically in the queue[]
+ * @param {*} day 
+ */
+const getDayOrder=(day)=>{
+    let times=[];
+
+    /**
+    * checks to see if users have a scheduled day today
+    * creates and adds a user object with the time to the times array
+    */
+    for(let user in scheduleCheckIn.fakeScheduleEntry){
+        for(let schedule of scheduleCheckIn.fakeScheduleEntry[user].schedules){
+          if(schedule.utcDays.includes(day)){
+            times.push({
+                id:user,
+                hour:schedule.utcTime[0],
+                min:schedule.utcTime[1]
+            });
+          }
+        }
+      }
+    
+    /**
+     * runs through the times array and creates an object with unique times
+     * this orders them in chronological order in the structuredTimes object
+    */
+    for(let t of times){
+        if(t.hour in structuredTimes){
+            if(t.min in structuredTimes[t.hour]){
+                structuredTimes[t.hour][t.min].push(t);
+            }else{
+                structuredTimes[t.hour][t.min]=[t];
+            }
+        }else{
+            structuredTimes[t.hour]={[t.min]:[t]};
+        }
+    }
+    
+    /**
+     * takes all of the values in structured times object 
+     * => adds it to the queue
+    */
+    for(let h in structuredTimes){
+        for(let m in structuredTimes[h]){
+            structuredTimes[h][m].forEach((reminder)=>{
+                queue.push(reminder);
+            });
+        }
+    }
+    console.log(queue)
+};
+
+
+/**
+ * gets the current utc day of week number
+ * converts number to name of day
+ * @returns current utc day of the week
+ */
+const checkCurrentDay=()=>{
+    const now=dayjs.utc();//.format()
+    const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']; 
+    const currentDayOfWeek = daysOfWeek[now.weekday()];
+    return(currentDayOfWeek);
+};
+/**
+ * creates a new queue
+ */
+const getQueue=()=>{
+    getDayOrder(checkCurrentDay());
+};
+
 class ScheduleError extends Error {
     constructor(message) {
         super(message);
@@ -250,6 +328,7 @@ module.exports = {
     mergeSchedules,
     displaySchedule,
     sendMessage,
+    getQueue,
     queue,
     ScheduleError
 };
