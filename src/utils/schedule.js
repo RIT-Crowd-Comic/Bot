@@ -2,24 +2,26 @@ const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
 const weekday = require('dayjs/plugin/weekday');
 const localizedFormat = require('dayjs/plugin/localizedFormat');
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, CommandInteraction, Client } = require("discord.js");
+const {
+    ActionRowBuilder, ButtonBuilder, ButtonStyle, CommandInteraction, Client
+} = require('discord.js');
 const { Dayjs } = dayjs;
 dayjs.extend(utc);
 dayjs.extend(weekday);
 dayjs.extend(localizedFormat);
 
-const scheduleCheckIn = require('../commands/dailyCheckIn/scheduleCheckIn');
-// const fakeScheduleEntry = {};
-const queue=[]
-const structuredTimes={};
+// const scheduleCheckIn = require('../commands/dailyCheckIn/scheduleCheckIn');
+const fakeScheduleEntry = {};
+const queue = [];
+const structuredTimes = {};
 const validDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 const abbreviations = {
-    'm': 'monday',
-    't': 'tuesday',
-    'w': 'wednesday',
+    'm':  'monday',
+    't':  'tuesday',
+    'w':  'wednesday',
     'th': 'thursday',
-    'h': 'thursday',
-    'f': 'friday',
+    'h':  'thursday',
+    'f':  'friday',
     'sa': 'saturday',
     'su': 'sunday',
 };
@@ -27,7 +29,7 @@ const abbreviations = {
 const displaySchedule = (schedule) => {
     const everyDay = validDays.every(d => schedule.localDays.includes(d));
     const days = everyDay ? 'every day' : `[${schedule.localDays.join(', ')}]`;
-    
+
     // Adds a zero if necessary. Ex: '5:5' to '5:05'
     let min = schedule.localTime[1].toString();
     min = min.length === 1 ? `0${min}` : min;
@@ -47,6 +49,7 @@ const displaySchedule = (schedule) => {
  * @returns { string } schedule.displaySchedule
  */
 const createSchedule = (daysList, time) => {
+
     // check if list of days is valid
     if (daysList.some(d => !validDays.includes(d))) {
         throw new ScheduleError('Invalid list of days. (abbreviations: m t w (th or h) f sa su).');
@@ -69,6 +72,7 @@ const createSchedule = (daysList, time) => {
             .minute(timeMinutes);
     const utcHour = firstScheduleDay.utc().hour();
     const utcMin = firstScheduleDay.utc().minute();
+
     // Since times close to midnight can translate to the next day (or previous day)
     // in UTC, the following code will shift the user's day schedule accordingly
 
@@ -78,10 +82,10 @@ const createSchedule = (daysList, time) => {
     });
 
     return {
-        utcDays: utcDays,
-        utcTime: [utcHour, utcMin],
+        utcDays:   utcDays,
+        utcTime:   [utcHour, utcMin],
         localDays: [...daysList],
-        localTime: [timeHours, timeMinutes], 
+        localTime: [timeHours, timeMinutes],
     };
 };
 
@@ -101,9 +105,11 @@ const mergeSchedules = (schedules) => {
     const mergedSchedules = [];
     schedules.forEach(s => {
         let duplicate = false;
+
         // iterate backwards because we're modifying the array
         for (let i = mergedSchedules.length - 1; i >= 0; i--) {
             const m = mergedSchedules[i];
+
             // find matching times
             if (s.utcTime.every((t, i) => t === m.utcTime[i])) {
                 s.days.forEach(d => {
@@ -113,12 +119,13 @@ const mergeSchedules = (schedules) => {
                 });
                 duplicate = true;
             }
+
             // otherwise, add schedule to list
         }
         if (!duplicate) {
             mergedSchedules.push({
-                days: [...s.days],
-                utcTime: [...s.utcTime],
+                days:            [...s.days],
+                utcTime:         [...s.utcTime],
                 displaySchedule: s.displaySchedule
             });
         }
@@ -136,13 +143,14 @@ const parseDaysList = (days) => {
     days = days.toString().trim();
     let parsedDays = [];
     const daily = days.toLocaleLowerCase().startsWith('daily');
+
     // split days by regex [,\s|]
     if (daily) {
         parsedDays = validDays;
-    }
-    else {
+    } else {
         parsedDays = days.split(/[\s,|]+/i).map(s => s.toString().toLocaleLowerCase());
     }
+
     // replace abbreviated days
     parsedDays = parsedDays.map(d => abbreviations[d] ?? d);
 
@@ -159,9 +167,11 @@ const parseDaysList = (days) => {
  * @returns {Dayjs}
  */
 const parseTime = (time) => {
+
     // dayjs requires space between `hh:mm am/pm`
     // regex allows user to have any number of spaces or no space at all
     let parsedTime = time.replace(/\s*([ap]m)/, ' $1');
+
     // date is required for parsing, even just 'Y'
     // using a day from the past (1/1 2024, a monday) to parse time
     const timeFormats = ['Y h:mma', 'Y h:mmA', 'Y H:mm'];
@@ -176,14 +186,14 @@ const parseTime = (time) => {
  * @param {*} client 
  * @param {*} id user id
  */
-const sendMessage=async (client,id)=>{
+const sendMessage = async (client, id)=>{
 
     let user = await client.users.cache.get(id);
-    if (!user) {//checks if user is already in cache
-        user = await client.users.fetch(id); //fetches user (will add to the cache)
+    if (!user) { // checks if user is already in cache
+        user = await client.users.fetch(id); // fetches user (will add to the cache)
     }
 
-    //checkin interface module
+    // checkin interface module
     let reply = [
         'Would you like to spend a few minutes to describe how you\'re doing? ',
         'Feel free to leave any fields blank. ',
@@ -209,35 +219,35 @@ const sendMessage=async (client,id)=>{
 
     try {
         await user.send({
-            content: reply,
+            content:    reply,
             components: [actions]
         });
 
     } catch (error) {
-        await user.send({
-            content: 'could not process command'
-        });
+        await user.send({ content: 'could not process command' });
     }
 
 };
+
 /**
- * delete the past 100 messages
+ * delete the past 100 messages in a given channel
  * @param {*} client 
  * @param {*} interaction 
  */
-const deleteAllDMs=async (client,interaction)=>{
-    let msgs=[]
-    let chan=await client.channels.fetch(interaction.channelId).then(
-        cha=>{cha.messages.fetch({ limit: 100 }).then(messages => {
-        console.log(`Received ${messages.size} messages`);
-        //Iterate through the messages here with the variable "messages".
-        messages.forEach(message => msgs.push(message))
-        for(let m of msgs){
-            m.delete()
-          }
-      })}
-    )
-}
+const deleteAllDMs = async (client, interaction)=>{
+    let msgs = [];
+    let chan = await client.channels.fetch(interaction.channelId).then(cha=>{
+        cha.messages.fetch({ limit: 100 }).then(messages => {
+            console.log(`Received ${messages.size} messages`);
+
+            // Iterate through the messages here with the variable "messages".
+            messages.forEach(message => msgs.push(message));
+            for (let m of msgs) {
+                m.delete();
+            }
+        });
+    });
+};
 
 
 
@@ -246,53 +256,53 @@ const deleteAllDMs=async (client,interaction)=>{
  * orders them chronologically in the queue[]
  * @param {*} day 
  */
-const getDayOrder=(day)=>{
-    let times=[];
+const getDayOrder = (day)=>{
+    let times = [];
 
     /**
     * checks to see if users have a scheduled day today
     * creates and adds a user object with the time to the times array
     */
-    for(let user in scheduleCheckIn.fakeScheduleEntry){
-        for(let schedule of scheduleCheckIn.fakeScheduleEntry[user].schedules){
-          if(schedule.utcDays.includes(day)){
-            times.push({
-                id:user,
-                hour:schedule.utcTime[0],
-                min:schedule.utcTime[1]
-            });
-          }
+    for (let user in fakeScheduleEntry) {
+        for (let schedule of fakeScheduleEntry[user].schedules) {
+            if (schedule.utcDays.includes(day)) {
+                times.push({
+                    id:   user,
+                    hour: schedule.utcTime[0],
+                    min:  schedule.utcTime[1]
+                });
+            }
         }
-      }
-    
+    }
+
     /**
      * runs through the times array and creates an object with unique times
      * this orders them in chronological order in the structuredTimes object
     */
-    for(let t of times){
-        if(t.hour in structuredTimes){
-            if(t.min in structuredTimes[t.hour]){
+    for (let t of times) {
+        if (t.hour in structuredTimes) {
+            if (t.min in structuredTimes[t.hour]) {
                 structuredTimes[t.hour][t.min].push(t);
-            }else{
-                structuredTimes[t.hour][t.min]=[t];
+            } else {
+                structuredTimes[t.hour][t.min] = [t];
             }
-        }else{
-            structuredTimes[t.hour]={[t.min]:[t]};
+        } else {
+            structuredTimes[t.hour] = { [t.min]: [t] };
         }
     }
-    
+
     /**
      * takes all of the values in structured times object 
      * => adds it to the queue
     */
-    for(let h in structuredTimes){
-        for(let m in structuredTimes[h]){
+    for (let h in structuredTimes) {
+        for (let m in structuredTimes[h]) {
             structuredTimes[h][m].forEach((reminder)=>{
                 queue.push(reminder);
             });
         }
     }
-    console.log(queue)
+    console.log(queue);
 };
 
 
@@ -301,16 +311,17 @@ const getDayOrder=(day)=>{
  * converts number to name of day
  * @returns current utc day of the week
  */
-const checkCurrentDay=()=>{
-    const now=dayjs.utc();//.format()
-    const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']; 
+const checkCurrentDay = ()=>{
+    const now = dayjs.utc();// .format()
+    const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     const currentDayOfWeek = daysOfWeek[now.weekday()];
-    return(currentDayOfWeek);
+    return currentDayOfWeek;
 };
+
 /**
  * creates a new queue
  */
-const getQueue=()=>{
+const getQueue = ()=>{
     getDayOrder(checkCurrentDay());
 };
 
@@ -329,6 +340,7 @@ module.exports = {
     displaySchedule,
     sendMessage,
     getQueue,
+    fakeScheduleEntry,
     queue,
     ScheduleError
 };

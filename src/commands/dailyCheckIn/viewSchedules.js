@@ -1,8 +1,9 @@
 const {
     ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, PermissionFlagsBits, SlashCommandBuilder
 } = require('discord.js');
-const { displaySchedule } = require('../../utils/schedule');
-const scheduleCheckIn = require('./scheduleCheckIn');
+const { fakeScheduleEntry, displaySchedule } = require('../../utils/schedule');
+
+// const scheduleCheckIn = require('./scheduleCheckIn');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -33,14 +34,13 @@ module.exports = {
         }
 
         try {
-            if (!scheduleCheckIn.fakeScheduleEntry[userId] || scheduleCheckIn.fakeScheduleEntry[userId]?.schedules?.length === 0) {
+            if (!fakeScheduleEntry[userId] || fakeScheduleEntry[userId]?.schedules?.length === 0) {
                 await interaction.editReply({ content: '*You have no schedules! Create one with `/schedule-check-in`*' });
                 return;
             }
 
 
-            const schedules = scheduleCheckIn
-                .fakeScheduleEntry[userId]
+            const schedules = fakeScheduleEntry[userId]
                 ?.schedules
                 ?.map(s => displaySchedule(s));
 

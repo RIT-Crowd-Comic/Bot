@@ -1,11 +1,11 @@
 
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const {
-    parseDaysList, parseTime, createSchedule, displaySchedule
+    fakeScheduleEntry, queue, parseDaysList, parseTime, createSchedule, displaySchedule, getQueue
 } = require('../../utils/schedule');
 
 
-const fakeScheduleEntry = {};
+
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -82,6 +82,10 @@ module.exports = {
             );
             fakeScheduleEntry[userId].schedules ??= [];
             fakeScheduleEntry[userId].schedules.push(schedule);
+
+            getQueue();
+            console.log('queue');
+            console.log(queue);
 
             let reply = `Check ins scheduled for ${displaySchedule(schedule)}`;
 

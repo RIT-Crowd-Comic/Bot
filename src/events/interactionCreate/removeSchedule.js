@@ -1,6 +1,6 @@
 
-const checkIn = require('../../commands/dailyCheckIn/scheduleCheckIn');
-const { displaySchedule } = require('../../utils/schedule');
+// const checkIn = require('../../commands/dailyCheckIn/scheduleCheckIn');
+const { fakeScheduleEntry, displaySchedule } = require('../../utils/schedule');
 
 /**
  * 
@@ -15,34 +15,31 @@ module.exports = async (client, interaction) => {
         const userId = interaction?.user?.id;
 
         try {
+
             // make sure unintended schedules aren't deleted when the remove-schedules dropdown changes
-            checkIn.fakeScheduleEntry[userId].schedules.forEach(s => {
+            fakeScheduleEntry[userId].schedules.forEach(s => {
                 s.remove = false;
             });
 
             // select schedules to remove
             interaction.values.forEach(v => {
-                checkIn.fakeScheduleEntry[userId].schedules[v].remove = true;
+                fakeScheduleEntry[userId].schedules[v].remove = true;
             });
             await interaction.deferUpdate();
 
-        }
-        catch {
-            await interaction.reply(
-                {
-                    ephemeral: true,
-                    content: '*Issue selecting schedule.*'
-                }
-            );
+        } catch {
+            await interaction.reply({
+                ephemeral: true,
+                content:   '*Issue selecting schedule.*'
+            });
             return;
         }
-    }
-    else if (interaction.customId === 'remove-schedule-btn') {
+    } else if (interaction.customId === 'remove-schedule-btn') {
 
         const userId = interaction?.user?.id;
 
         try {
-            const schedules = checkIn.fakeScheduleEntry[userId].schedules;
+            const schedules = fakeScheduleEntry[userId].schedules;
 
             // keep track of removed schedules to inform user 
             const removedSchedules = [];
@@ -67,16 +64,13 @@ module.exports = async (client, interaction) => {
 
             await interaction.reply({
                 ephemeral: true,
-                content: reply
+                content:   reply
             });
-        }
-        catch {
-            await interaction.reply(
-                {
-                    ephemeral: true,
-                    content: '*Issue deleting schedules*'
-                }
-            );
+        } catch {
+            await interaction.reply({
+                ephemeral: true,
+                content:   '*Issue deleting schedules*'
+            });
         }
     }
 };

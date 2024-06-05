@@ -1,8 +1,7 @@
 const {
     PermissionFlagsBits, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder
 } = require('discord.js');
-const scheduleCheckIn = require('./scheduleCheckIn');
-const { displaySchedule } = require('../../utils/schedule');
+const { fakeScheduleEntry, displaySchedule, getQueue } = require('../../utils/schedule');
 const { ActionRowBuilder } = require('@discordjs/builders');
 
 
@@ -38,11 +37,11 @@ module.exports = {
         }
 
         try {
-            if (scheduleCheckIn.fakeScheduleEntry[userId] === undefined) {
+            if (fakeScheduleEntry[userId] === undefined) {
                 await interaction.editReply({ content: '*You have no schedules! Create one with `/schedule-check-in`*' });
                 return;
             }
-            const schedules = scheduleCheckIn.fakeScheduleEntry[userId]?.schedules?.map(s => (
+            const schedules = fakeScheduleEntry[userId]?.schedules?.map(s => (
                 {
                     name:     displaySchedule(s),
                     schedule: s
@@ -66,6 +65,8 @@ module.exports = {
                 .setStyle(ButtonStyle.Danger);
             row1.addComponents(scheduleDropdown);
             row2.addComponents(removeButton);
+
+            getQueue();
 
             await interaction.editReply({
                 content:    `Select a schedule to remove`,
