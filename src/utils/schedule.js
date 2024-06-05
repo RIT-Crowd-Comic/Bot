@@ -18,17 +18,14 @@ const abbreviations = {
     'su': 'sunday',
 };
 
-class ScheduleError extends Error
-{
-    constructor(message)
-    {
+class ScheduleError extends Error {
+    constructor(message) {
         super(message);
         this.name = 'ScheduleError';
     }
 }
 
-const displaySchedule = (schedule) =>
-{
+const displaySchedule = (schedule) => {
     const everyDay = validDays.every(d => schedule.localDays.includes(d));
     const days = everyDay ? 'every day' : `[${schedule.localDays.join(', ')}]`;
     const time = `${schedule.localTime[0]}:${schedule.localTime[1]}`;
@@ -45,12 +42,10 @@ const displaySchedule = (schedule) =>
  * @returns { Number[] } schedule.utcTime,
  * @returns { string } schedule.displaySchedule
  */
-const createSchedule = (daysList, time) =>
-{
+const createSchedule = (daysList, time) => {
 
     // check if list of days is valid
-    if (daysList.some(d => !validDays.includes(d)))
-    {
+    if (daysList.some(d => !validDays.includes(d))) {
         throw new ScheduleError('Invalid list of days');
     }
 
@@ -75,8 +70,7 @@ const createSchedule = (daysList, time) =>
     // Since times close to midnight can translate to the next day (or previous day)
     // in UTC, the following code will shift the user's day schedule accordingly
 
-    const utcDays = daysList.map(day =>
-    {
+    const utcDays = daysList.map(day => {
         const dayIndex = validDays.indexOf(day); // dayjs() uses index
         return validDays[firstScheduleDay.day(dayIndex).utc().day()];
     });
@@ -95,8 +89,7 @@ const createSchedule = (daysList, time) =>
  * @returns 
  */
 // eslint-disable-next-line
-const mergeSchedules = (schedules) =>
-{
+const mergeSchedules = (schedules) => {
 
     // current issue:
     // displaySchedule will not update after schedules are 
@@ -104,22 +97,17 @@ const mergeSchedules = (schedules) =>
 
     // clone 2 levels deep
     const mergedSchedules = [];
-    schedules.forEach(s =>
-    {
+    schedules.forEach(s => {
         let duplicate = false;
 
         // iterate backwards because we're modifying the array
-        for (let i = mergedSchedules.length - 1; i >= 0; i--)
-        {
+        for (let i = mergedSchedules.length - 1; i >= 0; i--) {
             const m = mergedSchedules[i];
 
             // find matching times
-            if (s.utcTime.every((t, i) => t === m.utcTime[i]))
-            {
-                s.days.forEach(d =>
-                {
-                    if (!m.days.includes(d))
-                    {
+            if (s.utcTime.every((t, i) => t === m.utcTime[i])) {
+                s.days.forEach(d => {
+                    if (!m.days.includes(d)) {
                         m.days.push(d);
                     }
                 });
@@ -128,8 +116,7 @@ const mergeSchedules = (schedules) =>
 
             // otherwise, add schedule to list
         }
-        if (!duplicate)
-        {
+        if (!duplicate) {
             mergedSchedules.push({
                 days:            [...s.days],
                 utcTime:         [...s.utcTime],
@@ -146,27 +133,23 @@ const mergeSchedules = (schedules) =>
  * @param {string} days list of days separated by regex [,\s|]
  * @returns {string[]}
 */
-const parseDaysList = (days) =>
-{
+const parseDaysList = (days) => {
     days = days.toString().trim();
     let parsedDays;
     const daily = days.toLocaleLowerCase().startsWith('daily');
 
     // split days by regex [,\s|]
-    if (daily)
-    {
+    if (daily) {
         parsedDays = validDays;
     }
-    else
-    {
+    else {
         parsedDays = days.split(/[\s,|]+/i).map(s => s.toString().toLocaleLowerCase());
     }
 
     // replace abbreviated days
     parsedDays = parsedDays.map(d => abbreviations[d] ?? d);
 
-    if (parsedDays.some(d => !validDays.includes(d)))
-    {
+    if (parsedDays.some(d => !validDays.includes(d))) {
         throw ScheduleError('Invalid list of days');
     }
 
@@ -178,8 +161,7 @@ const parseDaysList = (days) =>
  * @param {string} time 
  * @returns {Dayjs}
  */
-const parseTime = (time) =>
-{
+const parseTime = (time) => {
 
     // dayjs requires space between `hh:mm am/pm`
     // regex allows user to have any number of spaces or no space at all

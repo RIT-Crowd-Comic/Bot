@@ -11,10 +11,8 @@ const path = './src/savedAvailability.json';
 
 // Callbacks
 // set-unavailability
-const setUnavail = async (interaction) =>
-{
-    try
-    {
+const setUnavail = async (interaction) => {
+    try {
         const userId = interaction?.user?.id;
         const userTag = interaction?.user?.tag;
 
@@ -49,17 +47,14 @@ const setUnavail = async (interaction) =>
         // Save data to file
         saveUnavailability(userId, userTag, unavail, path);
     }
-    catch (error)
-    {
-        if (error.name === 'ScheduleError')
-        {
+    catch (error) {
+        if (error.name === 'ScheduleError') {
             await interaction.editReply({
                 ephemeral: true,
                 content:   `*${error.message}*`
             });
         }
-        else
-        {
+        else {
             console.log(error);
             await interaction.editReply({
                 ephemeral: true,
@@ -70,10 +65,8 @@ const setUnavail = async (interaction) =>
 };
 
 // set-availability
-const setAvail = async (interaction) =>
-{
-    try
-    {
+const setAvail = async (interaction) => {
+    try {
         const userId = interaction?.user?.id;
         const userTag = interaction?.user?.tag;
 
@@ -107,17 +100,14 @@ const setAvail = async (interaction) =>
         saveAvailability(userId, userTag, avail, path);
 
     }
-    catch (error)
-    {
-        if (error.name === 'ScheduleError')
-        {
+    catch (error) {
+        if (error.name === 'ScheduleError') {
             await interaction.editReply({
                 ephemeral: true,
                 content:   `*${error.message}*`
             });
         }
-        else
-        {
+        else {
             console.log(error);
             await interaction.editReply({
                 ephemeral: true,
@@ -127,10 +117,8 @@ const setAvail = async (interaction) =>
     }
 };
 
-const displayAvail = async (interaction) =>
-{
-    try
-    {
+const displayAvail = async (interaction) => {
+    try {
         await interaction.deferReply({ ephemeral: true });
         let targetMember = interaction.options.get('member')?.value;
 
@@ -142,8 +130,7 @@ const displayAvail = async (interaction) =>
         const fileContent = loadAvailability(path);
 
         // If no matching user was found in the data, 
-        if (!fileContent[targetMember.id])
-        {
+        if (!fileContent[targetMember.id]) {
             console.log('no data');
             await interaction.editReply({
                 ephemeral: true,
@@ -160,8 +147,7 @@ const displayAvail = async (interaction) =>
             .setDescription(`Available from ${dayjs(availability.from).format('hh:mm A')}-${dayjs(availability.to).format('hh:mm A')} on ${availability.days.join(', ')}`);
         interaction.editReply({ embeds: [embed], ephemeral: true });
     }
-    catch (error)
-    {
+    catch (error) {
         console.log(error);
         await interaction.editReply({
             ephemeral: true,
@@ -170,10 +156,8 @@ const displayAvail = async (interaction) =>
     }
 };
 
-const displayUnavail = async (interaction) =>
-{
-    try
-    {
+const displayUnavail = async (interaction) => {
+    try {
         await interaction.deferReply({ ephemeral: true });
         let targetMember = interaction.options.get('member')?.value;
 
@@ -185,8 +169,7 @@ const displayUnavail = async (interaction) =>
         const fileContent = loadAvailability(path);
 
         // If no matching user was found in the data, 
-        if (!fileContent[targetMember.id])
-        {
+        if (!fileContent[targetMember.id]) {
             await interaction.editReply({
                 ephemeral: true,
                 content:   'Requested member has no available data'
@@ -199,8 +182,7 @@ const displayUnavail = async (interaction) =>
         // Create an embed to send to the user
         const embed = new EmbedBuilder()
             .setTitle(`${targetMember.username}'s Unavailability`);
-        for (let i = 0, length = unavailability.length; i < length; i++)
-        {
+        for (let i = 0, length = unavailability.length; i < length; i++) {
 
             // Check for reason (leave empty if none)
             const reason = unavailability[i].reason ? `Reason: ${unavailability[i].reason}` : ` `;
@@ -211,8 +193,7 @@ const displayUnavail = async (interaction) =>
         }
         interaction.editReply({ embeds: [embed], ephemeral: true });
     }
-    catch (error)
-    {
+    catch (error) {
         console.log(error);
         await interaction.editReply({
             ephemeral: true,
@@ -277,8 +258,7 @@ module.exports = {
                     option.setName('member')
                         .setDescription('User you want to see the unavailability of')
                         .setRequired(false))),
-    async execute(client, interaction)
-    {
+    async execute(client, interaction) {
 
 
         const action = {
@@ -288,16 +268,14 @@ module.exports = {
             'view-unavailability': () => displayUnavail(interaction)
         };
 
-        try
-        {
+        try {
 
             // get the used subcommand
             const subcommand = interaction.options.getSubcommand();
 
             action[subcommand]();
         }
-        catch (error)
-        {
+        catch (error) {
             await interaction.editReply({
                 content:   `Something went wrong. ${error}`,
                 ephemeral: false,

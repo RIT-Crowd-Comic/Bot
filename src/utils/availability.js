@@ -6,15 +6,13 @@ let availabilityChannel = undefined;
 const getAvailabilityChannel = async () => { return availabilityChannel; };
 const setAvailabilityChannel = channel => { availabilityChannel = channel; };
 
-const loadAvailability = (path) =>
-{
+const loadAvailability = (path) => {
     let data = fs.readFileSync(path, { encoding: 'utf8' });
     data = JSON.parse(data);
     return data;
 };
 
-const newAvailabilityEntry = (userId, userTag) =>
-{
+const newAvailabilityEntry = (userId, userTag) => {
     return {
         userId:    userId,
         userTag:   userTag,
@@ -36,8 +34,7 @@ const newAvailabilityEntry = (userId, userTag) =>
  * @param {string} days
  * @returns {Object}
  */
-const createAvailability = (start, end, days) =>
-{
+const createAvailability = (start, end, days) => {
     if (!dayjs(start).isValid && !dayjs(end).isValid)
         throw new ScheduleError('Enter times in proper formats');
     if (dayjs(start).isAfter(dayjs(end)))
@@ -57,8 +54,7 @@ const createAvailability = (start, end, days) =>
  * @param {string} reason
  * @returns {Object}
  */
-const createUnavailability = (start, end, reason) =>
-{
+const createUnavailability = (start, end, reason) => {
     if (!dayjs(start).isValid && !dayjs(end).isValid)
         throw new ScheduleError('Enter dates and times in proper formats');
     if (dayjs(start).isAfter(dayjs(end)))
@@ -71,8 +67,7 @@ const createUnavailability = (start, end, reason) =>
     };
 };
 
-const saveUnavailability = (userId, userTag, unavail, path) =>
-{
+const saveUnavailability = (userId, userTag, unavail, path) => {
 
     // Get saved data from file and turn into array with objects
     let fileContent = loadAvailability(path);
@@ -84,8 +79,7 @@ const saveUnavailability = (userId, userTag, unavail, path) =>
     fs.writeFile(path, JSON.stringify(fileContent, null, 2), (err) => err && console.error(err));
 };
 
-const saveAvailability = (userId, userTag, avail, path) =>
-{
+const saveAvailability = (userId, userTag, avail, path) => {
     let fileContent = loadAvailability(path);
 
     fileContent[userId] ??= newAvailabilityEntry(userId, userTag);
