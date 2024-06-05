@@ -1,6 +1,7 @@
 const fs = require('fs');
 const dayjs = require('dayjs');
 const { ScheduleError, parseDaysList } = require('./schedule.js');
+const { EmbedBuilder } = require('discord.js');
 
 let availabilityChannel = undefined;
 const getAvailabilityChannel = async () => { return availabilityChannel; };
@@ -103,56 +104,138 @@ const updateAvailabilityChannel = async newChannel => {
     return { content: `<#${newChannel.id}> is the new availability channel` };
 };
 
-const getSUData = (interaction, path) => {
-    return {
-        userId: interaction?.user?.id,
-        userTag: interaction?.user?.tag,
-        dateFrom: interaction.options.get('date-from')?.value,
-        dateTo: interaction.options.get('date-to')?.value,
-        timeFrom: interaction.options.get('time-from')?.value,
-        timeTo: interaction.options.get('time-to')?.value,
-        reason: interaction.options.get('reason')?.value,
-        path: path
-    }
-
-};
-
-//Command Functions
-const setUnavail = (userId,userTag,dateFrom,dateTo,timeFrom,timeTo,reason,path) => {
+// Command Functions
+const setUnavail = (userId, userTag, dateFrom, dateTo, timeFrom, timeTo, reason, path) => {
     try {
         if (dateTo && !dateFrom)
             throw new ScheduleError('Please select a start date.');
         if (timeTo && !timeFrom)
             throw new ScheduleError('Please select a start time.');
-    
+
         // Create a start and end dayjs obj (Default times to 0:00 if empty)
         const startUnavail = dayjs(`2024 ${dateFrom} ${timeFrom ? timeFrom : '0:00'}`);
         const endUnavail = dayjs(`2024 ${dateTo} ${timeTo ? timeTo : '23:59'}`);
-    
+
         const unavail = createUnavailability(startUnavail, endUnavail, reason);
-    
+
         // Print data for now
         let reply = [
             '```',
             JSON.stringify(unavail, undefined, 2),
             '```',
         ].join('\n');
-    
-        //await interaction.editReply({ content: reply });
-    
+
+        // await interaction.editReply({ content: reply });
+
         // Save data to file
         saveUnavailability(userId, userTag, unavail, path);
-    
-        return reply;
-    } catch (error) {
-        if (error.name === 'ScheduleError')
-            return `*${error.message}*`;
-        else {
-            console.log(error);
-            return `*Issue running command*`;
-        }
+        return { content: reply };
     }
-}
+    catch (error) {
+        if (error.name === 'ScheduleError')
+            return { content: `*${error.message}*` };
+
+        console.log(error);
+        return { content: `*Issue running command*` };
+
+    }
+};
+
+const setAvail = (userId, userTag, timeFrom, timeTo, days, path) => {
+    try {
+        if (!timeFrom || !timeTo)
+            throw new ScheduleError('Enter both start AND end times');
+
+        // Parse the day list into an array
+        const parsedDays = parseDaysList(days ? days : 'daily');
+
+        // Create a start and end dayjs obj (arbitrary day used, does not affect time result)
+        const startAvail = dayjs(`2024 5-20 ${timeFrom}`);
+        const endAvail = dayjs(`2024 8-9 ${timeTo}`);
+
+        const avail = createAvailability(startAvail, endAvail, parsedDays, userId, userTag);
+
+        // Print data for now
+        let reply = [
+            '```',
+            JSON.stringify(avail, undefined, 2),
+            '```',
+        ].join('\n');
+
+        // Save data to file
+        saveAvailability(userId, userTag, avail, path);
+        return { content: reply };
+    }
+    catch (error) {
+        if (error.name === 'ScheduleError') {
+            return { content: `*${error.message}*` };
+        }
+
+        console.log(error);
+        return { content: `*Issue running command*` };
+
+    }
+};
+
+const displayAvail = (user, member, path) => {
+    try {
+
+        const targetMember = member ? member : user;
+
+        // Get data saved from file
+        const fileContent = loadAvailability(path);
+
+        // If no matching user was found in the data, 
+        if (!fileContent[targetMember.id])
+            return { content: 'Requested member has no available data' };
+
+        const availability = fileContent[targetMember.id].available;
+
+        // Create an embed to send to the user
+        const embed = new EmbedBuilder()
+            .setTitle(`${targetMember.username}'s Availability`)
+            .setDescription(`Available from ${dayjs(availability.from).format('hh:mm A')}-${dayjs(availability.to).format('hh:mm A')} on ${availability.days.join(', ')}`);
+        return { embeds: [embed] };
+    }
+    catch (error) {
+        console.log(error);
+        return { content: `*Issue running command*` };
+    }
+};
+
+const displayUnavail = (user, member, path) => {
+    try {
+
+        const targetMember = member ? member : user;
+
+        // Get data saved from file
+        const fileContent = loadAvailability(path);
+
+        // If no matching user was found in the data, 
+        if (!fileContent[targetMember.id])
+            return { content: 'Requested member has no available data' };
+
+        const unavailability = fileContent[targetMember.id].unavailable;
+
+        // Create an embed to send to the user
+        const embed = new EmbedBuilder()
+            .setTitle(`${targetMember.username}'s Unavailability`);
+        for (let i = 0, length = unavailability.length; i < length; i++) {
+
+            // Check for reason (leave empty if none)
+            const reason = unavailability[i].reason ? `Reason: ${unavailability[i].reason}` : ` `;
+            embed.addFields({
+                name:  `From ${dayjs(unavailability[i].from).format('MM-DD hh:mm A')} to ${dayjs(unavailability[i].to).format('MM-DD hh:mm A')}`,
+                value: reason
+            });
+        }
+        return { embeds: [embed] };
+    }
+    catch (error) {
+        console.log(error);
+        return { content: `*Issue running command*` };
+    }
+};
 
 module.exports = {
     createAvailability,
@@ -164,6 +247,8 @@ module.exports = {
     saveAvailability,
     newAvailabilityEntry,
     loadAvailability,
-    getSUData,
-    setUnavail
+    setUnavail,
+    setAvail,
+    displayAvail,
+    displayUnavail
 };
