@@ -42,8 +42,7 @@ module.exports = {
     // logic for the command in the form of a callback function
     // interaction stores the data of the interaction, like button press, user, data input etc
     // must take in client and interaction
-    async execute(client, interaction)
-    {
+    async execute(client, interaction) {
         const action = {
             'subcommand':   () => { interaction.reply('Hello'); },
             'subcommand-2': () => { interaction.reply('Goodbye'); },

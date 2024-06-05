@@ -80,8 +80,7 @@ module.exports = async (client, message) =>
         const availabilityChannel = await getAvailabilityChannel();
 
         // only send a message if it's not from a bot and it's from the available channel
-        if (message.author.bot || !availabilityChannel || message.channelId !== availabilityChannel.id)
-        {
+        if (message.author.bot || !availabilityChannel || message.channelId !== availabilityChannel.id) {
             return;
         }
 

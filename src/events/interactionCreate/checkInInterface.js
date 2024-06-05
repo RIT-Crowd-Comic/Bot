@@ -12,14 +12,12 @@ const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
  * @param {CommandInteraction} interaction 
  * @returns 
  */
-module.exports = async (client, interaction) =>
-{
+module.exports = async (client, interaction) => {
 
 
 
     // only deal with the check in button, ignore all other button presses
-    if (interaction.customId?.startsWith('check-in-btn'))
-    {
+    if (interaction.customId?.startsWith('check-in-btn')) {
         await interaction.deferReply({ ephemeral: true });
         const userId = interaction.user.id;
         let reply = [
@@ -50,16 +48,14 @@ module.exports = async (client, interaction) =>
 
         actions.addComponents(yesBtn, laterBtn, notNowBtn);
 
-        try
-        {
+        try {
             await interaction.editReply({
                 content:    reply,
                 components: [actions]
             });
 
         }
-        catch
-        {
+        catch {
             await interaction.editReply({ content: 'could not process command' });
         }
     }
