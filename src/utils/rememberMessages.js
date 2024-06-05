@@ -75,7 +75,6 @@ const getMessagesAndReturnId = async(messagesToSave, channel, num, excludeBotMes
 // remembers all messages between two messages.
 const rememberRangeGrab = async (channelId, startMessageId, endMessageId, excludeBotMessages) => {
     try {
-
         // make sure channel exist
         const channelObj = await apiCalls.getChannelObject(channelId);
 

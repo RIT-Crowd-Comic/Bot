@@ -1,22 +1,20 @@
 const rolesUtils = require('../utils/roles');
-
+jest.mock('../utils/apiCalls');
+const apiCalls = require('../utils/apiCalls');
 const validUser = {
-    'id':                     '330475170835726347',
-    'username':               'blckhawker',
-    'avatar':                 '7dc8ea3f603dc5fed414c8505aada4ea',
+    'id':                     '1234567890',
+    'username':               'good_username',
+    'avatar':                 'nf32qkjbfni2qbniuqb',
     'discriminator':          '0',
     'public_flags':           0,
     'flags':                  0,
     'banner':                 null,
     'accent_color':           0,
-    'global_name':            'Hawker',
+    'global_name':            'User',
     'avatar_decoration_data': null,
     'banner_color':           '#000000',
     'clan':                   null
 };
-
-jest.mock('../utils/apiCalls');
-const apiCalls = require('../utils/apiCalls');
 
 describe('role utils', () => {
     beforeEach(() => {
