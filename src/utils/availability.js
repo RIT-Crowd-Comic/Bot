@@ -4,7 +4,7 @@ const { ScheduleError } = require('./schedule.js');
 
 let availabilityChannel = undefined;
 const getAvailabilityChannel = async () => { return availabilityChannel; };
-const setAvailabilityChannel = (channel) => { availabilityChannel = channel; };
+const setAvailabilityChannel = channel => { availabilityChannel = channel; };
 
 const loadAvailability = (path) =>
 {
@@ -95,13 +95,27 @@ const saveAvailability = (userId, userTag, avail, path) =>
     fs.writeFile(path, JSON.stringify(fileContent, null, 2), (err) => err && console.error(err));
 };
 
+const updateAvailabilityChannel = async newChannel => {
+    const oldChannel = await getAvailabilityChannel();
+
+    // check if new id is the same as the current one
+    if (oldChannel && oldChannel.id === newChannel.id) {
+        return { content: `<#${oldChannel.id}> is already the availability channel` };
+    }
+
+    // set the new channel as the current one
+    setAvailabilityChannel(newChannel);
+
+    return { content: `<#${newChannel.id}> is the new availability channel` };
+};
 module.exports = {
     createAvailability,
     createUnavailability,
     getAvailabilityChannel,
     setAvailabilityChannel,
+    updateAvailabilityChannel,
     saveUnavailability,
     saveAvailability,
     newAvailabilityEntry,
-    loadAvailability
+    loadAvailability,
 };

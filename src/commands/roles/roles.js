@@ -4,10 +4,8 @@ const rolesUtils = require('../../utils/roles');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 
-const addRole = async (interaction) =>
-{
-    try
-    {
+const addRole = async (interaction) => {
+    try {
 
         // if the user wasn't given, assume the user is the person calling the command
         const user = interaction.options.getUser('user') ?? interaction.member.user;
@@ -16,16 +14,13 @@ const addRole = async (interaction) =>
         interaction.editReply({ content: content });
     }
 
-    catch (error)
-    {
+    catch (error) {
         interaction.editReply({ content: `${error}` });
     }
 };
 
-const removeRole = async (interaction) =>
-{
-    try
-    {
+const removeRole = async (interaction) => {
+    try {
 
         // if a user wasn't given, assume it was the person who ran the command
         const user = interaction.options.getUser('user') ?? interaction.member.user;
@@ -33,8 +28,7 @@ const removeRole = async (interaction) =>
         const content = response.status === 'Success' ? 'Success' : response.description;
         interaction.editReply({ content: content });
     }
-    catch (error)
-    {
+    catch (error) {
         interaction.editReply({ content: `${error}` });
     }
 };
@@ -70,8 +64,7 @@ module.exports = {
     },
 
     // logic, 
-    async execute(client, interaction)
-    {
+    async execute(client, interaction) {
         await interaction.deferReply();
 
         const action = {
@@ -79,14 +72,12 @@ module.exports = {
             'remove': () => removeRole(interaction),
         };
 
-        try
-        {
+        try {
             const subcommand = interaction.options.getSubcommand();
 
             action[subcommand]();
         }
-        catch (error)
-        {
+        catch (error) {
             await interaction.editReply({
                 content:   `Something went wrong. ${error}`,
                 ephemeral: false,

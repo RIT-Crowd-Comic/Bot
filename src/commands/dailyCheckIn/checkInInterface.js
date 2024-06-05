@@ -7,8 +7,7 @@ const {
  */
 
 const fakecheckInDatabase = {};
-const makeDefaultUserSettings = (userTag, userId) =>
-{
+const makeDefaultUserSettings = (userTag, userId) => {
     return {
         tag:              userTag,
         id:               userId,
@@ -39,11 +38,8 @@ module.exports = {
 
 
     // logic, 
-    async execute(client, interaction)
-    {
-
-        try
-        {
+    async execute(client, interaction) {
+        try {
             await interaction.deferReply();
             const actions = new ActionRowBuilder();
             const testBtn = new ButtonBuilder()
@@ -58,8 +54,7 @@ module.exports = {
                 components: [actions]
             });
         }
-        catch (error)
-        {
+        catch (error) {
             await interaction.editReply({
                 content:   `Something went wrong. ${error}`,
                 ephemeral: false,
