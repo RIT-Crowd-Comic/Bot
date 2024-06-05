@@ -64,8 +64,6 @@ module.exports = {
                 return;
             }
 
-        try {
-
 
             const rawDays = interaction.options.get('days')?.value;
             const rawTime = interaction.options.get('time')?.value;
@@ -145,7 +143,11 @@ module.exports = {
             });
 
             // update the database
-            fakeScheduleEntry[userId] ??= {};
+
+            // until we have a way of cleanly updating a schedule,
+            // clear current user's entries and repopulate them
+
+            delete fakeScheduleEntry[userId];
 
             // update user's entries
             fakeScheduleEntry[userId] = {
@@ -164,7 +166,7 @@ module.exports = {
             const daysResponse = daily ? 'every day' : `[${parsedDays.join(', ')}]`;
 
             let reply = [
-                `Check ins scheduled for ${displaySchedule(schedule)}`,
+                `Check ins scheduled for ${daysResponse} at ${firstScheduleDay.format('LT')}`,
                 '',
                 '[debug]',
                 '',
