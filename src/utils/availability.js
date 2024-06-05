@@ -112,9 +112,13 @@ const setUnavail = (userId, userTag, dateFrom, dateTo, timeFrom, timeTo, reason,
         if (timeTo && !timeFrom)
             throw new ScheduleError('Please select a start time.');
 
-        // Create a start and end dayjs obj (Default times to 0:00 if empty)
+        // Create a start and end dayjs obj (Parse times if present and default times to 0:00 if empty)
         const startUnavail = dayjs(`2024 ${dateFrom} ${timeFrom ? timeFrom : '0:00'}`);
         const endUnavail = dayjs(`2024 ${dateTo} ${timeTo ? timeTo : '23:59'}`);
+
+        // Check if dates are valid
+        if (!dayjs(startUnavail).isValid() || !dayjs(endUnavail).isValid())
+            throw new ScheduleError('Please enter correctly formatted dates and times');
 
         const unavail = createUnavailability(startUnavail, endUnavail, reason);
 
@@ -136,7 +140,7 @@ const setUnavail = (userId, userTag, dateFrom, dateTo, timeFrom, timeTo, reason,
             return { content: `*${error.message}*` };
 
         console.log(error);
-        return { content: `*Issue running command*` };
+        return { content: `*${error.message}*` };
 
     }
 };
@@ -149,9 +153,14 @@ const setAvail = (userId, userTag, timeFrom, timeTo, days, path) => {
         // Parse the day list into an array
         const parsedDays = parseDaysList(days ? days : 'daily');
 
+        timeFrom = timeFrom.replace(/\s*([ap]m)/, ' $1');
+        timeTo = timeTo.replace(/\s*([ap]m)/, ' $1');
+
+        const timeFormats = ['Y h:mma', 'Y h:mmA', 'Y H:mm'];
+
         // Create a start and end dayjs obj (arbitrary day used, does not affect time result)
-        const startAvail = dayjs(`2024 5-20 ${timeFrom}`);
-        const endAvail = dayjs(`2024 8-9 ${timeTo}`);
+        const startAvail = dayjs(`2024 ${timeFrom}`, timeFormats);
+        const endAvail = dayjs(`2024 ${timeTo}`, timeFormats);
 
         const avail = createAvailability(startAvail, endAvail, parsedDays, userId, userTag);
 
@@ -172,7 +181,7 @@ const setAvail = (userId, userTag, timeFrom, timeTo, days, path) => {
         }
 
         console.log(error);
-        return { content: `*Issue running command*` };
+        return { content: `*${error.message}*` };
 
     }
 };
