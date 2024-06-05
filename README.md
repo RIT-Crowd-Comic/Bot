@@ -33,9 +33,15 @@
       - [range](#range)
       - [start-remembering](#start-remembering)
       - [stop-remembering](#stop-remembering)
-  - [/role](#role)
-    - [add](#add)
-    - [remove](#remove)
+    - [/role](#role)
+      - [add](#add)
+      - [remove](#remove)
+    - [/availability](#availability-subcommands)
+      - [set-availability](#set-availability)
+      - [set-unavailability](#set-unavailability)
+      - [view-availability](#view-availability)
+      - [view-unavailability](#view-unavailability)
+   
 ## Introduction <a name="introduction"></a>
 
 This is a discord bot that is used to help run the Crowd Comic team in their server. It allows many quality of life features such as checking in on users for the day to see how they are feeling overall, remembering meeting notes, and marking people as unavailable if they are on vacation.
@@ -416,3 +422,42 @@ Removes the unavailable role to a specific user
 | --- | --- |
 | user (optional) | The user who will be removed of the unavailable role. If not provided, the user who sent the command will be revoked of the role |
 
+### /available <a name="availability-subcommands"></a>
+
+#### set-availability <a name="set-availability"></a>
+
+Saves the times and days provided by the user to record when they are (typically) available during the week.
+
+| Parameters | Description |
+| --- | --- |
+| time-from | Time that the user begins work for the day |
+| time-to| Time the user stops work for the day|
+| days (optional) | Days of the week that the user is active. If not provided, active days will be set as "daily" |
+
+#### set-unavailability <a name="set-unavailability"></a>
+
+Saves individual instances where the user will be unavailable.
+
+| Parameters | Description |
+| --- | --- |
+| date-from | First day of unavailability |
+| date-to| Final day of unavailability|
+| time-from (optional) | Time on the first day that the user will be unavailable. Set to 12:00 am of that day if not entered. |
+| time-to (optional) | Time on the final day that the user will no longer be unavailable. Set to 11:59 pm of that day if not entered. |
+| reason (optional) | Reason for being unavailable |
+
+#### view-availability <a name="view-availability"></a>
+
+Sends the user a message with the requested availability.
+
+| Parameters | Description |
+| --- | --- |
+| member (optional) | The server member to request the availability of. Requests for the sender if left empty |
+
+#### view-unavailability <a name="view-unavailability"></a>
+
+Sends the user a message that lists all of the days the requested server member is unavailable.
+
+| Parameters | Description |
+| --- | --- |
+| member (optional) | The server member to request the availability of. Requests for the sender if left empty |
