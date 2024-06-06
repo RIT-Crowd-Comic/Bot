@@ -1,5 +1,6 @@
-const { getAvailabilityChannel } = require('../../utils/availability');
+const { getAvailabilityChannel, setUnavailAI } = require('../../utils/availability');
 const { openAiClient } = require('../../openAi/init');
+const path = './src/savedAvailability.json';
 
 const rememberUnavailability = (message,times) =>
 {
@@ -7,73 +8,45 @@ const rememberUnavailability = (message,times) =>
         times.times.forEach(timeRange => {
             let {start, end, reason } = timeRange;
             reason = reason ?? 'a mystery event';
-            message.reply({ content: `${message.author.globalName} is unavailable from ${start} to ${end} for ${reason}` });
+            message.reply(setUnavailAI(message.author.id, message.author.globalName, start, end, reason, path));
         });
 };
 
 const rememberAvailability = (message, times) =>
 {
-    // Loop through the array and print each time range
-    times.times.forEach(timeRange => {
-        const {start, end} = timeRange;
-        message.reply({ content: `${message.author.globalName} is available from ${start} to ${end}` });
-    });
+    const {days, from, to} = times;
+    message.reply({ content: `${message.author.globalName} is available from ${from} to ${to}` });
 };
 
 const unableToParse = (message) =>
 {
-    message.reply({ content: `${message.author.globalName} did not give data that could be parsed` });
+    message.reply({ content: `${message.author.globalName} something went wrong, try again` });
 };
 
-
-const fakeS = {
-"available": {
-    "from": "2024-05-20T14:00:00.000Z",
-    "to": "2024-08-09T22:00:00.000Z",
-    "days": [
-      "monday",
-      "tuesday",
-      "wednesday",
-      "thursday",
-      "friday"
-    ]
-  },
-  "unavailable": [
-    {
-      "from": "2024-07-03T05:00:00.000Z",
-      "to": "2024-07-06T04:59:00.000Z",
-      "reason": "Holiday"
-    },
-    {
-      "from": "2024-08-01T20:00:00.000Z",
-      "to": "2024-08-02T17:30:00.000Z"
-    }
-  ]
-}
 const tools = [
     {
         'type':     'function',
         'function': {
             'name':        'rememberUnavailability',
-            'description': 'Determines chunks of time in the future and reasons that the user is available. If no reason is given make up something silly. In UTC.',
+            'description': 'In relation to the local current date, determines future chunks of time that the user is unavailable as well as reasons for that unavailability. In local time.',
             'parameters':  {
                 'type':       'object',
                 'properties': {
                     'times' :{
                         'type' : 'array',
-                        'description' : 'An array of {start, end, reason} dates and times the user is unavailable. In UTC.',
+                        'description' : 'An array of {start, end, reason} dates and times the user is unavailable. In local time.',
                         "items":{
                             'from': {
                                 'type':        'string',
-                                'description': 'The start date and time that the user is unavailable. Is a date in UTC.',
+                                'description': 'The start date and time that the user is unavailable. Is a date in local time.',
                             },
                             'to': {
                                 'type':        'string',
-                                'description': 'The end date and time that the user is unavailable. Is a date in UTC',
+                                'description': 'The end date and time that the user is unavailable. Is a date in local time',
                             },
                             'reason': {
                                 'type':        'string',
-                                'description': 'The reason why the user unavailable at those times.',
+                                'description': 'The reason why the user unavailable at those times. If nothing was given make something funny up.',
                             }
                         }
                 }
@@ -82,25 +55,25 @@ const tools = [
             },
         },
     },
-    {
+    /*{
         'type':     'function',
         'function': {
             'name':        'rememberAvailability',
-            'description': 'Gets a the time in UTC the user is available each day, then grabs which days the user is available. Match the properties exactly.',
+            'description': 'Gets the time the user is available using the current date in local time and gets which week days the user is available.',
             'parameters':  {
                 'type': 'object',
                 'properties': {
                     'from': {
                             'type':        'string',
-                            'description': 'The start time that the user is available each day. In UTC.',
+                            'description': 'The start time that the user is available each day. Is a date in local time.',
                     },
                     'to': {
                             'type':        'string',
-                            'description': 'The end time that the user is available each day. In UTC',
+                            'description': 'The end time that the user is available each day. Is a date in local time.',
                     },
                     'days' :{
                         'type' : 'array',
-                        'description' : 'An array of booleans representing the days the user is available. Only check monday through friday.',
+                        'description' : 'An array of booleans representing the days the user is available. Only monday through friday.',
                         'items':{
                             'monday': {
                                 'type':        'bool',
@@ -126,10 +99,10 @@ const tools = [
                         
                     }
                 },
-                'required': ['times', 'days'],    
+                'required': ['from', 'to', 'days'],    
             },
         },
-    },
+    },*/
     {
         'type':     'function',
         'function': {
@@ -160,14 +133,13 @@ module.exports = async (client, message) =>
             return;
         }
 
-        const date = new Date(message.createdTimestamp).toISOString()
-
+        const date = new Date(message.createdTimestamp).toLocaleDateString()
         const response = await openAiClient.chat.completions.create({
             model:    'gpt-3.5-turbo',
             messages: [
                 {
                     'role':    'user',
-                    'content': message.content + `the current date is ${date}.yea`,
+                    'content': message.content + `the current local date is ${date} and tomorrow is not today.`,
                     'date': date
                 }
             ],
@@ -182,9 +154,7 @@ module.exports = async (client, message) =>
             message.reply('Unable to parse message');
             return;
         }
-        output.tool_calls.forEach(tool => {
-            parseResults(message, tool.function)
-        })
+        parseResults(message, output.tool_calls[0].function)      
     }
     catch (error) { console.log(error); }
 };
