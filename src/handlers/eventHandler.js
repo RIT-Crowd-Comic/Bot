@@ -25,7 +25,8 @@ module.exports = client =>{
                 const eventFunction = require(eventFile);
 
                 try {
-                    await eventFunction(client, arg);
+                    if (typeof eventFunction === 'function')
+                        await eventFunction(client, arg);
                 }
                 catch (error) {
                     console.log(error);

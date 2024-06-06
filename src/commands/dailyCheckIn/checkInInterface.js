@@ -2,24 +2,6 @@ const {
     SlashCommandBuilder, PermissionFlagsBits, ButtonBuilder, ButtonStyle, ActionRowBuilder
 } = require('discord.js');
 
-/**
- * Initiate a prompt allowing users to create a scheduler.
- */
-
-const fakecheckInDatabase = {};
-const makeDefaultUserSettings = (userTag, userId) => {
-    return {
-        tag:              userTag,
-        id:               userId,
-        notificationDays: {
-            monday:    { notify: false },
-            tuesday:   { notify: false },
-            wednesday: { notify: false },
-            thursday:  { notify: false },
-            friday:    { notify: false },
-        }
-    };
-};
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -29,18 +11,16 @@ module.exports = {
 
     options:
     {
-        devOnly:                 false,
-        testOnly:                false,
-        deleted:                 false,
-        fakecheckInDatabase:     fakecheckInDatabase,
-        makeDefaultUserSettings: makeDefaultUserSettings
+        devOnly:  true,
+        testOnly: true,
+        deleted:  false,
     },
 
 
     // logic, 
     async execute(client, interaction) {
         try {
-            await interaction.deferReply();
+            await interaction.deferReply({ ephemeral: true });
             const actions = new ActionRowBuilder();
             const testBtn = new ButtonBuilder()
                 .setCustomId('check-in-btn')
@@ -55,36 +35,8 @@ module.exports = {
             });
         }
         catch (error) {
-            await interaction.editReply({
-                content:   `Something went wrong. ${error}`,
-                ephemeral: false,
-            });
+            console.log(error);
         }
-    }
+
+    },
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
