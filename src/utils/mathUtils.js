@@ -9,7 +9,7 @@ const clamp = (min, max, num) => Math.max(min, Math.min(num, max));
 function uniqueArray(a) {
     var seen = {};
     return a.filter(function(item) {
-        return seen.hasOwnProperty(item) ? false : seen[item] = true;
+        return Object.prototype.hasOwnProperty.call(item) ? false : seen[item] = true;
     });
 }
 
