@@ -57,40 +57,37 @@ module.exports = async (client, interaction) => {
 
         setTimeout(()=>{ sendCheckInReminder(client, interaction.user.id); }, 2 * 60 * 60 * 1000);// sends another reminder in 2 hours
 
-        try {
-            await interaction.message.delete();// deletes origional reminder message
-        }
-        catch {
-            await interaction.editReply({
-                ephemeral: true,
-                content:   `*Issue deleting original message*`
-            });
-            return;
-        }
-        interaction.editReply({
+        await interaction.editReply({
             ephemeral: true,
             content:   `The reminder has been snoozed for 2 hours`
         });
+
+        // deletes origional reminder message
+        interaction.message.delete()
+            .catch(() => {
+                interaction.followUp({
+                    ephemeral: true,
+                    content:   `*Issue deleting original message*`
+                });
+            });
     }
 
     // user clicked no, stop bothering them
     else if (interaction.customId === 'check-in-cancel-btn') {
 
-        await interaction.deferReply({ ephemeral: true });
-        try {
-            await interaction.message.delete();// deletes origional reminder message
-        }
-        catch {
-            await interaction.editReply({
-                ephemeral: true,
-                content:   `*Issue deleting original message*`
-            });
-            return;
-        }
-        interaction.editReply({
+        await interaction.reply({
             ephemeral: true,
             content:   `You have skipped today's check-in. Make sure to take short breaks and to drink plenty of water!`
         });
+
+        // deletes origional reminder message
+        interaction.message.delete()
+            .catch(() => {
+                interaction.followUp({
+                    ephemeral: true,
+                    content:   `*Issue deleting original message*`
+                });
+            });
     }
     else return; // user didn't interact with either of these buttons, do nothing
 };

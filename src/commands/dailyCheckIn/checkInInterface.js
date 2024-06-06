@@ -20,7 +20,7 @@ module.exports = {
     // logic, 
     async execute(client, interaction) {
         try {
-            await interaction.deferReply();
+            await interaction.deferReply({ ephemeral: true });
             const actions = new ActionRowBuilder();
             const testBtn = new ButtonBuilder()
                 .setCustomId('check-in-btn')
