@@ -1,4 +1,4 @@
-﻿﻿﻿
+﻿﻿﻿﻿﻿
 # CrowdComic Bot
 
 ## Table of Contents
@@ -19,7 +19,7 @@
       - [How to create a command](#how-to-create-a-command)
       - [How to create a subcommand](#how-to-create-a-subcommand)
       - [How to add an event](#how-to-add-an-event)
-      - [Unit Tests]
+      - [Unit Tests](#unit-tests)
   - [Command Documentation](#command-documentation)
     - [/help](#help)
     - [/help-remember](#help-remember)
@@ -300,6 +300,11 @@ Check out  `./commands/example/exampleCommand.js` for an example.
 3.	Add logic to the function.
 
 **Note:** The eventHandler sorts the events in each folder by number, so 1 has greater priority than 2. Example:  `01registerCommands.js`  comes before  `02example.js`.
+
+#### Unit Tests <a name="unit-tests"></a>
+The Jest library is used to create/run unit test. Here is the [documentation](https://jestjs.io/docs/getting-started). All test files are stored in `src/test` and follow this naming convention: `[testName].test.js`
+
+All tests can be run with `npm test`
 
 ## Command Documentation <a name="command-documentation"></a>
 All subcommands append to its parent command with a space afterwards
