@@ -44,7 +44,7 @@ const callSetAvail = async (interaction) => {
 const callDisplayAvail = async (interaction) => {
     await interaction.deferReply({ ephemeral: true });
 
-    const reply = displayAvail(interaction.user, interaction.options.get('member')?.value, path);
+    const reply = displayAvail(interaction.user, interaction.guild.members.cache.get(interaction.options.get('member')?.value), path);
 
     interaction.editReply(reply);
 };
@@ -52,7 +52,7 @@ const callDisplayAvail = async (interaction) => {
 const callDisplayUnavail = async (interaction) => {
     await interaction.deferReply({ ephemeral: true });
 
-    const reply = displayUnavail(interaction.user, interaction.options.get('member')?.value, path);
+    const reply = displayUnavail(interaction.user, interaction.guild.members.cache.get(interaction.options.get('member')?.value), path);
 
     interaction.editReply(reply);
 };

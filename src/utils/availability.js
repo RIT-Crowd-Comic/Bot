@@ -20,8 +20,8 @@ const newAvailabilityEntry = (userId, userTag) => {
         available: {
 
             // Random day used for object creation, has no effect on result
-            from: JSON.stringify(dayjs('2024 5-20 09:00')),
-            to:   JSON.stringify(dayjs('2024 8-9 17:00')),
+            from: dayjs('2024 5-20 09:00'),
+            to:   dayjs('2024 8-9 17:00'),
             days: parseDaysList('daily')
         },
         unavailable: []
@@ -56,8 +56,6 @@ const createAvailability = (start, end, days) => {
  * @returns {Object}
  */
 const createUnavailability = (start, end, reason) => {
-    if (!dayjs(start).isValid && !dayjs(end).isValid)
-        throw new ScheduleError('Enter dates and times in proper formats');
     if (dayjs(start).isAfter(dayjs(end)))
         throw new ScheduleError('End Date/Time must be after Start Date/Time');
 
@@ -111,6 +109,12 @@ const setUnavail = (userId, userTag, dateFrom, dateTo, timeFrom, timeTo, reason,
             throw new ScheduleError('Please select a start date.');
         if (timeTo && !timeFrom)
             throw new ScheduleError('Please select a start time.');
+
+        // Check if time given is a number and if it is in proper format
+        if (timeFrom && !isNaN(timeFrom))
+            timeFrom = timeFrom.includes(':') ? timeFrom : `${timeFrom}:00`;
+        if (timeTo && !isNaN(timeTo))
+            timeTo = timeTo.includes(':') ? timeTo : `${timeTo}:00`;
 
         // Create a start and end dayjs obj (Parse times if present and default times to 0:00 if empty)
         const startUnavail = dayjs(`2024 ${dateFrom} ${timeFrom ? timeFrom : '0:00'}`);
@@ -189,7 +193,7 @@ const setAvail = (userId, userTag, timeFrom, timeTo, days, path) => {
 const displayAvail = (user, member, path) => {
     try {
 
-        const targetMember = member ? member : user;
+        const targetMember = member ? member.user : user;
 
         // Get data saved from file
         const fileContent = loadAvailability(path);
@@ -215,7 +219,7 @@ const displayAvail = (user, member, path) => {
 const displayUnavail = (user, member, path) => {
     try {
 
-        const targetMember = member ? member : user;
+        const targetMember = member ? member.user : user;
 
         // Get data saved from file
         const fileContent = loadAvailability(path);
