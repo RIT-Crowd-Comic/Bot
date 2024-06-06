@@ -2,6 +2,7 @@ const {
     ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, PermissionFlagsBits, SlashCommandBuilder
 } = require('discord.js');
 const { fakeScheduleEntry, displaySchedule } = require('../../utils/schedule');
+const { uniqueArray } = require('../../utils/mathUtils');
 
 // const scheduleCheckIn = require('./scheduleCheckIn');
 
@@ -50,10 +51,10 @@ module.exports = {
             const scheduleDropdown =
                 new StringSelectMenuBuilder()
                     .setCustomId('show-schedule-dropdown')
-                    .addOptions(schedules.map(s =>
+                    .addOptions(schedules.map((s, i) =>
                         new StringSelectMenuOptionBuilder()
                             .setLabel(s)
-                            .setValue(s)))
+                            .setValue(`${i}`)))
                     .setMinValues(0)
                     .setMaxValues(schedules.length);
 
