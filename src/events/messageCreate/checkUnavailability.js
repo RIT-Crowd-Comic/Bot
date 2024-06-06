@@ -86,9 +86,47 @@ const tools = [
         'type':     'function',
         'function': {
             'name':        'rememberAvailability',
-            'description': 'Provided a schedhule for the user, takes the user message and updates that schedhule.',
+            'description': 'Gets a the time in UTC the user is available each day, then grabs which days the user is available. Match the properties exactly.',
             'parameters':  {
-                
+                'type': 'object',
+                'properties': {
+                    'from': {
+                            'type':        'string',
+                            'description': 'The start time that the user is available each day. In UTC.',
+                    },
+                    'to': {
+                            'type':        'string',
+                            'description': 'The end time that the user is available each day. In UTC',
+                    },
+                    'days' :{
+                        'type' : 'array',
+                        'description' : 'An array of booleans representing the days the user is available. Only check monday through friday.',
+                        'items':{
+                            'monday': {
+                                'type':        'bool',
+                                'description': 'If monday is available or not.',
+                            },
+                            'tuesday': {
+                                'type':        'bool',
+                                'description': 'If tuesday is available or not.',
+                            },
+                            'wednesday': {
+                                'type':        'bool',
+                                'description': 'If wednesday is available or not.',
+                            },
+                            'thursday': {
+                                'type':        'bool',
+                                'description': 'If thursday is available or not.',
+                            },
+                            'friday': {
+                                'type':        'bool',
+                                'description': 'If friday is available or not.',
+                            }
+                        }
+                        
+                    }
+                },
+                'required': ['times', 'days'],    
             },
         },
     },
