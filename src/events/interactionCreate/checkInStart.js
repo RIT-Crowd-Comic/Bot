@@ -1,8 +1,4 @@
 /**
- * Author: Arthur Powers & Victoria Parsonage Ueda
- * Date: 5/22/2024, 6/3/2024
- * 
- * 
  * Handle when a user interacts with the check in notification
  */
 const {
@@ -51,24 +47,27 @@ module.exports = async (client, interaction) => {
 
         checkInForm.addComponents(roses, thorns, buds);
 
-        await interaction.showModal(checkInForm);
+        interaction.showModal(checkInForm);
     }
 
     // remind me later button -> snoozes message for 2h
     else if (interaction.customId === 'check-in-later-btn') {
+
+        await interaction.deferReply({ ephemeral: true });
+
         setTimeout(()=>{ sendCheckInReminder(client, interaction.user.id); }, 2 * 60 * 60 * 1000);// sends another reminder in 2 hours
 
         try {
-
             await interaction.message.delete();// deletes origional reminder message
         }
-        catch (error) {
-            await interaction.reply({
+        catch {
+            await interaction.editReply({
                 ephemeral: true,
-                content:   `*Issue running command* error:${error.name}`
+                content:   `*Issue deleting original message*`
             });
+            return;
         }
-        await interaction.reply({
+        interaction.editReply({
             ephemeral: true,
             content:   `The reminder has been snoozed for 2 hours`
         });
@@ -77,11 +76,21 @@ module.exports = async (client, interaction) => {
     // user clicked no, stop bothering them
     else if (interaction.customId === 'check-in-cancel-btn') {
 
-        await interaction.reply({
+        await interaction.deferReply({ ephemeral: true });
+        try {
+            await interaction.message.delete();// deletes origional reminder message
+        }
+        catch {
+            await interaction.editReply({
+                ephemeral: true,
+                content:   `*Issue deleting original message*`
+            });
+            return;
+        }
+        interaction.editReply({
             ephemeral: true,
             content:   `You have skipped today's check-in. Make sure to take short breaks and to drink plenty of water!`
         });
-        interaction.message.delete();
     }
     else return; // user didn't interact with either of these buttons, do nothing
 };
