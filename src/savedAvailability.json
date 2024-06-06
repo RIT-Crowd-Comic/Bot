@@ -1,1 +1,20 @@
-{}
+{
+  "568106584836931584": {
+    "userId": "568106584836931584",
+    "userTag": "demon_slayer_75",
+    "available": {
+      "from": "2024-01-01T14:00:00.000Z",
+      "to": "2024-01-01T19:00:00.000Z",
+      "days": [
+        "sunday",
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday"
+      ]
+    },
+    "unavailable": []
+  }
+}

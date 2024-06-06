@@ -25,18 +25,43 @@ const unableToParse = (message) =>
     message.reply({ content: `${message.author.globalName} did not give data that could be parsed` });
 };
 
+
+const fakeS = {
+"available": {
+    "from": "2024-05-20T14:00:00.000Z",
+    "to": "2024-08-09T22:00:00.000Z",
+    "days": [
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday"
+    ]
+  },
+  "unavailable": [
+    {
+      "from": "2024-07-03T05:00:00.000Z",
+      "to": "2024-07-06T04:59:00.000Z",
+      "reason": "Holiday"
+    },
+    {
+      "from": "2024-08-01T20:00:00.000Z",
+      "to": "2024-08-02T17:30:00.000Z"
+    }
+  ]
+}
 const tools = [
     {
         'type':     'function',
         'function': {
             'name':        'rememberUnavailability',
-            'description': 'Determines if the user is unavailable between certain times. In relation to the current date passed to the api.',
+            'description': 'Determines chunks of time in the future and reasons that the user is available. If no reason is given make up something silly. In UTC.',
             'parameters':  {
                 'type':       'object',
                 'properties': {
                     'times' :{
                         'type' : 'array',
-                        'description' : 'An array of {start, end, reason(optional)} dates and times the user is unavailable. In UTC.',
+                        'description' : 'An array of {start, end, reason} dates and times the user is unavailable. In UTC.',
                         "items":{
                             'from': {
                                 'type':        'string',
@@ -61,26 +86,9 @@ const tools = [
         'type':     'function',
         'function': {
             'name':        'rememberAvailability',
-            'description': 'Determines if the user is available between certain times. In relation to the current date passed to the api.',
+            'description': 'Provided a schedhule for the user, takes the user message and updates that schedhule.',
             'parameters':  {
-                'type':       'object',
-                'properties': {
-                    'times' :{
-                        'type' : 'array',
-                        'description' : 'An array of {start, end} dates and times the user is available. In UTC.',
-                        "items":{
-                            'from': {
-                                'type':        'string',
-                                'description': 'The start date and time that the user is available. Returns a date in UTC.',
-                            },
-                            'to': {
-                                'type':        'string',
-                                'description': 'The end date and time that the user is available. Returns a date in UTC.',
-                            },
-                        }
-                }
-                },
-                'required': ['times'],
+                
             },
         },
     },
@@ -121,7 +129,7 @@ module.exports = async (client, message) =>
             messages: [
                 {
                     'role':    'user',
-                    'content': message.content + `the current date is ${date}`,
+                    'content': message.content + `the current date is ${date}.yea`,
                     'date': date
                 }
             ],
