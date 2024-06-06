@@ -30,21 +30,21 @@ const tools = [
         'type':     'function',
         'function': {
             'name':        'rememberUnavailability',
-            'description': 'Determines if the user is busy between certain times.',
+            'description': 'Determines if the user is unavailable between certain times. In relation to the current date passed to the api.',
             'parameters':  {
                 'type':       'object',
                 'properties': {
                     'times' :{
                         'type' : 'array',
-                        'description' : 'An array of {start, end, reason} dates and times the user is unavailable. In UTC',
+                        'description' : 'An array of {start, end, reason(optional)} dates and times the user is unavailable. In UTC.',
                         "items":{
                             'from': {
                                 'type':        'string',
-                                'description': 'The start date and time that the user is unavailable. Returns a date in UTC.',
+                                'description': 'The start date and time that the user is unavailable. Is a date in UTC.',
                             },
                             'to': {
                                 'type':        'string',
-                                'description': 'The end date and time that the user is unavailable. Returns a date in UTC',
+                                'description': 'The end date and time that the user is unavailable. Is a date in UTC',
                             },
                             'reason': {
                                 'type':        'string',
@@ -61,7 +61,7 @@ const tools = [
         'type':     'function',
         'function': {
             'name':        'rememberAvailability',
-            'description': 'Determines if the user is available between certain times. Based on the current date passed to the api.',
+            'description': 'Determines if the user is available between certain times. In relation to the current date passed to the api.',
             'parameters':  {
                 'type':       'object',
                 'properties': {
