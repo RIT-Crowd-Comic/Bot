@@ -4,7 +4,6 @@ const weekday = require('dayjs/plugin/weekday');
 const localizedFormat = require('dayjs/plugin/localizedFormat');
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 
-// const { Dayjs } = dayjs;
 dayjs.extend(utc);
 dayjs.extend(weekday);
 dayjs.extend(localizedFormat);
@@ -22,6 +21,13 @@ const abbreviations = {
     'sa': 'saturday',
     'su': 'sunday',
 };
+
+class ScheduleError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'ScheduleError';
+    }
+}
 
 /**
  * creates a string of the users schedule in their local time
@@ -96,12 +102,12 @@ const createSchedule = (daysList, time) => {
  * @param {*} schedules 
  * @returns 
  */
-const mergeSchedules = (/* schedules*/) => {
+// eslint-disable-next-line
+const mergeSchedules = (schedules) => {
 
     // current issue:
     // displaySchedule will not update after schedules are 
     // merged. Figure out some better way to deal with that
-    throw new Error('Not yet implemented');
 
     // clone 2 levels deep
     /*
@@ -145,7 +151,7 @@ const mergeSchedules = (/* schedules*/) => {
 */
 const parseDaysList = (days) => {
     days = days.toString().trim();
-    let parsedDays = [];
+    let parsedDays;
     const daily = days.toLocaleLowerCase().startsWith('daily');
 
     // split days by regex [,\s|]
@@ -321,18 +327,11 @@ const getQueue = ()=>{
 
 
 
-class ScheduleError extends Error {
-    constructor(message) {
-        super(message);
-        this.name = 'ScheduleError';
-    }
-}
 
 module.exports = {
     createSchedule,
     parseDaysList,
     parseTime,
-    mergeSchedules,
     displaySchedule,
     sendCheckInReminder,
     getQueue,
