@@ -19,10 +19,9 @@ eventHandler(client);
 
 // set up database before connecting
 
-await db.connect();
+db.retryConnect(10000)
 
-client.login(process.env.DISCORD_TOKEN)
-.finally(() => {
-    db.disconnect();
-});
+// test a query
+    .then(() => db.testQuery().then(res => console.log(res)));
 
+client.login(process.env.DISCORD_TOKEN);

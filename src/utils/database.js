@@ -1,6 +1,7 @@
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
-const { Client } = require('pg');
-
+const { Pool } = require('pg');
 
 // configuration variables must be in .env
 
@@ -21,14 +22,57 @@ alternatively use config object
     port: port,
 }
 */
-const client = new Client();
+
+const pool = new Pool();
+let client;
+
+let retry = true;
+
+class ConnectionError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'ConnectionError';
+        this.code = 'ConnectionError';
+    }
+}
+
+const verifyConnected = () => {
+    if (!(client?._connected ?? false))
+        throw new ConnectionError('Client not connected');
+};
+const testQuery = async () => {
+    verifyConnected();
+    return pool.query('SELECT * FROM users');
+};
 
 const connect = async () => {
-    return client.connect();
+    client = await pool.connect();
+    return client;
+};
+
+const retryConnect = async (ms) => {
+    for (let nRetry = 1; retry; nRetry++) {
+        try {
+            client = await pool.connect();
+            console.info('Now successfully connected to Postgres');
+            break;
+        }
+        catch (e) {
+            if (e.code?.includes('ECONNREFUSED')) {
+                console.info(`ECONNREFUSED connecting to Postgres, ${nRetry} attempts`);
+
+                // Wait 1 second
+                await new Promise(resolve => void setTimeout(resolve, ms));
+            }
+            else {
+                throw e;
+            }
+        }
+    }
 };
 
 const disconnect = async () => {
-    return client.end();
+    return pool.end();
 };
 
 /**
@@ -36,16 +80,17 @@ const disconnect = async () => {
  * @param {{ id: string, tag: string, name: string }} user 
  */
 const touchUser = async (user) => {
+    verifyConnected();
 
     // must have valid data
     if (!user?.id?.length > 0 ||
         !user?.tag?.length > 0 ||
-        !user?.name?.length > 0) return;
+        !user?.name?.length > 0) return undefined;
 
     const values = [user.id, user.tag, user.name];
 
     const query =
-`BEGIN touch_user;
+        `BEGIN touch_user;
     IF EXISTS (
         SELECT * FROM users WITH (
             UPDLOCK, SERIALIZABLE
@@ -116,6 +161,7 @@ const checkinQueuePop = async () => {
 };
 
 module.exports = {
+    testQuery,
     touchUser,
     addMessage,
     addCheckinSchedule,
@@ -123,5 +169,7 @@ module.exports = {
     checkinQueuePush,
     checkinQueuePop,
     connect,
-    disconnect
+    retryConnect,
+    disconnect,
+    ConnectionError
 };
