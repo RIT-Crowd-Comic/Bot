@@ -422,7 +422,7 @@ Removes the unavailable role to a specific user
 | --- | --- |
 | user (optional) | The user who will be removed of the unavailable role. If not provided, the user who sent the command will be revoked of the role |
 
-### /available <a name="availability-subcommands"></a>
+### /availability <a name="availability-subcommands"></a>
 
 #### set-availability <a name="set-availability"></a>
 
