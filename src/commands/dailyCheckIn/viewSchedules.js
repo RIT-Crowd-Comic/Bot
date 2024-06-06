@@ -2,7 +2,6 @@ const {
     ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, PermissionFlagsBits, SlashCommandBuilder
 } = require('discord.js');
 const { fakeScheduleEntry, displaySchedule } = require('../../utils/schedule');
-const { uniqueArray } = require('../../utils/mathUtils');
 
 // const scheduleCheckIn = require('./scheduleCheckIn');
 
