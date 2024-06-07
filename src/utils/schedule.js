@@ -8,12 +8,12 @@ dayjs.extend(localizedFormat);
 
 const validDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 const abbreviations = {
-    'm':  'monday',
-    't':  'tuesday',
-    'w':  'wednesday',
+    'm': 'monday',
+    't': 'tuesday',
+    'w': 'wednesday',
     'th': 'thursday',
-    'h':  'thursday',
-    'f':  'friday',
+    'h': 'thursday',
+    'f': 'friday',
     'sa': 'saturday',
     'su': 'sunday',
 };
@@ -76,8 +76,8 @@ const createSchedule = (daysList, time) => {
     });
 
     return {
-        utcDays:   utcDays,
-        utcTime:   [utcHour, utcMin],
+        utcDays: utcDays,
+        utcTime: [utcHour, utcMin],
         localDays: [...daysList],
         localTime: [timeHours, timeMinutes],
     };
@@ -118,8 +118,8 @@ const mergeSchedules = (schedules) => {
         }
         if (!duplicate) {
             mergedSchedules.push({
-                days:            [...s.days],
-                utcTime:         [...s.utcTime],
+                days: [...s.days],
+                utcTime: [...s.utcTime],
                 displaySchedule: s.displaySchedule
             });
         }
@@ -149,8 +149,13 @@ const parseDaysList = (days) => {
     // replace abbreviated days
     parsedDays = parsedDays.map(d => abbreviations[d] ?? d);
 
+    //make sure days are distinct
+    parsedDays = parsedDays.filter((value, index, self) => {
+        return self.indexOf(value) === index;
+    });
+
     if (parsedDays.some(d => !validDays.includes(d))) {
-        throw ScheduleError('Invalid list of days');
+        throw new ScheduleError('Invalid list of days');
     }
 
     return parsedDays;
