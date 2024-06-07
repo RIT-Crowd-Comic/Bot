@@ -190,7 +190,17 @@ const setAvail = (userId, userTag, timeFrom, timeTo, days, path) => {
     }
 };
 
-//OpenAi Aval functions
+
+/**
+ * 
+ * @param {string} userId 
+ * @param {string} userTag 
+ * @param {string} dateFrom  date(UTC) from,
+ * @param {string} dateTo    date(UTC) to, 
+ * @param {string} reason 
+ * @param {string} path 
+ * @returns 
+ */
 const setUnavailAI = (userId, userTag, dateFrom, dateTo, reason, path) => {
     try {
 

@@ -1,28 +1,65 @@
 const { getAvailabilityChannel, setUnavailAI, setAvail } = require('../../utils/availability');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, Events } = require('discord.js');
 const { openAiClient } = require('../../openAi/init');
-const path = './src/savedAvailability.json';
 const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
-const rememberUnavailability = (message,times) =>
+/**
+ * 
+ * @param {DiscordJS Message} message 
+ * @param {Array of Times} times 
+ */
+const rememberUnavailability = async(message,times, client) =>
 {
-        // Loop through the array and print each time range
-        times.times.forEach(timeRange => {
-            let {start, end, reason } = timeRange;
-            reason = reason ?? 'a mystery event';
-            message.reply(setUnavailAI(message.author.id, message.author.globalName, start, end, reason, path));
-        });
+    // Loop through the array and print each time range
+    times.times.forEach( async timeRange => {
+        let {start, end, reason } = timeRange;
+        reason = reason ?? 'a mystery event';
+        message.reply(`\`Data: Start:${start} End: ${end} Reason: ${reason}\``);
+        //{author: message.author.globalName, id: message.author.id, start: start , end: end , reason: reason}
+        const row = new ActionRowBuilder()
+        .addComponents(
+            new ButtonBuilder()
+                .setCustomId(`v-unA-y_${message.author.globalName}_${message.author.id}_${start}_${end}_${reason}`)
+                .setLabel('Yes')
+                .setStyle(ButtonStyle.Primary),
+            new ButtonBuilder()
+                .setCustomId('v-unA-n')
+                .setLabel('No')
+                .setStyle(ButtonStyle.Danger),
+        );
+        await message.channel.send({ content: 'Is this information correct? Times are in local 24 hour time.', components: [row], ephemeral: true });
+    });
+
 };
 
-
-const rememberAvailability = (message, times) =>
+/**
+ * Parse and save availability
+ * @param {DiscordJS Message} message 
+ * @param {Object of times} times 
+ */
+const rememberAvailability = async(message, times) =>
 {
     const {days, from, to} = times;
-    const mappedDays = days
-        .map((value, index) => value ? daysOfWeek[index] : null)
-        .filter(day => day !== null);
-        message.reply(setAvail(message.author.id, message.author.globalName, from, to, mappedDays, path));
+
+    message.reply(`\`Data: Start:${from} End: ${to} Days: M:${days[0]} T:${days[1]} W:${days[2]} Th:${days[3]} F:${days[4]}\``);
+    const row = new ActionRowBuilder()
+    .addComponents(
+        new ButtonBuilder()
+            .setCustomId(`v-a-y_${message.author.globalName}_${message.author.id}_${from}_${to}_${days[0]}_${days[1]}_${days[2]}_${days[3]}_${days[4]}`)
+            .setLabel('Yes')
+            .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
+            .setCustomId('v-a-n')
+            .setLabel('No')
+            .setStyle(ButtonStyle.Danger),
+        );
+        await message.channel.send({ content: 'Is this information correct? Times are in local 24 hour time.', components: [row], ephemeral: true });
 };
 
+/**
+ * Called when openai fails to parse message
+ * @param {DiscordJS Message} message 
+ */
 const unableToParse = (message) =>
 {
     message.reply({ content: `${message.author.globalName} something went wrong, try again` });
@@ -33,13 +70,13 @@ const tools = [
         'type':     'function',
         'function': {
             'name':        'rememberUnavailability',
-            'description': 'In relation to the local current date, determines future chunks of time that the user is unavailable as well as reasons for that unavailability. In local time.',
+            'description': 'In relation to the local current date, determines future chunks of time that the user is unavailable or busy as well as reasons for that unavailability. In local time.',
             'parameters':  {
                 'type':       'object',
                 'properties': {
                     'times' :{
                         'type' : 'array',
-                        'description' : 'An array of {start, end, reason} dates and times the user is unavailable. In local time.',
+                        'description' : 'An array of {start, end, reason} dates and times the user is unavailable. In local time. The reason must be under 30 characters, remove spaces.',
                         "items":{
                             'from': {
                                 'type':        'string',
@@ -51,7 +88,7 @@ const tools = [
                             },
                             'reason': {
                                 'type':        'string',
-                                'description': 'The reason why the user unavailable at those times. If nothing was given make something funny up.',
+                                'description': 'The reason why the user unavailable at those times. If nothing was given make something funny up. Under 30 characters',
                             }
                         }
                 }
@@ -118,15 +155,21 @@ const tools = [
     },
 ];
 
-const parseResults = (message, calledFunction) =>{
+/**
+ * Given a function object from open ai and a message, attempt to parse 
+ * @param {DiscordJS Message} message 
+ * @param {OpenAI Tool} calledFunction 
+ */
+const parseResults = (message, calledFunction, client) =>{
     const action = {
-        'rememberUnavailability': () => rememberUnavailability(message, JSON.parse(calledFunction.arguments)),
+        'rememberUnavailability': () => rememberUnavailability(message, JSON.parse(calledFunction.arguments), client),
         'rememberAvailability':   () => rememberAvailability(message, JSON.parse(calledFunction.arguments)),
         'unableToParse':          () => unableToParse(message),
     };
     action[calledFunction.name]();
 }
 
+//checks the message sent in the channel and sends it to openai to parse, then if possible saves the availability data
 module.exports = async (client, message) =>
 {
     try
@@ -159,7 +202,7 @@ module.exports = async (client, message) =>
             message.reply('Unable to parse message');
             return;
         }
-        parseResults(message, output.tool_calls[0].function)      
+        parseResults(message, output.tool_calls[0].function, client)      
     }
     catch (error) { console.log(error); }
 };
