@@ -40,4 +40,42 @@ describe('remember messages utils', () => {
             expect(response.content).toBe(`Remembered: "${validMessage.content}"`)
         });
     });
+
+    describe('rememberRangeGrab', () => {
+        let channelId;
+        let startMessageId;
+        let endMessageId;
+        let excludeBotMessages;
+        test('invalid channelId will result in a fail', async () => {
+            apiCalls.getChannelObject.mockResolvedValue(undefined);
+            const response = await rememberRangeGrab(channelId, startMessageId, endMessageId, excludeBotMessages);
+            expect(response.status).toBe('Fail')
+            expect(response.description.startsWith('Cannot find a channel with the id')).toBeTruthy()
+        })
+
+        test('invalid startMessageId will result in a fail', async () => {
+            channelId = 'a';
+            apiCalls.getChannelObject.mockResolvedValue(channelId);
+            apiCalls.getMessageObject.mockResolvedValue(undefined)
+            const response = await rememberRangeGrab(channelId, startMessageId, endMessageId, excludeBotMessages);
+            expect(response.status).toBe('Fail')
+            expect(response.description.startsWith('Cannot find start message with the id')).toBeTruthy()
+        })
+
+        test('invalid endMessageId will result in a fail', async () => {
+
+        })
+
+        test('second message being sent before the first message will result in a fail', async () => {
+
+        })
+
+        test('get all the messages between the first and second message inclusively. should return with success', async () => {
+
+        })
+
+        test('get all the messages between the first and second message inclusively excluding bot messages. should return with success', async () => {
+
+        })
+    })
 });
