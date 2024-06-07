@@ -6,20 +6,20 @@ module.exports = {
         .setName('help')
         .setDescription('List of commands')
         .addSubcommand(subcommand =>
-            subcommand.setName('help-general')
+            subcommand.setName('general')
                 .setDescription('List of general commands'))
         .addSubcommand(subcommand =>
-            subcommand.setName('help-remember')
+            subcommand.setName('remember')
                 .setDescription('List of remember commands'))
         .addSubcommand(subcommand =>
-            subcommand.setName('help-availability')
+            subcommand.setName('availability')
                 .setDescription('List of availability commands')),
 
     async execute(client, interaction) {
         const action = {
-            'help-general':      () => help(),
-            'help-remember':     () => helpRemember(),
-            'help-availability': () => helpAvailability()
+            'general':      () => help(),
+            'remember':     () => helpRemember(),
+            'availability': () => helpAvailability()
         };
 
         try {

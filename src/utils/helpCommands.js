@@ -9,13 +9,13 @@ const help = () =>{
             {
 
                 // name - /[name of command]
-                name: '/help help-remember',
+                name: '/help remember',
 
                 // value - description of command
                 value: 'Shows a brief description of all of the remember subcommands'
             },
             {
-                name:  '/help help-availability',
+                name:  '/help availability',
                 value: 'Shows a brief description of all of the availability subcommands'
             },
             {
