@@ -1,6 +1,7 @@
-const { getAvailabilityChannel, setUnavailAI } = require('../../utils/availability');
+const { getAvailabilityChannel, setUnavailAI, setAvail } = require('../../utils/availability');
 const { openAiClient } = require('../../openAi/init');
 const path = './src/savedAvailability.json';
+const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
 const rememberUnavailability = (message,times) =>
 {
@@ -12,10 +13,14 @@ const rememberUnavailability = (message,times) =>
         });
 };
 
+
 const rememberAvailability = (message, times) =>
 {
     const {days, from, to} = times;
-    message.reply({ content: `${message.author.globalName} is available from ${from} to ${to}` });
+    const mappedDays = days
+        .map((value, index) => value ? daysOfWeek[index] : null)
+        .filter(day => day !== null);
+        message.reply(setAvail(message.author.id, message.author.globalName, from, to, mappedDays, path));
 };
 
 const unableToParse = (message) =>
@@ -55,7 +60,7 @@ const tools = [
             },
         },
     },
-    /*{
+    {
         'type':     'function',
         'function': {
             'name':        'rememberAvailability',
@@ -102,7 +107,7 @@ const tools = [
                 'required': ['from', 'to', 'days'],    
             },
         },
-    },*/
+    },
     {
         'type':     'function',
         'function': {
