@@ -5,7 +5,8 @@ CREATE TABLE users (
     user_pk SERIAL PRIMARY KEY,
     user_id VARCHAR NOT NULL,
     user_tag VARCHAR NOT NULL,
-    user_name VARCHAR NOT NULL
+    user_name VARCHAR NOT NULL,
+    deleted_at TIMESTAMP
 );
 
 -- From rememberMessage.js
@@ -16,7 +17,8 @@ CREATE TABLE messages (
     message_pk SERIAL PRIMARY KEY,
     user_id VARCHAR NOT NULL,
     content VARCHAR NOT NULL,
-    timestamp TIMESTAMP
+    timestamp TIMESTAMP,
+    deleted_at TIMESTAMP
 );
 
 -- keep in mind, array size is just verbose and effectively does nothing
@@ -26,7 +28,8 @@ CREATE TABLE checkin_schedules (
     utc_days VARCHAR[],
     utc_time INT[2],
     local_days VARCHAR[],
-    local_time INT[2]
+    local_time INT[2],
+    deleted_at TIMESTAMP
 );
 
 -- -
@@ -36,11 +39,12 @@ CREATE TABLE checkin_schedules (
 -- -
 
 -- from/to are dayjs strings. Ex: `JSON.stringify(dayjs())`
-CREATE TABLE unavailabe_schedules (
+CREATE TABLE unavailable_schedules (
     unavailable_pk SERIAL PRIMARY KEY,
     from_time VARCHAR,
     to_time VARCHAR,
-    reason VARCHAR
+    reason VARCHAR,
+    deleted_at TIMESTAMP
 );
 
 -- this is not yet determined
@@ -49,7 +53,7 @@ CREATE TABLE checkin_queue
 (
     checkin_q_pk UUID PRIMARY KEY,
     time_inserted TIMESTAMP,
-    payload JSON
+    payload JSON,
 );
 
 CREATE INDEX checkin_time_inserted_id
@@ -57,13 +61,29 @@ CREATE INDEX checkin_time_inserted_id
 
 --------------------------                 EXAMPLE SQL QUERIES                 ----------------------
 
-
+-- create or update user
+-- technically transaction is not needed since there are 
+-- only single statements
+BEGIN touch_user;
+    IF EXISTS (
+        SELECT * FROM users WITH (
+            UPDLOCK, SERIALIZABLE
+        )
+        WHERE user_id = $1
+    )
+        UPDATE users
+        SET user_tag = $2, user_name = $3
+        WHERE user_id = $1
+    ELSE
+        INSERT INTO users (user_id, user_tag, user_name)
+        VALUES ($1, $2, $3);
+COMMIT touch_user;
 
 --------------------------              HOW TO USE A QUEUE IN SQL              ----------------------
 
 -- inserting into queue
 INSERT INTO checkin_queue (checkin_q_pk, time_inserted, payload)
-VALUES (gen_random_uuid(), current_timestamp, '{
+VALUES (gen_random_uuid(), CURRENT_TIMESTAMP, '{
   "name": "example data",
   "description": "fifo queue read and write, no domain logic involved"
 }');
