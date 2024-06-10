@@ -83,6 +83,18 @@ const createUnavailability = (start, end, reason) => {
     };
 };
 
+const removeExpired = (data, userId) => {
+    const expiredObjects = [];
+    for(let i=0, list = data[userId].unavailable; i<list.length; i++){
+        if(dayjs(list[i].to).isBefore(dayjs()))
+            expiredObjects.push(list[i]);
+    }
+    //Remove expired unavailability from the data
+    for(let obj of expiredObjects)
+        data[userId].unavailable.splice(data[userId].unavailable.indexOf(obj),1);
+    return data;
+}
+
 /**
  * Save an Unavailable object to a user in the JSON file
  * @param {string} userId ID of the user that is scheduling unavailability
@@ -96,7 +108,20 @@ const saveUnavailability = (userId, userTag, unavail, path) => {
     let fileContent = loadAvailability(path);
 
     fileContent[userId] ??= newAvailabilityEntry(userId, userTag);
-    fileContent[userId].unavailable.push(unavail);
+    //Store unavailability in the list in chronological order
+    for(let i = 0, list = fileContent[userId].unavailable; i<list.length; i++){
+        if(dayjs(list[i].from).isAfter(dayjs(unavail.from))){
+            list.splice(i, 0, unavail);
+            break;
+        }
+        else if(i==list.length-1){
+            list.push(unavail);
+            break;
+        }
+    }
+
+    //Check if any times in unavailability have passed and need to be removed
+    fileContent = removeExpired(fileContent, userId);
 
     // Send data back to file
     fs.writeFileSync(path, JSON.stringify(fileContent, null, 2), (err) => err && console.error(err));
@@ -353,6 +378,9 @@ const displayUnavail = (user, member, path) => {
         // If no matching user was found in the data, 
         if (!fileContent[targetMember.id])
             return { content: 'Requested member has no available data' };
+
+        //Check if old unavailability needs to be removed
+        fileContent = removeExpired(fileContent, targetMember.id);
 
         const unavailability = fileContent[targetMember.id].unavailable;
 

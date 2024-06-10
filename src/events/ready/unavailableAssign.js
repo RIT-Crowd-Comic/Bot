@@ -12,13 +12,13 @@ const checkQueues = (client) => {
     }
     //Check to add role
     while ((startQueue.length > 0 && startQueue[0].hour <= today.hour())|| (endQueue.length > 0 && endQueue[0].hour <= today.hour())){
-        if(startQueue[0]?.min <= today.minute() || startQueue[0]?.hour < today.hour()){
-            changeRole(client, startQueue[0].id, true); //Give user the unavailable role
-            startQueue.shift();
-        }
-        else if(endQueue[0]?.min <= today.minute() || endQueue[0]?.hour < today.hour()){
+        if(endQueue[0]?.min <= today.minute() || endQueue[0]?.hour < today.hour()){
             changeRole(client, endQueue[0].id, false); //Remove unavailable role from user
             endQueue.shift();
+        }
+        else if(startQueue[0]?.min <= today.minute() || startQueue[0]?.hour < today.hour()){
+            changeRole(client, startQueue[0].id, true); //Give user the unavailable role
+            startQueue.shift();
         }
         else { break; }
     }
