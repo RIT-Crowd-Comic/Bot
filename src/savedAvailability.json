@@ -3,13 +3,22 @@
     "userId": "568106584836931584",
     "userTag": "demon_slayer_75",
     "available": {
-      "from": "2024-01-01T13:00:00.000Z",
-      "to": "2024-01-02T01:00:00.000Z",
+      "from": "2024-01-01T14:00:00.000Z",
+      "to": "2024-01-01T22:00:00.000Z",
       "days": [
+        "monday",
         "tuesday",
-        "thursday"
+        "wednesday",
+        "thursday",
+        "friday"
       ]
     },
-    "unavailable": []
+    "unavailable": [
+      {
+        "from": "2024-06-12T14:00:00.000Z",
+        "to": "2024-06-12T16:00:00.000Z",
+        "reason": "busy"
+      }
+    ]
   }
 }

@@ -1,33 +1,33 @@
-const { getAvailabilityChannel, setUnavailAI, setAvail } = require('../../utils/availability');
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, Events } = require('discord.js');
+const { getAvailabilityChannel } = require('../../utils/availability');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { openAiClient } = require('../../openAi/init');
-const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
 /**
  * 
  * @param {DiscordJS Message} message 
  * @param {Array of Times} times 
  */
-const rememberUnavailability = async(message,times, client) =>
-{
+const rememberUnavailability = async(message, times) => {
+
     // Loop through the array and print each time range
-    times.times.forEach( async timeRange => {
-        let {start, end, reason } = timeRange;
+    times.times.forEach(async timeRange => {
+        let { start, end, reason } = timeRange;
         reason = reason ?? 'a mystery event';
-        message.reply(`\`Data: Start:${start} End: ${end} Reason: ${reason}\``);
-        //{author: message.author.globalName, id: message.author.id, start: start , end: end , reason: reason}
+        const content = `Start: \`${start}\` End: \`${end}\` Reason: \`${reason}\``;
+
+        // {author: message.author.globalName, id: message.author.id, start: start , end: end , reason: reason}
         const row = new ActionRowBuilder()
-        .addComponents(
-            new ButtonBuilder()
-                .setCustomId(`v-unA-y_${message.author.globalName}_${message.author.id}_${start}_${end}_${reason}`)
-                .setLabel('Yes')
-                .setStyle(ButtonStyle.Primary),
-            new ButtonBuilder()
-                .setCustomId('v-unA-n')
-                .setLabel('No')
-                .setStyle(ButtonStyle.Danger),
-        );
-        await message.channel.send({ content: 'Is this information correct? Times are in local 24 hour time.', components: [row], ephemeral: true });
+            .addComponents(
+                new ButtonBuilder()
+                    .setCustomId(`v-unA-y_${message.author.globalName}_${message.author.id}_${start}_${end}_${reason}`)
+                    .setLabel('Yes')
+                    .setStyle(ButtonStyle.Primary),
+                new ButtonBuilder()
+                    .setCustomId('v-unA-n')
+                    .setLabel('No')
+                    .setStyle(ButtonStyle.Danger),
+            );
+        await message.reply({ content: `${content}\n'Is this information correct? Times are in local 24 hour time.'`, components: [row], ephemeral: true });
     });
 
 };
@@ -37,32 +37,33 @@ const rememberUnavailability = async(message,times, client) =>
  * @param {DiscordJS Message} message 
  * @param {Object of times} times 
  */
-const rememberAvailability = async(message, times) =>
-{
-    const {days, from, to} = times;
+const rememberAvailability = async(message, times) => {
+    const { days, from, to } = times;
 
-    message.reply(`\`Data: Start:${from} End: ${to} Days: M:${days[0]} T:${days[1]} W:${days[2]} Th:${days[3]} F:${days[4]}\``);
+    // swap days to a string
+    const daysString = days.map(d => d.toString());
+
+    const content = `Start:\`${from}\` End: \`${to}\` Days: M:\`${days[0]}\` T:\`${days[1]}\` W:\`${days[2]}\` Th:\`${days[3]}\` F:\`${days[4]}\``;
     const row = new ActionRowBuilder()
-    .addComponents(
-        new ButtonBuilder()
-            .setCustomId(`v-a-y_${message.author.globalName}_${message.author.id}_${from}_${to}_${days[0]}_${days[1]}_${days[2]}_${days[3]}_${days[4]}`)
-            .setLabel('Yes')
-            .setStyle(ButtonStyle.Primary),
-        new ButtonBuilder()
-            .setCustomId('v-a-n')
-            .setLabel('No')
-            .setStyle(ButtonStyle.Danger),
+        .addComponents(
+            new ButtonBuilder()// save the data to the message id, days[i][0] represents the first char of a bool, so t
+                .setCustomId(`v-a-y_${message.author.globalName}_${message.author.id}_${from}_${to}_${daysString[0][0]}_${daysString[1][0]}_${daysString[2][0]}_${daysString[3][0]}_${daysString[4][0]}`)
+                .setLabel('Yes')
+                .setStyle(ButtonStyle.Primary),
+            new ButtonBuilder()
+                .setCustomId('v-a-n')
+                .setLabel('No')
+                .setStyle(ButtonStyle.Danger),
         );
-        await message.channel.send({ content: 'Is this information correct? Times are in local 24 hour time.', components: [row], ephemeral: true });
+    await message.reply({ content: `${content}\n\nIs this information correct? Times are in local 24 hour time.`, components: [row], ephemeral: true });
 };
 
 /**
  * Called when openai fails to parse message
  * @param {DiscordJS Message} message 
  */
-const unableToParse = (message) =>
-{
-    message.reply({ content: `${message.author.globalName} something went wrong, try again` });
+const unableToParse = (message) => {
+    message.reply({ content: `${message.author.globalName} something went wrong, try again`, ephemeral: true });
 };
 
 const tools = [
@@ -74,10 +75,10 @@ const tools = [
             'parameters':  {
                 'type':       'object',
                 'properties': {
-                    'times' :{
-                        'type' : 'array',
-                        'description' : 'An array of {start, end, reason} dates and times the user is unavailable. In local time. The reason must be under 30 characters, remove spaces.',
-                        "items":{
+                    'times': {
+                        'type':        'array',
+                        'description': 'An array of {start, end, reason} dates and times the user is unavailable. In local time. The reason must be under 30 characters, remove spaces.',
+                        'items':       {
                             'from': {
                                 'type':        'string',
                                 'description': 'The start date and time that the user is unavailable. Is a date in local time.',
@@ -91,7 +92,7 @@ const tools = [
                                 'description': 'The reason why the user unavailable at those times. If nothing was given make something funny up. Under 30 characters',
                             }
                         }
-                }
+                    }
                 },
                 'required': ['times'],
             },
@@ -101,22 +102,22 @@ const tools = [
         'type':     'function',
         'function': {
             'name':        'rememberAvailability',
-            'description': 'Gets the time the user is available using the current date in local time and gets which week days the user is available.',
+            'description': 'Gets the local time the user is available using the current date in local time and gets which week days the user is available.',
             'parameters':  {
-                'type': 'object',
+                'type':       'object',
                 'properties': {
                     'from': {
-                            'type':        'string',
-                            'description': 'The start time that the user is available each day. Is a date in local time.',
+                        'type':        'string',
+                        'description': 'The start time that the user is available each day. Is a date in local time.',
                     },
                     'to': {
-                            'type':        'string',
-                            'description': 'The end time that the user is available each day. Is a date in local time.',
+                        'type':        'string',
+                        'description': 'The end time that the user is available each day. Is a date in local time.',
                     },
-                    'days' :{
-                        'type' : 'array',
-                        'description' : 'An array of booleans representing the days the user is available. Only monday through friday.',
-                        'items':{
+                    'days': {
+                        'type':        'array',
+                        'description': 'An array of booleans representing the days the user is available. Only monday through friday.',
+                        'items':       {
                             'monday': {
                                 'type':        'bool',
                                 'description': 'If monday is available or not.',
@@ -138,10 +139,10 @@ const tools = [
                                 'description': 'If friday is available or not.',
                             }
                         }
-                        
+
                     }
                 },
-                'required': ['from', 'to', 'days'],    
+                'required': ['from', 'to', 'days'],
             },
         },
     },
@@ -160,20 +161,18 @@ const tools = [
  * @param {DiscordJS Message} message 
  * @param {OpenAI Tool} calledFunction 
  */
-const parseResults = (message, calledFunction, client) =>{
+const parseResults = (message, calledFunction) =>{
     const action = {
-        'rememberUnavailability': () => rememberUnavailability(message, JSON.parse(calledFunction.arguments), client),
+        'rememberUnavailability': () => rememberUnavailability(message, JSON.parse(calledFunction.arguments)),
         'rememberAvailability':   () => rememberAvailability(message, JSON.parse(calledFunction.arguments)),
         'unableToParse':          () => unableToParse(message),
     };
     action[calledFunction.name]();
-}
+};
 
-//checks the message sent in the channel and sends it to openai to parse, then if possible saves the availability data
-module.exports = async (client, message) =>
-{
-    try
-    {
+// checks the message sent in the channel and sends it to openai to parse, then if possible saves the availability data
+module.exports = async (client, message) => {
+    try {
         const availabilityChannel = await getAvailabilityChannel();
 
         // only send a message if it's not from a bot and it's from the available channel
@@ -181,14 +180,14 @@ module.exports = async (client, message) =>
             return;
         }
 
-        const date = new Date(message.createdTimestamp).toLocaleDateString()
+        const date = new Date(message.createdTimestamp).toLocaleDateString();
         const response = await openAiClient.chat.completions.create({
             model:    'gpt-3.5-turbo',
             messages: [
                 {
                     'role':    'user',
                     'content': message.content + `the current local date is ${date} and tomorrow is not today.`,
-                    'date': date
+                    'date':    date
                 }
             ],
             tools:       tools,
@@ -197,12 +196,11 @@ module.exports = async (client, message) =>
 
         const output = response.choices[0].message;
 
-        if (!output.tool_calls)
-        {
+        if (!output.tool_calls) {
             message.reply('Unable to parse message');
             return;
         }
-        parseResults(message, output.tool_calls[0].function, client)      
+        parseResults(message, output.tool_calls[0].function);
     }
     catch (error) { console.log(error); }
 };
