@@ -122,7 +122,7 @@ This project uses Node.js with the following dependencies and versions:
 
 "nodemon": "^3.1.0"
 
-https://github.com/RIT-Crowd-Comic/Bot/pull/37
+"openai": "^4.47.3"
 
 ```
 
@@ -140,6 +140,9 @@ https://github.com/RIT-Crowd-Comic/Bot/pull/37
 
 -  `DEV_IDS` is an array of user id's. These are used to restrict who has access to certain commands of the bot. To get your user ID, right click on your account in bottom left icon, click `Copy User ID`
 
+-  `OPENAI_API_KEY` is the key for the OpenAI API. To get this id, make or login to an OpenAI api account, then within the account navigate to the proper organization `
+Travis's Goodtime Fun Company`. Then make sure  navigate to the project `Crowd Comic`. Then find the `API Key` tab and create a new key and copy it into the `.env`.
+**Travis has to add you to his org for this to work**
 3. Verify that all of these ids/tokens are strings.
 
   
