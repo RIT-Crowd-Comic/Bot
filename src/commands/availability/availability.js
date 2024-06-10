@@ -1,6 +1,6 @@
 // import ApplicationCommandOptionType if you need types of options
 // import PermissionFlagsBits if you need permissions
-const { SlashCommandBuilder } = require('discord.js');
+const { ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, SlashCommandBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ComponentType } = require('discord.js');
 const {
     setUnavail, setAvail, displayAvail, displayUnavail
 } = require('../../utils/availability');
@@ -57,10 +57,69 @@ const callDisplayUnavail = async (interaction) => {
     interaction.editReply(reply);
 };
 
+const setUnavailabilityGUI = async (interaction) => {
+    await interaction.deferReply({ ephemeral: false });
+
+    const unavailabilityForm = new ModalBuilder()
+        .setCustomId('unavailabilityForm')
+        .setTitle('Setting up unavailability');
+
+    const actionRow = new ActionRowBuilder();
+
+    const reason = new TextInputBuilder()
+        .setCustomId('reason')
+        .setLabel('Reason for not being present')
+        .setStyle(TextInputStyle.Paragraph)
+        .setRequired(false);
+
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const days = [];
+    for (let i = 1; i < 32; i++) {
+        days.push(i)
+    }
+    const monthsSelector = new StringSelectMenuBuilder()
+        .setCustomId('unavailable months')
+        .setPlaceholder('Months')
+        .addOptions(months.map(m => new StringSelectMenuOptionBuilder()
+            .setLabel(m)
+            .setValue(m)))
+        .setMinValues(1)
+        .setMaxValues(1);
+
+    const submitButton = new ButtonBuilder()
+        .setCustomId('SubmitButton')
+        .setLabel('Submit')
+        .setStyle(ButtonStyle.Primary);
+
+
+
+    //actionRow.addComponents(reason)
+    actionRow.addComponents(submitButton)
+
+
+    const reply = await interaction.editReply({
+        content: `Update your unavailability`,
+        components: [actionRow]
+    });
+
+    const collector = reply.createMessageComponentCollector({
+        ComponentType: ComponentType.StringSelect,
+        time: 60_000,
+    })
+
+    collector.on('collect', (interaction) => {
+        console.log(interaction.values)
+    })
+}
+
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('availability')
-        .setDescription('Saves and Displays availability data')
+        .setDescription('Saves and displays availability data')
+        .addSubcommand(subcommand =>
+            subcommand.setName('set-unavailability-gui')
+                .setDescription('Record a time you\'ll be unavailable with a GUI'))
         .addSubcommand(subcommand =>
             subcommand.setName('set-unavailability')
                 .setDescription('Record a time you\'ll be unavailable')
@@ -117,10 +176,11 @@ module.exports = {
 
 
         const action = {
-            'set-unavailability':  () => callSetUnavail(interaction),
-            'set-availability':    () => callSetAvail(interaction),
-            'view-availability':   () => callDisplayAvail(interaction),
-            'view-unavailability': () => callDisplayUnavail(interaction)
+            'set-unavailability': () => callSetUnavail(interaction),
+            'set-availability': () => callSetAvail(interaction),
+            'view-availability': () => callDisplayAvail(interaction),
+            'view-unavailability': () => callDisplayUnavail(interaction),
+            'set-unavailability-gui': () => setUnavailabilityGUI(interaction)
         };
 
         try {
@@ -132,7 +192,7 @@ module.exports = {
         }
         catch (error) {
             await interaction.editReply({
-                content:   `Something went wrong. ${error}`,
+                content: `Something went wrong. ${error}`,
                 ephemeral: false,
             });
         }
