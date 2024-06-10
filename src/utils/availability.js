@@ -7,12 +7,23 @@ let availabilityChannel = undefined;
 const getAvailabilityChannel = async () => { return availabilityChannel; };
 const setAvailabilityChannel = channel => { availabilityChannel = channel; };
 
+/**
+ * Get availability data from JSON file
+ * @param {string} path path to JSON file
+ * @returns object with data from JSON
+ */
 const loadAvailability = (path) => {
     let data = fs.readFileSync(path, { encoding: 'utf8' });
     data = JSON.parse(data);
     return data;
 };
 
+/**
+ * Generate a default availability entry for a user
+ * @param {string} userId ID of user to create object for
+ * @param {string} userTag tag of user to create object for
+ * @returns default availability object
+ */
 const newAvailabilityEntry = (userId, userTag) => {
     return {
         userId:    userId,
@@ -30,10 +41,10 @@ const newAvailabilityEntry = (userId, userTag) => {
 
 /**
  * Create Available object
- * @param {Dayjs} start
- * @param {Dayjs} end
- * @param {string} days
- * @returns {Object}
+ * @param {Dayjs} start beginning time of availability
+ * @param {Dayjs} end end time of availability
+ * @param {string[]} days array of days the user is available 
+ * @returns object to fill the "available" property in an availability entry
  */
 const createAvailability = (start, end, days) => {
     if (!dayjs(start).isValid && !dayjs(end).isValid)
@@ -50,10 +61,10 @@ const createAvailability = (start, end, days) => {
 
 /**
  * Create Unavailable object
- * @param {Dayjs} start
- * @param {Dayjs} end
- * @param {string} reason
- * @returns {Object}
+ * @param {Dayjs} start begining of an unavailability block
+ * @param {Dayjs} end end of an unavailability block
+ * @param {string} reason reason for being unavailable
+ * @returns object to be pushed to the "unavailable" property array in the availability object
  */
 const createUnavailability = (start, end, reason) => {
     if (dayjs(start).isAfter(dayjs(end)))
@@ -66,6 +77,13 @@ const createUnavailability = (start, end, reason) => {
     };
 };
 
+/**
+ * Save an Unavailable object to a user in the JSON file
+ * @param {string} userId ID of the user that is scheduling unavailability
+ * @param {string} userTag tag of the user that is scheduling unavailability
+ * @param {object} unavail object to be pushed to the "unavailable" property's array
+ * @param {string} path path to JSON file
+ */
 const saveUnavailability = (userId, userTag, unavail, path) => {
 
     // Get saved data from file and turn into array with objects
@@ -78,6 +96,13 @@ const saveUnavailability = (userId, userTag, unavail, path) => {
     fs.writeFileSync(path, JSON.stringify(fileContent, null, 2), (err) => err && console.error(err));
 };
 
+/**
+ * Save an available object to a user in the JSON
+ * @param {string} userId ID of the user that is scheduling availability
+ * @param {string} userTag tag of the user that is scheduling availability
+ * @param {object} avail object to fill the "available" property of this user
+ * @param {string} path path to JSON file
+ */
 const saveAvailability = (userId, userTag, avail, path) => {
     let fileContent = loadAvailability(path);
 
@@ -103,6 +128,18 @@ const updateAvailabilityChannel = async newChannel => {
 };
 
 // Command Functions
+/**
+ * Schedule a block a user is unavailable for
+ * @param {string} userId ID of user scheduling unavailability
+ * @param {string} userTag tag of user scheduling unavailability
+ * @param {string} dateFrom starting date of unavailability
+ * @param {string} dateTo end date of unavailability
+ * @param {string} timeFrom time on start date unavailability begins at
+ * @param {string} timeTo time on end date unavailability stops at
+ * @param {string} reason reason for unavailability
+ * @param {string} path path to JSON file
+ * @returns Message contents to send
+ */
 const setUnavail = (userId, userTag, dateFrom, dateTo, timeFrom, timeTo, reason, path) => {
     try {
         if (dateTo && !dateFrom)
@@ -133,8 +170,6 @@ const setUnavail = (userId, userTag, dateFrom, dateTo, timeFrom, timeTo, reason,
             '```',
         ].join('\n');
 
-        // await interaction.editReply({ content: reply });
-
         // Save data to file
         saveUnavailability(userId, userTag, unavail, path);
         return { content: reply };
@@ -149,6 +184,16 @@ const setUnavail = (userId, userTag, dateFrom, dateTo, timeFrom, timeTo, reason,
     }
 };
 
+/**
+ * Record when a user is typically available
+ * @param {string} userId ID of user scheduling availability
+ * @param {string} userTag tag of user scheduling availability
+ * @param {string} timeFrom start time on available days
+ * @param {string} timeTo end time on available days
+ * @param {string} days days of the week a user works
+ * @param {string} path path to the JSON file
+ * @returns Message contents to send
+ */
 const setAvail = (userId, userTag, timeFrom, timeTo, days, path) => {
     try {
         if (!timeFrom || !timeTo)
@@ -186,10 +231,16 @@ const setAvail = (userId, userTag, timeFrom, timeTo, days, path) => {
 
         console.log(error);
         return { content: `*${error.message}*` };
-
     }
 };
 
+/**
+ * Display the availability of self or requested server member
+ * @param {User} user User object of user that called the command
+ * @param {GuildMember} member object of the (optional) requested member
+ * @param {string} path path to the JSON file
+ * @returns Embed that displays availability
+ */
 const displayAvail = (user, member, path) => {
     try {
 
@@ -216,6 +267,13 @@ const displayAvail = (user, member, path) => {
     }
 };
 
+/**
+ * Display the availability of self or requested server member
+ * @param {User} user User object of user that called the command
+ * @param {GuildMember} member object of the (optional) requested member
+ * @param {string} path path to the JSON file
+ * @returns Embed that displays unavailability
+ */
 const displayUnavail = (user, member, path) => {
     try {
 
