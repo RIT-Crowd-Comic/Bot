@@ -91,7 +91,7 @@ const helpAvailability = () =>{
 
     // Create an embed to send to the user
     const embed = new EmbedBuilder()
-        .setTitle('General Server Commands')
+        .setTitle('Availability Commands')
         .addFields(
             {
 
