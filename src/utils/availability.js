@@ -83,6 +83,12 @@ const createUnavailability = (start, end, reason) => {
     };
 };
 
+/**
+ * Removes any unavailability events that have passed for a specific user
+ * @param {object} data Data from the savedAvailability file
+ * @param {string} userId ID of user to check unavailability of
+ * @returns {object} altered data
+ */
 const removeExpired = (data, userId) => {
     const expiredObjects = [];
     for(let i=0, list = data[userId].unavailable; i<list.length; i++){
@@ -164,35 +170,47 @@ const updateAvailabilityChannel = async newChannel => {
     return { content: `<#${newChannel.id}> is the new availability channel` };
 };
 
+/**
+ * Check if provided Dayjs object is today
+ * @param {Daysjs} date Date to check
+ * @returns {boolean} date is today (true) or isn't (false)
+ */
 const isToday = (date) => {
     return (dayjs().get('month')==dayjs(date).get('month'))&&(dayjs().get('date')==dayjs(date).get('date'));
 };
 
+/**
+ * Update the provided queue with a new time of unavailability
+ * @param {object[]} queue Array to be updated
+ * @param {Dayjs} time Time to be added to the queue
+ * @param {string} id ID of user
+ * @param {boolean} toRemove If the given time is meant to be removed from queue
+ */
 const updateQueue = (queue, time, id, toRemove = false) => {
     if(isToday(time)){
         const hour = dayjs(time).hour();
         const min = dayjs(time).minute();
 
-        const reminder = {
+        const unavailTime = {
             'id':   id,
             'hour': hour,
             'min':  min
         };
-        let index = queue.indexOf(reminder);
+        let index = queue.indexOf(unavailTime);
         if(index && toRemove)
             queue.splice(index,1);
         else if(index==-1 && queue.length == 0)
-            queue.push(reminder)
+            queue.push(unavailTime)
         else{
             for(let i = 0; i<queue.length; i++) {
                 const qTime = queue[i];
                 const same = qTime.id == id && qTime.hour == hour && qTime.min == min;
                 if(hour <= qTime.hour && min <= qTime.min && !same){
-                    queue.splice(i, 0, reminder);
+                    queue.splice(i, 0, unavailTime);
                     return;
                 }
                 else if(i==queue.length-1 && !same){
-                    queue.push(reminder);
+                    queue.push(unavailTime);
                     return;
                 }
             }
@@ -200,6 +218,12 @@ const updateQueue = (queue, time, id, toRemove = false) => {
     }
 };
 
+/**
+ * Add or remove the unavailable role from a server member
+ * @param {Client} client Discord client
+ * @param {string} id User ID of user change role of
+ * @param {boolean} isUnavail Add(true) or remove(false) unavailable role
+ */
 const changeRole = async (client, id, isUnavail) => {
     let user = await client.users.cache.get(id); //Get user if already in cache
     if(!user)
@@ -209,10 +233,14 @@ const changeRole = async (client, id, isUnavail) => {
     isUnavail ? addUnavailableRole(user) : removeUnavailableRole(user);
 }
 
+/**
+ * Populate the start and end queues with most up to date unavailability info
+ * @param {string} path path to JSON file with availability data
+ */
 const getQueues = (path) => {
     const data = loadAvailability(path);
-
     for (let user in data){
+        data = removeExpired(data, user);
         for(let i = 0, length = data[user].unavailable.length; i<length; i++){
             updateQueue(startQueue, data[user].unavailable[i].from, user);
             updateQueue(endQueue, data[user].unavailable[i].to, user);
