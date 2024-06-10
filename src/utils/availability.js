@@ -1,11 +1,17 @@
 const fs = require('fs');
 const dayjs = require('dayjs');
+const utc = require('dayjs/plugin/utc');
+dayjs.extend(utc);
 const { ScheduleError, parseDaysList } = require('./schedule.js');
+const {addUnavailableRole, removeUnavailableRole} = require('./roles.js');
 const { EmbedBuilder } = require('discord.js');
 
 let availabilityChannel = undefined;
 const getAvailabilityChannel = async () => { return availabilityChannel; };
 const setAvailabilityChannel = channel => { availabilityChannel = channel; };
+
+const startQueue = [];
+const endQueue = [];
 
 /**
  * Get availability data from JSON file
@@ -94,6 +100,9 @@ const saveUnavailability = (userId, userTag, unavail, path) => {
 
     // Send data back to file
     fs.writeFileSync(path, JSON.stringify(fileContent, null, 2), (err) => err && console.error(err));
+
+    //Update queues
+    getQueues('./src/savedAvailability.json');
 };
 
 /**
@@ -111,6 +120,9 @@ const saveAvailability = (userId, userTag, avail, path) => {
 
     // Send data back to file
     fs.writeFile(path, JSON.stringify(fileContent, null, 2), (err) => err && console.error(err));
+
+    //Update queues
+    getQueues('./src/savedAvailability.json');
 };
 
 const updateAvailabilityChannel = async newChannel => {
@@ -125,6 +137,62 @@ const updateAvailabilityChannel = async newChannel => {
     setAvailabilityChannel(newChannel);
 
     return { content: `<#${newChannel.id}> is the new availability channel` };
+};
+
+const isToday = (date) => {
+    return (dayjs().get('month')==dayjs(date).get('month'))&&(dayjs().get('date')==dayjs(date).get('date'));
+};
+
+const updateQueue = (queue, time, id, toRemove = false) => {
+    if(isToday(time)){
+        const hour = dayjs(time).hour();
+        const min = dayjs(time).minute();
+
+        const reminder = {
+            'id':   id,
+            'hour': hour,
+            'min':  min
+        };
+        let index = queue.indexOf(reminder);
+        if(index && toRemove)
+            queue.splice(index,1);
+        else if(index==-1 && queue.length == 0)
+            queue.push(reminder)
+        else{
+            for(let i = 0; i<queue.length; i++) {
+                const qTime = queue[i];
+                const same = qTime.id == id && qTime.hour == hour && qTime.min == min;
+                if(hour <= qTime.hour && min <= qTime.min && !same){
+                    queue.splice(i, 0, reminder);
+                    return;
+                }
+                else if(i==queue.length-1 && !same){
+                    queue.push(reminder);
+                    return;
+                }
+            }
+        }
+    }
+};
+
+const changeRole = async (client, id, isUnavail) => {
+    let user = await client.users.cache.get(id); //Get user if already in cache
+    if(!user)
+        user = await client.users.fetch(id); //Fetches user and adds to cache
+
+    //Add or remove unavailable role depending on isUnavail
+    isUnavail ? addUnavailableRole(user) : removeUnavailableRole(user);
+}
+
+const getQueues = (path) => {
+    const data = loadAvailability(path);
+
+    for (let user in data){
+        for(let i = 0, length = data[user].unavailable.length; i<length; i++){
+            updateQueue(startQueue, data[user].unavailable[i].from, user);
+            updateQueue(endQueue, data[user].unavailable[i].to, user);
+        }
+    }
 };
 
 // Command Functions
@@ -309,15 +377,11 @@ const displayUnavail = (user, member, path) => {
 };
 
 module.exports = {
-    createAvailability,
-    createUnavailability,
-    getAvailabilityChannel,
-    setAvailabilityChannel,
     updateAvailabilityChannel,
-    saveUnavailability,
-    saveAvailability,
-    newAvailabilityEntry,
-    loadAvailability,
+    startQueue,
+    endQueue,
+    getQueues,
+    changeRole,
     setUnavail,
     setAvail,
     displayAvail,
