@@ -22,7 +22,9 @@
       - [Unit Tests](#unit-tests)
   - [Command Documentation](#command-documentation)
     - [/help](#help)
-    - [/help-remember](#help-remember)
+      - [general](#help-general) 
+      - [remember](#help-remember)
+      - [availability](#help-availability)
     - [/check-in-interface](#check-in-interface)
     - [/schedule-check-in](#schedule-check-in)
     - [/remember](#remember-subcommands)
@@ -317,13 +319,19 @@ All subcommands append to its parent command with a space afterwards
 - Example: `/remember message`
 ### /help <a name="help"></a>
 
+#### general <a name="help-general"></a>
+
 Show all of the commands along with a brief description
 
-  
 
-### /help-remember <a name="help-remember"></a>
+#### remember <a name="help-remember"></a>
 
 Shows a brief description of all of the remember subcommands
+
+
+#### availability <a name="help-availability"></a>
+
+Shows a brief description of all of the availability subcommands
 
   
 

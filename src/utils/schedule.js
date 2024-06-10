@@ -2,10 +2,14 @@ const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
 const weekday = require('dayjs/plugin/weekday');
 const localizedFormat = require('dayjs/plugin/localizedFormat');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+
 dayjs.extend(utc);
 dayjs.extend(weekday);
 dayjs.extend(localizedFormat);
 
+const fakeScheduleEntry = {};
+const queue = [];
 const validDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 const abbreviations = {
     'm': 'monday',
@@ -25,10 +29,20 @@ class ScheduleError extends Error {
     }
 }
 
+/**
+ * creates a string of the users schedule in their local time
+ * @param {schedule object} schedule 
+ * @returns 
+ */
 const displaySchedule = (schedule) => {
     const everyDay = validDays.every(d => schedule.localDays.includes(d));
     const days = everyDay ? 'every day' : `[${schedule.localDays.join(', ')}]`;
-    const time = `${schedule.localTime[0]}:${schedule.localTime[1]}`;
+
+    // Adds a zero if necessary. Ex: '5:5' to '5:05'
+    let min = schedule.localTime[1].toString();
+    min = min.length === 1 ? `0${min}` : min;
+
+    const time = `${schedule.localTime[0]}:${min} (24 hr time)`;
     return `${days} at ${time}`;
 };
 
@@ -46,7 +60,7 @@ const createSchedule = (daysList, time) => {
 
     // check if list of days is valid
     if (daysList.some(d => !validDays.includes(d))) {
-        throw new ScheduleError('Invalid list of days');
+        throw new ScheduleError('Invalid list of days. (abbreviations: m t w (th or h) f sa su).');
     }
 
     if (!time.isValid) throw new ScheduleError('Invalid time');
@@ -96,6 +110,7 @@ const mergeSchedules = (schedules) => {
     // merged. Figure out some better way to deal with that
 
     // clone 2 levels deep
+    /*
     const mergedSchedules = [];
     schedules.forEach(s => {
         let duplicate = false;
@@ -125,6 +140,7 @@ const mergeSchedules = (schedules) => {
         }
     });
     return mergedSchedules;
+    */
 };
 
 
@@ -155,7 +171,7 @@ const parseDaysList = (days) => {
     });
 
     if (parsedDays.some(d => !validDays.includes(d))) {
-        throw new ScheduleError('Invalid list of days');
+        throw new ScheduleError('Invalid list of days. (abbreviations: m t w (th or h) f sa su).');
     }
 
     return parsedDays;
@@ -181,10 +197,151 @@ const parseTime = (time) => {
     return parsedTime;
 };
 
+/**
+ * sends DM to user with check-in reminder interface
+ * @param {*} client 
+ * @param {string} id user id
+ */
+const sendCheckInReminder = async (client, id)=>{
+
+    let user = await client.users.cache.get(id);
+    if (!user) { // checks if user is already in cache
+        user = await client.users.fetch(id); // fetches user (will add to the cache)
+    }
+
+    // checkin interface module
+    let reply = [
+        'Would you like to spend a few minutes to describe how you\'re doing? ',
+        'Feel free to leave any fields blank. ',
+        'Keep in mind that your response may be viewed by an administrator. ',
+        '** **',
+    ].join('\n');
+
+    const actions = new ActionRowBuilder();
+    const yesBtn = new ButtonBuilder()
+        .setCustomId('check-in-start-btn')
+        .setLabel('Yes')
+        .setStyle(ButtonStyle.Primary);
+    const laterBtn = new ButtonBuilder()
+        .setCustomId('check-in-later-btn')
+        .setLabel('Remind Me Later')
+        .setStyle(ButtonStyle.Secondary);
+    const notNowBtn = new ButtonBuilder()
+        .setCustomId('check-in-cancel-btn')
+        .setLabel('Not Today')
+        .setStyle(ButtonStyle.Secondary);
+
+    actions.addComponents(yesBtn, laterBtn, notNowBtn);
+
+    try {
+        await user.send({
+            content:    reply,
+            components: [actions]
+        });
+
+    }
+    catch (error) {
+        console.log(error);
+        await user.send({ content: 'could not process command' });
+    }
+
+};
+
+/**
+ * creates a reminder object to add to the que then inserts it in the correct chronological placement
+ * @param {string[]} days array of schedule days
+ * @param {int[]} utcTime utc reminder [hour,min]
+ * @param {string} id user id
+ * @param {bool} toRemove whether or not you want to remove (default=false)
+ */
+const updateQueue = (days, utcTime, id, toRemove = false)=>{
+    const hour = utcTime[0];
+    const min = utcTime[1];
+
+    const reminder = {
+        'id':   id,
+        'hour': hour,
+        'min':  min
+    };
+
+    // if affects today's queue
+    if (days.includes(checkCurrentDay())) {
+        let index = queue.indexOf(reminder);
+        if (index && toRemove) { // if it exists in the queue and we want to remove
+            queue.splice(index, 1);
+        }
+        else if (index == -1 && queue.length == 0) { // if queue is empty
+            queue.push(reminder);
+        }
+        else { // inserting into queue
+            for (let t = 0; t < queue.length; t++) {
+                const time = queue[t];
+                const same = time.id == id && time.hour == hour && time.min == min;
+                if (hour <= time.hour && min <= time.min && !same) {
+                    queue.splice(t, 0, reminder);
+                    return;
+                }
+                else if (t == queue.length - 1 && !same) {
+                    queue.push(reminder);
+                    return;
+                }
+            }
+        }
+
+    }
+};
+
+/**
+ * gets the current day's scheduled times & users
+ * orders them chronologically in the queue[]
+ */
+const getDayOrder = ()=>{
+
+    /**
+    * checks to see if users have a scheduled day today
+    * creates and adds a reminder object with the time and user id to the queue using updateQueue()
+    */
+    for (let user in fakeScheduleEntry) {
+        for (let schedule of fakeScheduleEntry[user].schedules) {
+            updateQueue(schedule.utcDays, schedule.utcTime[0], schedule.utcTime[1], user);
+
+        }
+    }
+
+};
+
+
+/**
+ * gets the current utc day of week number
+ * converts number to name of day
+ * @returns {string} currentDayOfWeek: current utc day of the week
+ */
+const checkCurrentDay = ()=>{
+    const now = dayjs.utc();// .format()
+    const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const currentDayOfWeek = daysOfWeek[now.weekday()];
+    return currentDayOfWeek;
+};
+
+/**
+ * creates a new queue
+ */
+const getQueue = ()=>{
+    getDayOrder(checkCurrentDay());
+};
+
+
+
+
 module.exports = {
     createSchedule,
     parseDaysList,
     parseTime,
     displaySchedule,
+    sendCheckInReminder,
+    getQueue,
+    updateQueue,
+    fakeScheduleEntry,
+    queue,
     ScheduleError
 };

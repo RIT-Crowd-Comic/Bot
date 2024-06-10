@@ -1,14 +1,10 @@
 /**
- * Author: Arthur Powers
- * Date: 5/22/2024
- * 
- * 
  * Handle when a user interacts with the check in notification
  */
-
 const {
     ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder
 } = require('discord.js');
+const { sendCheckInReminder } = require('../../utils/schedule');
 
 
 /**
@@ -51,21 +47,47 @@ module.exports = async (client, interaction) => {
 
         checkInForm.addComponents(roses, thorns, buds);
 
-        await interaction.showModal(checkInForm);
+        interaction.showModal(checkInForm);
     }
+
+    // remind me later button -> snoozes message for 2h
     else if (interaction.customId === 'check-in-later-btn') {
-        await interaction.reply({
+
+        await interaction.deferReply({ ephemeral: true });
+
+        setTimeout(()=>{ sendCheckInReminder(client, interaction.user.id); }, 2 * 60 * 60 * 1000);// sends another reminder in 2 hours
+
+        await interaction.editReply({
             ephemeral: true,
-            content:   `Not yet implemented`
+            content:   `The reminder has been snoozed for 2 hours`
         });
+
+        // deletes origional reminder message
+        interaction.message.delete()
+            .catch(() => {
+                interaction.followUp({
+                    ephemeral: true,
+                    content:   `*Issue deleting original message*`
+                });
+            });
     }
 
     // user clicked no, stop bothering them
     else if (interaction.customId === 'check-in-cancel-btn') {
+
         await interaction.reply({
             ephemeral: true,
-            content:   `Thanks for responding! Make sure to take short breaks and to drink plenty of water!`
+            content:   `You have skipped today's check-in. Make sure to take short breaks and to drink plenty of water!`
         });
+
+        // deletes origional reminder message
+        interaction.message.delete()
+            .catch(() => {
+                interaction.followUp({
+                    ephemeral: true,
+                    content:   `*Issue deleting original message*`
+                });
+            });
     }
     else return; // user didn't interact with either of these buttons, do nothing
 };
