@@ -4,23 +4,35 @@ const help = () =>{
 
     // Create an embed to send to the user
     const embed = new EmbedBuilder()
-        .setTitle('Server Commands')
+        .setTitle('General Server Commands')
         .addFields(
             {
 
                 // name - /[name of command]
-                name: '/help-remember',
+                name: '/help remember',
 
                 // value - description of command
-                value: 'Brings up list of remember commands'
+                value: 'Shows a brief description of all of the remember subcommands'
+            },
+            {
+                name:  '/help availability',
+                value: 'Shows a brief description of all of the availability subcommands'
             },
             {
                 name:  '/check-in-interface',
-                value: 'Create an interface for users to schedule their check ins'
+                value: 'Check in with how your are feeling for the day'
             },
             {
                 name:  '/schedule-check-in',
-                value: 'Schedule a day and time to be notified'
+                value: 'Create a schedule for receiving check in notifications'
+            },
+            {
+                name:  '/role add',
+                value: 'Adds the unavailable role to a specific user'
+            },
+            {
+                name:  '/role remove',
+                value: 'Removes the unavailable role to a specific user'
             }
         );
 
@@ -40,35 +52,66 @@ const helpRemember = () =>{
                 name: '/remember message',
 
                 // value - description of command
-                value: 'Stores a message from the current channel based on its message-id'
+                value: 'Remember and save a specific message'
             },
             {
                 name:  '/remember clear-messages',
                 value: 'Clear all messages currently saved in remembrance'
             },
             {
+                name:  '/remember past',
+                value: 'Saves messages from past set amount of "hours" and "minutes" in a specific channel    '
+            },
+            {
                 name:  '/remember recall',
                 value: 'creates a JSON of all the saved message'
             },
             {
-                name:  '/remember past',
-                value: 'Saves messages from past set amount of "hours" and "minutes" in the current channel.'
-            },
-            {
                 name:  '/remember number',
-                value: 'Saves the last x messages from the current channel. Has an option to save from a specific channel.'
+                value: 'Saves a number of the most recent messages from a specific channel'
             },
             {
                 name:  '/remember range',
-                value: 'Remember all messages between two specific messages (inclusively)'
+                value: 'Remember all messages between two specific messages inclusively'
             },
             {
                 name:  '/remember start-remembering',
-                value: 'Start remembering messages in a specific channels'
+                value: 'Start remembering messages in a specific channel'
             },
             {
                 name:  '/remember stop-remembering',
-                value: 'Stop remembering messages in a specific channels'
+                value: 'Stop remembering messages in a specific channel'
+            }
+        );
+
+    return { embeds: [embed], ephemeral: true };
+};
+
+const helpAvailability = () =>{
+
+    // Create an embed to send to the user
+    const embed = new EmbedBuilder()
+        .setTitle('General Server Commands')
+        .addFields(
+            {
+
+                // name - /[name of command]
+                name: '/availability set-availability',
+
+                // value - description of command
+                value: 'Saves the times and days provided by the user to record when they are (typically) available during the week'
+            },
+            {
+                name:  '/availability set-unavailability',
+                value: 'Saves individual instances where the user will be unavailable'
+            },
+            {
+                name:  '/availability view-availability',
+                value: 'Sends the user a message with the requested availability'
+            },
+            {
+                name:  '/availability view-unavailability',
+                value: 'Sends the user a message that lists all of the days the requested server member is unavailable'
             }
         );
 
@@ -77,5 +120,6 @@ const helpRemember = () =>{
 
 module.exports = {
     help,
-    helpRemember
+    helpRemember,
+    helpAvailability
 };
