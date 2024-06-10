@@ -1,4 +1,4 @@
-const { clamp } = require('./mathUtils');
+const { clamp } = require('../utils/mathUtils');
 
 describe('clamp', () => {
     test('returns the number when it is within the range', () => {
