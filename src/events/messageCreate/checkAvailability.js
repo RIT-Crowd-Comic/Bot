@@ -63,7 +63,7 @@ const rememberAvailability = async(message, times) => {
  * @param {DiscordJS Message} message 
  */
 const unableToParse = (message) => {
-    message.reply({ content: `omething went wrong, try again`, ephemeral: true });
+    message.reply({ content: `Something went wrong, the message could not be interpreted,  please try again`, ephemeral: true });
 };
 
 const tools = [
