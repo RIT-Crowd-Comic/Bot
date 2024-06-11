@@ -4,7 +4,9 @@ require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const { Pool } = require('pg');
 
 const { ArgumentError, ConnectionError } = require('./errors');
-const { User, sequelize } = require('./models');
+const {
+    User, sequelize, UnavailableSchedule, CheckInResponse
+} = require('./models');
 
 // configuration variables must be in .env
 
@@ -270,24 +272,89 @@ SELECT * FROM checkin_schedules
     return pool.query(query, values);
 };
 
-const addCheckinResponse = (response) => {
+/**
+ * @param {{
+ * id: string,
+ * rose?: string | undefined,
+ * thorn?: string | undefined,
+ * bud?: string | undefined,
+ * }} response
+ */
+const addCheckInResponse = (response) => {
+    const user_id = response?.id?.toString()?.trim() ?? '';
+    const rose = response?.rose?.toString()?.trim() ?? '';
+    const thorn = response?.thorn?.toString()?.trim() ?? '';
+    const bud = response?.bud?.toString()?.trim() ?? '';
 
+    assertArgument(user_id?.length > 0, 'Invalid Argument: response.id');
+
+    // rose thorn bud can be empty
+
+    // don't add entry if it's empty
+    if (rose.length === 0 && thorn.length === 0 && bud.length === 0) return;
+
+
+    return CheckInResponse.create({
+        user_id,
+        rose,
+        thorn,
+        bud
+    });
 };
 
-const getCheckinResponse = (userId) => {
+const getCheckInResponses = (userId, limit = 5) => {
+    const user_id = userId?.toString()?.trim() ?? '';
 
+    assertArgument(user_id?.length > 0, 'Invalid Argument: userId');
+    assertArgument(limit >= 1, 'Invalid Argument: limit must be >= 1');
+
+    const filter = {
+        where: { user_id, },
+        order: [['createdAt', 'ASC']],
+        limit
+    };
+
+    return CheckInResponse.findAll(filter);
 };
 
 /**
  * 
  * @param {{
+ * id: string
  * from: string,
  * to: string,
  * reason: string | undefined}} schedule 
  */
 const addUnavailable = async (schedule) => {
+    const user_id = schedule?.id?.toString()?.trim() ?? '';
+    const from_time = schedule?.from?.toString()?.trim() ?? '';
+    const to_time = schedule?.to?.toString()?.trim() ?? '';
+    const reason = schedule?.reason?.toString()?.trim() ?? '';
 
+    assertArgument(user_id?.length > 0, 'Invalid Argument: schedule.id');
+    assertArgument(from_time?.length > 0, 'Invalid Argument: schedule.from');
+    assertArgument(to_time?.length > 0, 'Invalid Argument: schedule.to');
+
+    // reason can be empty :)
+
+    return UnavailableSchedule.create({
+        user_id,
+        from_time,
+        to_time,
+        reason
+    });
 };
+
+const getUnavailable = async (userId) => {
+    const user_id = userId?.toString()?.trim() ?? '';
+
+    assertArgument(user_id?.length > 0, 'Invalid Argument: userId');
+
+    const filter = { where: { user_id } };
+    return UnavailableSchedule.findAll(filter);
+};
+
+// const
 
 /**
  * 
@@ -312,7 +379,10 @@ module.exports = {
     getUser,
     addMessage,
     addCheckinSchedule,
+    addCheckInResponse,
+    getCheckInResponses,
     addUnavailable,
+    getUnavailable,
     checkinQueuePush,
     checkinQueuePop,
     authenticate

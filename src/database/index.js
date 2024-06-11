@@ -1,6 +1,6 @@
 
 module.exports = {
-    ...require('./models'),
+    Models: { ...require('./models'), },
+    Errors: { ...require('./errors'), },
     ...require('./queries'),
-    ...require('./errors')
 };
