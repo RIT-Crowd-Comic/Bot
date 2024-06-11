@@ -189,13 +189,13 @@ module.exports = async (client, message) => {
                     'role':    'system',
                     'content': prompt,
                 },
-                {
+                /*{
                     'role':    'user',
                     'content': stripIndents`I am busy from 10-12 tommorow`,
                 },
                 {
                     'role':    'assistant',
-                    'content': `Calls 'rememberUnavailability'`,
+                    'content': `{name: 'rememberUnavailability', arguments: '{"times":[{"start":"2024-06-12T10:00:00","end":"2024-06-12T14:00:00","reason":"busy"}]}"}'`,
                 },
                 {
                     'role':    'user',
@@ -203,7 +203,7 @@ module.exports = async (client, message) => {
                 },
                 {
                     'role':    'assistant',
-                    'content': `Calls 'rememberUnavailability'`,
+                    'content': `{name: 'rememberUnavailability', arguments: '{"times":[{"start":"2024-06-12T00:00:00","end":"2024-06-12T23:59:59","reason":"busy"}, {"start":"2024-06-13T10:00:00","end":"2024-06-13T14:00:00","reason":"busy"}, {"start":"2024-06-14T10:00:00","end":"2024-06-14T16:00:00","reason":"busy"}]}"}'`,
                 },
                 {
                     'role':    'user',
@@ -211,8 +211,8 @@ module.exports = async (client, message) => {
                 },
                 {
                     'role':    'assistant',
-                    'content': `Calls 'rememberAvailability'`,
-                },
+                    'content': `{name: "rememberAvailability", arguments: "{"from":"09:00","to":"17:00","days":[true,true,true,true,true]}",}`,
+                },*/
                 {
                     'role':    'user',
                     'content': stripIndents`${message.content}`,
