@@ -124,6 +124,8 @@ This project uses Node.js with the following dependencies and versions:
 
 "openai": "^4.47.3"
 
+"common-tags": "^1.8.2",
+
 ```
 
   

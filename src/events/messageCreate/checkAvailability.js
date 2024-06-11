@@ -1,6 +1,7 @@
 const { getAvailabilityChannel } = require('../../utils/availability');
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { openAiClient } = require('../../openAi/init');
+const {stripIndents} = require('common-tags')
 
 /**
  * 
@@ -179,15 +180,18 @@ module.exports = async (client, message) => {
         if (message.author.bot || !availabilityChannel || message.channelId !== availabilityChannel.id) {
             return;
         }
-
         const date = new Date(message.createdTimestamp).toLocaleDateString();
+        const prompt = stripIndents`Based on the attached message, use one of the provided tools to parse availability or unavailability. If either don't work call 'unableToParse' from the tools.  The message date is ${date}.`;
         const response = await openAiClient.chat.completions.create({
             model:    'gpt-3.5-turbo',
             messages: [
                 {
+                    'role':    'system',
+                    'content': prompt,
+                },
+                {
                     'role':    'user',
-                    'content': message.content + `the current local date is ${date} and tomorrow is not today.`,
-                    'date':    date
+                    'content':  stripIndents`${message.content}`,
                 }
             ],
             tools:       tools,
@@ -200,7 +204,10 @@ module.exports = async (client, message) => {
             message.reply('Unable to parse message');
             return;
         }
-        parseResults(message, output.tool_calls[0].function);
+        
+        output.tool_calls.forEach(tool =>{
+            parseResults(message, tool.function);
+        })
     }
     catch (error) { console.log(error); }
 };

@@ -20,6 +20,7 @@
   "author": "William Tallarico",
   "license": "ISC",
   "dependencies": {
+    "common-tags": "^1.8.2",
     "dayjs": "^1.11.11",
     "discord.js": "^14.15.2",
     "dotenv": "^16.4.5",
@@ -34,6 +35,8 @@
     "globals": "^15.3.0"
   },
   "nodemonConfig": {
-    "ignore": ["**/*.json"]
+    "ignore": [
+      "**/*.json"
+    ]
   }
 }
