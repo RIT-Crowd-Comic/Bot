@@ -1,5 +1,3 @@
 
 
-module.exports = {
-    validUser
-}
+module.exports = { validUser };
