@@ -28,7 +28,38 @@ const User = sequelize.define(
     }
 );
 
+const Message = sequelize.define(
+    'message',
+    {
+        message_author: 
+        {
+            type: DataTypes.JSON,
+            allowNull: false
+        },
+        message_content:
+        {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        message_id:
+        {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        message_timestamp:
+        {
+            type: DataTypes.STRING,
+            allowNull: false
+        }
+
+    },
+    {
+        paranoid:true
+    }
+);
+
 module.exports = {
     User,
+    Message,
     sequelize
 };
