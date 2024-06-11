@@ -24,6 +24,7 @@
       - [general](#help-general) 
       - [remember](#help-remember)
       - [availability](#help-availability)
+      - [check-in](#help-check-in)
     - [/check-in-interface](#check-in-interface)
     - [/check-in](#check-in)
         - [schedule](#schedule-check-in)
@@ -322,6 +323,9 @@ Shows a brief description of all of the remember subcommands
 
 Shows a brief description of all of the availability subcommands
 
+#### check-in <a name="help-check-in"></a>
+
+Shows a brief description of all of the check-in subcommands
   
 
 ### /check-in-interface <a name="check-in-interface"></a>
