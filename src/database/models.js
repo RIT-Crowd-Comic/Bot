@@ -32,33 +32,82 @@ const Message = sequelize.define(
     'message',
     {
         user_id: {
-            type: DataTypes.STRING,
+            type:      DataTypes.STRING,
             allowNull: false
         },
         content:
         {
-            type: DataTypes.STRING,
+            type:      DataTypes.STRING,
             allowNull: false
         },
         message_id:
         {
-            type: DataTypes.STRING,
+            type:      DataTypes.STRING,
             allowNull: false
         },
         message_ts:
         {
-            type: DataTypes.STRING,
+            type:      DataTypes.STRING,
             allowNull: false
         }
 
     },
-    {
-        paranoid:true
-    }
+    { paranoid: true }
 );
+
+const Schedule = sequelize.define(
+    'schedule',
+    {
+        user_id: {
+            type:      DataTypes.STRING,
+            allowNull: false
+        },
+        utcDays:
+        {
+            type:      DataTypes.ARRAY(DataTypes.STRING),
+            allowNull: false
+        },
+        utcTime:
+        {
+            type:      DataTypes.ARRAY(DataTypes.INTEGER),
+            allowNull: false
+        },
+        localDays:
+        {
+            type:      DataTypes.ARRAY(DataTypes.STRING),
+            allowNull: false
+        },
+        localTime:
+        {
+            type:      DataTypes.ARRAY(DataTypes.INTEGER),
+            allowNull: false
+        }
+
+    },
+    { paranoid: true }
+);
+
+/* fiddling with*/
+// const ScheduleQueue = sequelize.define(
+//     'scheduleQueue',
+//     {
+
+//         utcDays:
+//         {
+//             type: DataTypes.ARRAY(DataTypes.STRING),
+//             allowNull: false
+//         },
+
+
+//     },
+//     {
+//         paranoid:true
+//     }
+// );
 
 module.exports = {
     User,
     Message,
+    Schedule,
     sequelize
 };
