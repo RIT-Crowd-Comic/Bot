@@ -105,23 +105,7 @@ const Response = sequelize.define(
     { paranoid: true }
 );
 
-/* fiddling with*/
-// const ScheduleQueue = sequelize.define(
-//     'scheduleQueue',
-//     {
 
-//         utcDays:
-//         {
-//             type: DataTypes.ARRAY(DataTypes.STRING),
-//             allowNull: false
-//         },
-
-
-//     },
-//     {
-//         paranoid:true
-//     }
-// );
 
 module.exports = {
     User,

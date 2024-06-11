@@ -289,21 +289,7 @@ const addUnavailable = async (schedule) => {
 
 };
 
-/**
- * 
- * @param {object} entry 
- */
-const checkinQueuePush = async (entry) => {
 
-};
-
-/**
- * 
- * @returns {object} 
- */
-const checkinQueuePop = async () => {
-
-};
 
 module.exports = {
     testQuery,
@@ -313,7 +299,5 @@ module.exports = {
     addMessage,
     addCheckinSchedule,
     addUnavailable,
-    checkinQueuePush,
-    checkinQueuePop,
     authenticate
 };
