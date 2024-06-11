@@ -87,30 +87,45 @@ const Schedule = sequelize.define(
     { paranoid: true }
 );
 
-const Response = sequelize.define(
-    'response',
+
+const UnavailableSchedule = sequelize.define(
+    'unavailable_schedule',
     {
         user_id: {
             type:      DataTypes.STRING,
             allowNull: false
         },
-        date: {
-            type:      DataTypes.DATE,
+        from_time: {
+            type:      DataTypes.STRING,
             allowNull: false
         },
-        rose:  { type: DataTypes.STRING, },
-        bud:   { type: DataTypes.STRING, },
-        thorn: { type: DataTypes.STRING, },
+        to_time: {
+            type:      DataTypes.STRING,
+            allowNull: false
+        },
+        reason: { type: DataTypes.STRING },
     },
     { paranoid: true }
 );
 
-
+const CheckInResponse = sequelize.define(
+    'checkin_response',
+    {
+        user_id: {
+            type:      DataTypes.STRING,
+            allowNull: false
+        },
+        rose:  { type: DataTypes.STRING, },
+        thorn: { type: DataTypes.STRING, },
+        bud:   { type: DataTypes.STRING, }
+    }
+);
 
 module.exports = {
     User,
     Message,
     Schedule,
-    Response,
+    UnavailableSchedule,
+    CheckInResponse,
     sequelize
 };
