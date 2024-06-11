@@ -1,12 +1,11 @@
 const {
-    newAvailabilityEntry, createAvailability, createUnavailability, setUnavail, setAvail, displayAvail, displayUnavail, loadAvailability
+    newAvailabilityEntry, createAvailability, createUnavailability, displayAvail, displayUnavail
 } = require('../utils/availability');
 
 
 jest.mock('../utils/availability', () => {
 
     const originalModule = jest.requireActual('../utils/availability');
-    console.log(':3c');
     return {
         __esModule:       true,
         ...originalModule,
