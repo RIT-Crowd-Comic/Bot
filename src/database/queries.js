@@ -48,6 +48,12 @@ pool.on('error', (err) => {
 
 // let retry = true;
 
+/**
+ * Throw an error if a condition is not met
+ * @param {boolean | function} condition throw error if condition is not met
+ * @param {string} message message to send when assertion fails
+ * @param {ArgumentError | Error} ErrConstructor type of error to throw
+ */
 const assertArgument = (
     condition,
     message = 'Invalid Arguments',
@@ -62,7 +68,7 @@ const assertArgument = (
         condition();
 
     // this would be fixed with typescript
-    const validErrors = [ArgumentError, ConnectionError, Error];
+    const validErrors = [ArgumentError, Error];
     if (validErrors.some(e => ErrConstructor === e)) ErrConstructor = Error;
 
     if (!_condition) throw new ErrConstructor(message);
@@ -73,6 +79,10 @@ const testQuery = async () => {
     return pool.query('SELECT * FROM users');
 };
 
+/**
+ * Check if successfully connected to database
+ * @returns 
+ */
 const authenticate = () => {
     return sequelize.authenticate();
 };
@@ -102,33 +112,6 @@ const touchUser = async (user) => {
         });
 };
 
-// const touchUser = async (user) => {
-//     
-
-//     const id = user?.id?.toString()?.trim() ?? '';
-//     const tag = user?.id?.toString()?.trim() ?? '';
-//     const name = user?.id?.toString()?.trim() ?? '';
-
-//     // must be a valid user
-//     assertArgument(id?.length > 0, 'Invalid Argument: user.id');
-//     assertArgument(tag?.length > 0, 'Invalid Argument: user.tag');
-//     assertArgument(name?.length > 0, 'Invalid Argument: user.name');
-
-//     const values = [id, tag, name];
-//     const query =
-// `
-// IF NOT EXISTS (
-//     SELECT * FROM users WHERE user_id = $1
-// )
-//     INSERT INTO users (user_id, user_tag, user_name)
-//     VALUES ($1, $2, $3);
-// `;
-
-//     // QUERY PARAMETERS MUST BE DONE THIS WAY TO PREVENT
-//     // SQL INJECTION ATTACKS
-//     return client.query(query, values);
-// };
-
 /**
  * Create or update a user entry
  * @param {{ id: string, tag: string, name: string }} user 
@@ -156,7 +139,7 @@ const upsertUser = async (user) => {
 };
 
 /**
- * 
+ * Get a user's id, tag, and name
  * @param {string} userId 
  */
 const getUser = async (userId) => {
@@ -273,12 +256,13 @@ SELECT * FROM checkin_schedules
 };
 
 /**
+ * Save a user's check-in response form
  * @param {{
  * id: string,
  * rose?: string | undefined,
  * thorn?: string | undefined,
  * bud?: string | undefined,
- * }} response
+ * }} response required
  */
 const addCheckInResponse = (response) => {
     const user_id = response?.id?.toString()?.trim() ?? '';
@@ -290,7 +274,7 @@ const addCheckInResponse = (response) => {
 
     // rose thorn bud can be empty
 
-    // don't add entry if it's empty
+    // don't add entry if everything is empty
     if (rose.length === 0 && thorn.length === 0 && bud.length === 0) return undefined;
 
 
@@ -302,12 +286,20 @@ const addCheckInResponse = (response) => {
     });
 };
 
+/**
+ * Get the most recent list of check-in responses for a user
+ * ordered by created date, ascending.
+ * @param {string} userId required
+ * @param {number} limit optional
+ * @returns 
+ */
 const getCheckInResponses = (userId, limit = 5) => {
     const user_id = userId?.toString()?.trim() ?? '';
 
     assertArgument(user_id?.length > 0, 'Invalid Argument: userId');
     assertArgument(limit >= 1, 'Invalid Argument: limit must be >= 1');
 
+    // make sure to get the most recent responses
     const filter = {
         where: { user_id, },
         order: [['createdAt', 'ASC']],
@@ -318,12 +310,12 @@ const getCheckInResponses = (userId, limit = 5) => {
 };
 
 /**
- * 
+ * Add an unavailable schedule to a user
  * @param {{
  * id: string
  * from: string,
  * to: string,
- * reason: string | undefined}} schedule 
+ * reason: string | undefined}} schedule required
  */
 const addUnavailable = async (schedule) => {
     const user_id = schedule?.id?.toString()?.trim() ?? '';
@@ -335,7 +327,7 @@ const addUnavailable = async (schedule) => {
     assertArgument(from_time?.length > 0, 'Invalid Argument: schedule.from');
     assertArgument(to_time?.length > 0, 'Invalid Argument: schedule.to');
 
-    // reason can be empty :)
+    // reason can be empty, no need to assert :)
 
     return UnavailableSchedule.create({
         user_id,
@@ -345,10 +337,18 @@ const addUnavailable = async (schedule) => {
     });
 };
 
+/**
+ * Get a list of unavailable dates for a user 
+ * @param {string} userId required
+ * @returns 
+ */
 const getUnavailable = async (userId) => {
     const user_id = userId?.toString()?.trim() ?? '';
 
     assertArgument(user_id?.length > 0, 'Invalid Argument: userId');
+
+    // TODO: figure out a way to filter out past dates
+    // TODO: figure out a way to delete past schedules
 
     const filter = { where: { user_id } };
     return UnavailableSchedule.findAll(filter);
