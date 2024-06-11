@@ -83,7 +83,7 @@ const helpAvailability = () => {
 
     // Create an embed to send to the user
     const embed = new EmbedBuilder()
-        .setTitle('Availability Server Commands')
+        .setTitle('Availability Commands')
         .addFields(
             {
                 name: '/availability set-availability',

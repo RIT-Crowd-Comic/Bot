@@ -12,7 +12,7 @@
     "prestart": "npm run setup",
     "start": "node ./src/index.js",
     "start-heroku": "node ./src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [
     "none"
@@ -30,7 +30,9 @@
     "@eslint/js": "^9.3.0",
     "@stylistic/eslint-plugin-js": "^2.1.0",
     "eslint": "^9.3.0",
-    "globals": "^15.3.0"
+    "eslint-plugin-jest": "^28.5.0",
+    "globals": "^15.3.0",
+    "jest": "^29.7.0"
   },
   "nodemonConfig": {
     "ignore": ["**/*.json"]

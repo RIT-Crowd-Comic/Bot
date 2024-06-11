@@ -1,4 +1,4 @@
-﻿﻿﻿
+﻿﻿﻿﻿﻿
 # CrowdComic Bot
 
 ## Table of Contents
@@ -19,6 +19,7 @@
       - [How to create a command](#how-to-create-a-command)
       - [How to create a subcommand](#how-to-create-a-subcommand)
       - [How to add an event](#how-to-add-an-event)
+      - [Unit Tests](#unit-tests)
   - [Command Documentation](#command-documentation)
     - [/help](#help)
       - [general](#help-general) 
@@ -110,7 +111,7 @@ It's highly recommended to make your own version of the bot for testing purposes
 
 This project uses Node.js with the following dependencies and versions:
 
-  
+ **dependencies**
 
 ```
 
@@ -126,6 +127,14 @@ This project uses Node.js with the following dependencies and versions:
 
 ```
 
+**devDependencies**
+```
+    "@eslint/js": "^9.3.0",
+    "@stylistic/eslint-plugin-js": "^2.1.0",
+    "eslint": "^9.3.0",
+    "globals": "^15.3.0",
+    "jest": "^29.7.0"
+```
   
 
 #### .env Set Up <a name="env-set-up"></a>
@@ -304,6 +313,11 @@ Check out  `./commands/example/exampleCommand.js` for an example.
 
 **Note:** The eventHandler sorts the events in each folder by number, so 1 has greater priority than 2. Example:  `01registerCommands.js`  comes before  `02example.js`.
 
+#### Unit Tests <a name="unit-tests"></a>
+The Jest library is used to create/run unit test. Here is the [documentation](https://jestjs.io/docs/getting-started). All test files are stored in `src/test` and follow this naming convention: `[testName].test.js`
+
+All tests can be run with `npm test`
+
 ## Command Documentation <a name="command-documentation"></a>
 All subcommands append to its parent command with a space afterwards
 - Example: `/remember message`
@@ -428,7 +442,6 @@ Start remembering messages in a specific channel
 
 Stop remembering messages in a specific channel
 ### /role <a name="role"></a>
-Add/remove the unavailable role from a user
 
 #### add <a name="add"></a>
 Adds the unavailable role to a specific user
