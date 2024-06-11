@@ -103,7 +103,7 @@ const tools = [
         'type':     'function',
         'function': {
             'name':        'rememberAvailability',
-            'description': 'Gets the local time the user is available using the current message date in local time, and gets which week days the user is available.',
+            'description': 'Gets the local time the user is generally available using the current message date in local time, and gets which week days the user is available. Each user only has one, and its the default time that the user is available.',
             'parameters':  {
                 'type':       'object',
                 'properties': {
@@ -181,13 +181,37 @@ module.exports = async (client, message) => {
             return;
         }
         const date = new Date(message.createdTimestamp).toLocaleDateString();
-        const prompt = stripIndents`Based on the attached message, use one of the provided tools to parse availability or unavailability. If either don't work call 'unableToParse' from the tools.  The message date is ${date}.`;
+        const prompt = stripIndents`Based on the attached message and examples, use one of the provided tools to parse availability or unavailability. If either don't work call 'unableToParse' from the tools.  The message date is ${date}.`;
         const response = await openAiClient.chat.completions.create({
             model:    'gpt-3.5-turbo',
             messages: [
                 {
                     'role':    'system',
                     'content': prompt,
+                },
+                {
+                    'role':    'user',
+                    'content': stripIndents`I am busy from 10-12 tommorow`,
+                },
+                {
+                    'role':    'assistant',
+                    'content': `Calls 'rememberUnavailability'`,
+                },
+                {
+                    'role':    'user',
+                    'content': stripIndents`I am busy all day this upcoming wednesday, thursday i am busy from 10-2 and friday 10-4`,
+                },
+                {
+                    'role':    'assistant',
+                    'content': `Calls 'rememberUnavailability'`,
+                },
+                {
+                    'role':    'user',
+                    'content': stripIndents`I free from 9-5 monday through friday next week`,
+                },
+                {
+                    'role':    'assistant',
+                    'content': `Calls 'rememberAvailability'`,
                 },
                 {
                     'role':    'user',
