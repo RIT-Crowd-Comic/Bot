@@ -1,7 +1,7 @@
 import globals from 'globals';
 import pluginJs from '@eslint/js';
 import stylisticJs from '@stylistic/eslint-plugin-js';
-import jestPlugin from 'jest/eslint-plugin-jest';
+import jestPlugin from '@jest/eslint-plugin-jest';
 
 export default [
     {
@@ -155,7 +155,7 @@ export default [
     {
         files: ['**/*.test.js'],
         plugins: {
-            'jest/eslint-plugin-jest': jestPlugin
+            '@jest/eslint-plugin-jest': jestPlugin
         },
         languageOptions: {
             globals: {
