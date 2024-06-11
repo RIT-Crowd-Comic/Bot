@@ -68,7 +68,6 @@ CREATE TABLE checkin_responses (
     rose VARCHAR,
     thorn VARCHAR,
     bud VARCHAR,
-    timestamp TIMESTAMP,
     deleted_at TIMESTAMP
 );
 
