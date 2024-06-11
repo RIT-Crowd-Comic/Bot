@@ -1,7 +1,7 @@
 const { getAvailabilityChannel } = require('../../utils/availability');
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { openAiClient } = require('../../openAi/init');
-const {stripIndents} = require('common-tags')
+const { stripIndents } = require('common-tags');
 
 /**
  * 
@@ -72,7 +72,7 @@ const tools = [
         'type':     'function',
         'function': {
             'name':        'rememberUnavailability',
-            'description': 'In relation to the local current date, determines future chunks of time that the user is unavailable or busy as well as reasons for that unavailability. In local time.',
+            'description': 'In relation to the local current  message date, determines future chunks of time that the user is unavailable or busy as well as reasons for that unavailability. In local time.',
             'parameters':  {
                 'type':       'object',
                 'properties': {
@@ -103,7 +103,7 @@ const tools = [
         'type':     'function',
         'function': {
             'name':        'rememberAvailability',
-            'description': 'Gets the local time the user is available using the current date in local time and gets which week days the user is available.',
+            'description': 'Gets the local time the user is available using the current message date in local time, and gets which week days the user is available.',
             'parameters':  {
                 'type':       'object',
                 'properties': {
@@ -191,7 +191,7 @@ module.exports = async (client, message) => {
                 },
                 {
                     'role':    'user',
-                    'content':  stripIndents`${message.content}`,
+                    'content': stripIndents`${message.content}`,
                 }
             ],
             tools:       tools,
@@ -204,10 +204,10 @@ module.exports = async (client, message) => {
             message.reply('Unable to parse message');
             return;
         }
-        
+
         output.tool_calls.forEach(tool =>{
             parseResults(message, tool.function);
-        })
+        });
     }
     catch (error) { console.log(error); }
 };
