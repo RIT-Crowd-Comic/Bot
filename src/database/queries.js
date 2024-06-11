@@ -1,0 +1,319 @@
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+
+const { Pool } = require('pg');
+
+const { ArgumentError, ConnectionError } = require('./errors');
+const { User, sequelize } = require('./models');
+
+// configuration variables must be in .env
+
+/*
+PGUSER=postgres
+PGHOST=localhost
+PGPASSWORD=testdb
+PGDATABASE=database_name
+PGPORT=port
+
+
+alternatively use config object with Pool()
+{
+    user: 'postgres',
+    host: 'localhost',
+    database: 'testdb',
+    password: '1234abcd',
+    port: port,
+}
+*/
+
+const pool = new Pool();
+
+// pool.query(query, configValues) for most queries
+// This automatically connects/releases clients
+
+// For transactions, use the following:
+// const client = await pool.connect();
+// await client.query(...)
+// ...
+// client.release()
+
+
+pool.on('error', (err) => {
+    console.log(err);
+
+    // in the future, potentially do additional handling
+});
+
+// let retry = true;
+
+const assertArgument = (
+    condition,
+    message = 'Invalid Arguments',
+    ErrConstructor = ArgumentError
+) => {
+
+    if (typeof condition !== 'boolean' && typeof condition !== 'function')
+        throw new Error('Assert condition must be a function or boolean');
+
+    const _condition = typeof condition === 'boolean' ?
+        condition :
+        condition();
+
+    // this would be fixed with typescript
+    const validErrors = [ArgumentError, ConnectionError, Error];
+    if (validErrors.some(e => ErrConstructor === e)) ErrConstructor = Error;
+
+    if (!_condition) throw new ErrConstructor(message);
+};
+
+const testQuery = async () => {
+
+    return pool.query('SELECT * FROM users');
+};
+
+const authenticate = () => {
+    return sequelize.authenticate();
+};
+
+/**
+ * Create a user entry only if the user doesn't already exist
+ * @param {{ id: string, tag: string, name: string }} user 
+ */
+const touchUser = async (user) => {
+    const user_id = user?.id?.toString()?.trim() ?? '';
+    const user_tag = user?.tag?.toString()?.trim() ?? '';
+    const user_name = user?.name?.toString()?.trim() ?? '';
+
+    assertArgument(user_id?.length > 0, 'Invalid Argument: user.id');
+    assertArgument(user_tag?.length > 0, 'Invalid Argument: user.tag');
+    assertArgument(user_name?.length > 0, 'Invalid Argument: user.name');
+
+    // Create only if user doesn't exist
+
+    const filter = { where: { user_id } };
+
+    return User
+        .findOne(filter)
+        .then(user => {
+            if (!user) return User.create({ user_id, user_tag, user_name });
+            return user;
+        });
+};
+
+// const touchUser = async (user) => {
+//     
+
+//     const id = user?.id?.toString()?.trim() ?? '';
+//     const tag = user?.id?.toString()?.trim() ?? '';
+//     const name = user?.id?.toString()?.trim() ?? '';
+
+//     // must be a valid user
+//     assertArgument(id?.length > 0, 'Invalid Argument: user.id');
+//     assertArgument(tag?.length > 0, 'Invalid Argument: user.tag');
+//     assertArgument(name?.length > 0, 'Invalid Argument: user.name');
+
+//     const values = [id, tag, name];
+//     const query =
+// `
+// IF NOT EXISTS (
+//     SELECT * FROM users WHERE user_id = $1
+// )
+//     INSERT INTO users (user_id, user_tag, user_name)
+//     VALUES ($1, $2, $3);
+// `;
+
+//     // QUERY PARAMETERS MUST BE DONE THIS WAY TO PREVENT
+//     // SQL INJECTION ATTACKS
+//     return client.query(query, values);
+// };
+
+/**
+ * Create or update a user entry
+ * @param {{ id: string, tag: string, name: string }} user 
+ */
+const upsertUser = async (user) => {
+
+
+    const user_id = user?.id?.toString()?.trim() ?? '';
+    const user_tag = user?.tag?.toString()?.trim() ?? '';
+    const user_name = user?.name?.toString()?.trim() ?? '';
+
+    // must be a valid user
+    assertArgument(user_id?.length > 0, 'Invalid Argument: user.id');
+    assertArgument(user_tag?.length > 0, 'Invalid Argument: user.tag');
+    assertArgument(user_name?.length > 0, 'Invalid Argument: user.name');
+
+    const filter = { where: { user_id } };
+
+    return User
+        .findOne(filter)
+        .then(user => {
+            if (user) return User.update({ user_tag, user_name });
+            return User.create({ user_id, user_tag, user_name });
+        });
+};
+
+/**
+ * 
+ * @param {string} userId 
+ */
+const getUser = async (userId) => {
+    const id = userId?.toString()?.trim() ?? '';
+
+    assertArgument(id.length > 0, 'Invalid argument: userId');
+
+    const filter = {
+        where: { user_id: id },
+        order: [['id', 'ASC']],
+        limit: 1
+    };
+
+    return User.findAll(filter);
+};
+
+/**
+ * 
+ * @param {{
+ * userId: string, 
+ * content: string, 
+ * timestamp: string}} message 
+ */
+const addMessage = async (message) => {
+
+
+    const id = message?.userId?.toString().trim() ?? '';
+    const content = message?.content?.toString().trim() ?? '';
+    const timestamp = message?.timestamp?.toString().trim() ??
+        'CURRENT_TIMESTAMP';
+
+    assertArgument(id.length > 0, 'Invalid argument: message.id');
+
+    const values = [id, content, timestamp];
+    const query =
+`
+INSERT INTO messages (user_id, content, timestamp)
+    VALUES ($1, $2, $3);
+`;
+
+    return pool.query(query, values);
+};
+
+const getMessages = async (filter) => {
+
+};
+
+/**
+ * 
+ * @param {{
+ * userId: string, 
+ * utcDays: string[], 
+ * utcTime: number[], 
+ * localDays: string[], 
+ * localTime: number[]}} schedule 
+ * 
+ */
+const addCheckinSchedule = async (schedule) => {
+
+
+    const id = schedule?.userId?.toString().trim() ?? '';
+    const utcDays = schedule?.utcDays;
+    const utcTime = schedule?.utcTime;
+    const localDays = schedule?.localDays;
+    const localTime = schedule?.localTime;
+
+    assertArgument(id.length > 0, 'Invalid argument: schedule.id');
+
+    // replace with schedule.validDays() or something
+    assertArgument(utcDays.constructor === Array, 'Invalid argument: schedule.utcDays');
+    assertArgument(utcTime.constructor === Array && utcTime.length === 2, 'Invalid argument: schedule.utcTime');
+    assertArgument(localDays.constructor === Array, 'Invalid argument: schedule.localDays');
+    assertArgument(localTime.constructor === Array && localTime.length === 2, 'Invalid argument: schedule.localTime');
+
+    const values = [id, utcDays, utcTime, localDays, localTime];
+    const query =
+`
+INSERT INTO checkin_schedules (user_id, utc_days, utc_time, local_days, local_time)
+    VALUES ($1, $2, $3, $4, $5);
+`;
+    return pool.query(query, values);
+};
+
+/**
+ * Marks a schedule for deletion
+ * @param {*} schedule 
+ */
+const deleteCheckinSchedule = (schedule) => {
+
+
+    // TODO: figure out best way to delete a schedule
+};
+
+/**
+ * Get a list of check in schedules for a specific user
+ * @param {string} userId 
+ * @returns 
+ */
+const getCheckinSchedules = (userId) => {
+
+
+    const id = userId?.toString()?.trim() ?? '';
+
+    assertArgument(id.length > 0, 'Invalid argument: userId');
+
+    const values = [id];
+    const query =
+`
+SELECT * FROM checkin_schedules
+    WHERE user_id = $1
+    ORDER BY checkin_schedule_pk ASC;
+`;
+    return pool.query(query, values);
+};
+
+const addCheckinResponse = (response) => {
+
+};
+
+const getCheckinResponse = (userId) => {
+
+};
+
+/**
+ * 
+ * @param {{
+ * from: string,
+ * to: string,
+ * reason: string | undefined}} schedule 
+ */
+const addUnavailable = async (schedule) => {
+
+};
+
+/**
+ * 
+ * @param {object} entry 
+ */
+const checkinQueuePush = async (entry) => {
+
+};
+
+/**
+ * 
+ * @returns {object} 
+ */
+const checkinQueuePop = async () => {
+
+};
+
+module.exports = {
+    testQuery,
+    touchUser,
+    upsertUser,
+    getUser,
+    addMessage,
+    addCheckinSchedule,
+    addUnavailable,
+    checkinQueuePush,
+    checkinQueuePop,
+    authenticate
+};
