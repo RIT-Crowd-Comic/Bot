@@ -87,6 +87,24 @@ const Schedule = sequelize.define(
     { paranoid: true }
 );
 
+const Response = sequelize.define(
+    'response',
+    {
+        user_id: {
+            type:      DataTypes.STRING,
+            allowNull: false
+        },
+        date: {
+            type:      DataTypes.DATE,
+            allowNull: false
+        },
+        rose:  { type: DataTypes.STRING, },
+        bud:   { type: DataTypes.STRING, },
+        thorn: { type: DataTypes.STRING, },
+    },
+    { paranoid: true }
+);
+
 /* fiddling with*/
 // const ScheduleQueue = sequelize.define(
 //     'scheduleQueue',
@@ -109,5 +127,6 @@ module.exports = {
     User,
     Message,
     Schedule,
+    Response,
     sequelize
 };
