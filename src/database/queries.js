@@ -291,7 +291,7 @@ const addCheckInResponse = (response) => {
     // rose thorn bud can be empty
 
     // don't add entry if it's empty
-    if (rose.length === 0 && thorn.length === 0 && bud.length === 0) return;
+    if (rose.length === 0 && thorn.length === 0 && bud.length === 0) return undefined;
 
 
     return CheckInResponse.create({
