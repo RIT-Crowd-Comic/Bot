@@ -3,7 +3,7 @@ const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
 dayjs.extend(utc);
 const { ScheduleError, parseDaysList } = require('./schedule.js');
-const {addUnavailableRole, removeUnavailableRole} = require('./roles.js');
+const { addUnavailableRole, removeUnavailableRole } = require('./roles.js');
 const { EmbedBuilder } = require('discord.js');
 
 let availabilityChannel = undefined;
@@ -91,15 +91,16 @@ const createUnavailability = (start, end, reason) => {
  */
 const removeExpired = (data, userId) => {
     const expiredObjects = [];
-    for(let i=0, list = data[userId].unavailable; i<list.length; i++){
-        if(dayjs(list[i].to).isBefore(dayjs()))
+    for (let i = 0, list = data[userId].unavailable; i < list.length; i++) {
+        if (dayjs(list[i].to).isBefore(dayjs()))
             expiredObjects.push(list[i]);
     }
-    //Remove expired unavailability from the data
-    for(let obj of expiredObjects)
-        data[userId].unavailable.splice(data[userId].unavailable.indexOf(obj),1);
+
+    // Remove expired unavailability from the data
+    for (let obj of expiredObjects)
+        data[userId].unavailable.splice(data[userId].unavailable.indexOf(obj), 1);
     return data;
-}
+};
 
 /**
  * Save an Unavailable object to a user in the JSON file
@@ -114,25 +115,29 @@ const saveUnavailability = (userId, userTag, unavail, path) => {
     let fileContent = loadAvailability(path);
 
     fileContent[userId] ??= newAvailabilityEntry(userId, userTag);
-    //Store unavailability in the list in chronological order
-    for(let i = 0, list = fileContent[userId].unavailable; i<list.length; i++){
-        if(dayjs(list[i].from).isAfter(dayjs(unavail.from))){
+
+    // Store unavailability in the list in chronological order
+    for (let i = 0, list = fileContent[userId].unavailable; i < list.length; i++) {
+        if (dayjs(list[i].from).isAfter(dayjs(unavail.from))) {
             list.splice(i, 0, unavail);
             break;
         }
-        else if(i==list.length-1){
+        else if (i == list.length - 1) {
             list.push(unavail);
             break;
         }
     }
 
-    //Check if any times in unavailability have passed and need to be removed
+    // If there was no prior unavailability saved, save now
+    if (fileContent[userId].unavailable.length == 0) { fileContent[userId].unavailable.push(unavail); }
+
+    // Check if any times in unavailability have passed and need to be removed
     fileContent = removeExpired(fileContent, userId);
 
     // Send data back to file
     fs.writeFileSync(path, JSON.stringify(fileContent, null, 2), (err) => err && console.error(err));
 
-    //Update queues
+    // Update queues
     getQueues('./src/savedAvailability.json');
 };
 
@@ -152,7 +157,7 @@ const saveAvailability = (userId, userTag, avail, path) => {
     // Send data back to file
     fs.writeFile(path, JSON.stringify(fileContent, null, 2), (err) => err && console.error(err));
 
-    //Update queues
+    // Update queues
     getQueues('./src/savedAvailability.json');
 };
 
@@ -176,7 +181,7 @@ const updateAvailabilityChannel = async newChannel => {
  * @returns {boolean} date is today (true) or isn't (false)
  */
 const isToday = (date) => {
-    return (dayjs().get('month')==dayjs(date).get('month'))&&(dayjs().get('date')==dayjs(date).get('date'));
+    return (dayjs().get('month') == dayjs(date).get('month')) && (dayjs().get('date') == dayjs(date).get('date'));
 };
 
 /**
@@ -186,8 +191,8 @@ const isToday = (date) => {
  * @param {string} id ID of user
  * @param {boolean} toRemove If the given time is meant to be removed from queue
  */
-const updateQueue = (queue, time, id, toRemove = false) => {
-    if(isToday(time)){
+const updateQueue = (queue, time, id) => {
+    if (isToday(time)) {
         const hour = dayjs(time).hour();
         const min = dayjs(time).minute();
 
@@ -196,20 +201,16 @@ const updateQueue = (queue, time, id, toRemove = false) => {
             'hour': hour,
             'min':  min
         };
-        let index = queue.indexOf(unavailTime);
-        if(index && toRemove)
-            queue.splice(index,1);
-        else if(index==-1 && queue.length == 0)
-            queue.push(unavailTime)
-        else{
-            for(let i = 0; i<queue.length; i++) {
+        if (queue.length == 0)
+            queue.push(unavailTime);
+        else {
+            for (let i = 0; i < queue.length; i++) {
                 const qTime = queue[i];
-                const same = qTime.id == id && qTime.hour == hour && qTime.min == min;
-                if(hour <= qTime.hour && min <= qTime.min && !same){
+                if (hour <= qTime.hour && min <= qTime.min) {
                     queue.splice(i, 0, unavailTime);
                     return;
                 }
-                else if(i==queue.length-1 && !same){
+                else if (i == queue.length - 1) {
                     queue.push(unavailTime);
                     return;
                 }
@@ -225,23 +226,27 @@ const updateQueue = (queue, time, id, toRemove = false) => {
  * @param {boolean} isUnavail Add(true) or remove(false) unavailable role
  */
 const changeRole = async (client, id, isUnavail) => {
-    let user = await client.users.cache.get(id); //Get user if already in cache
-    if(!user)
-        user = await client.users.fetch(id); //Fetches user and adds to cache
+    let user = await client.users.cache.get(id); // Get user if already in cache
+    if (!user)
+        user = await client.users.fetch(id); // Fetches user and adds to cache
 
-    //Add or remove unavailable role depending on isUnavail
+    // Add or remove unavailable role depending on isUnavail
     isUnavail ? addUnavailableRole(user) : removeUnavailableRole(user);
-}
+};
 
 /**
  * Populate the start and end queues with most up to date unavailability info
  * @param {string} path path to JSON file with availability data
  */
 const getQueues = (path) => {
-    const data = loadAvailability(path);
-    for (let user in data){
+    let data = loadAvailability(path);
+
+    // Empty queues when reloading from file
+    startQueue.length = 0;
+    endQueue.length = 0;
+    for (let user in data) {
         data = removeExpired(data, user);
-        for(let i = 0, length = data[user].unavailable.length; i<length; i++){
+        for (let i = 0, length = data[user].unavailable.length; i < length; i++) {
             updateQueue(startQueue, data[user].unavailable[i].from, user);
             updateQueue(endQueue, data[user].unavailable[i].to, user);
         }
@@ -401,13 +406,13 @@ const displayUnavail = (user, member, path) => {
         const targetMember = member ? member.user : user;
 
         // Get data saved from file
-        const fileContent = loadAvailability(path);
+        let fileContent = loadAvailability(path);
 
         // If no matching user was found in the data, 
         if (!fileContent[targetMember.id])
             return { content: 'Requested member has no available data' };
 
-        //Check if old unavailability needs to be removed
+        // Check if old unavailability needs to be removed
         fileContent = removeExpired(fileContent, targetMember.id);
 
         const unavailability = fileContent[targetMember.id].unavailable;
