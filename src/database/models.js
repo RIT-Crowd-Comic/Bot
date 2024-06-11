@@ -45,9 +45,9 @@ const Message = sequelize.define(
             type: DataTypes.STRING,
             allowNull: false
         },
-        timestamp:
+        message_ts:
         {
-            type: DataTypes.TIMESTAMP,
+            type: DataTypes.STRING,
             allowNull: false
         }
 

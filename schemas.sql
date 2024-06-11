@@ -18,7 +18,7 @@ CREATE TABLE messages (
     user_id VARCHAR NOT NULL,
     content VARCHAR NOT NULL,
     message_id VARCHAR NOT NULL,
-    timestamp TIMESTAMP,
+    message_ts VARCHAR NOT NULL,
     deleted_at TIMESTAMP
 );
 
