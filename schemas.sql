@@ -2,7 +2,7 @@
 -- keep track of all users (id, tag, name)
 
 CREATE TABLE users (
-    user_pk SERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     user_id VARCHAR NOT NULL,
     user_tag VARCHAR NOT NULL,
     user_name VARCHAR NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE users (
 -- discord has a limit of 2000 chars per message (4000 for nitro users)
 -- and VARCHAR has a limit of 10485760
 CREATE TABLE messages (
-    message_pk SERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     user_id VARCHAR NOT NULL,
     content VARCHAR NOT NULL,
     timestamp TIMESTAMP,
@@ -23,7 +23,7 @@ CREATE TABLE messages (
 
 -- keep in mind, array size is just verbose and effectively does nothing
 CREATE TABLE checkin_schedules (
-    checkin_schedule_pk SERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     user_id VARCHAR NOT NULL,
     utc_days VARCHAR[],
     utc_time INT[2],
@@ -40,7 +40,7 @@ CREATE TABLE checkin_schedules (
 
 -- from/to are dayjs strings. Ex: `JSON.stringify(dayjs())`
 CREATE TABLE unavailable_schedules (
-    unavailable_pk SERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     user_id VARCHAR NOT NULL,
     from_time VARCHAR,
     to_time VARCHAR,
@@ -62,7 +62,7 @@ CREATE INDEX checkin_q_time_inserted_id
 
 -- this is for rose thorn bud responses
 CREATE TABLE checkin_responses (
-    user_id VARCHAR NOT NULL,
+    id VARCHAR NOT NULL,
     rose VARCHAR,
     thorn VARCHAR,
     bud VARCHAR,
