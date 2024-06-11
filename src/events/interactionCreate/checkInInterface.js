@@ -18,7 +18,7 @@ module.exports = async (client, interaction) => {
 
     // only deal with the check in button, ignore all other button presses
     if (interaction.customId?.startsWith('check-in-btn')) {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply();
         const userId = interaction.user.id;
         let reply = [
             `<@${userId}>`,
