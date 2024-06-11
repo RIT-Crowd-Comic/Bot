@@ -87,23 +87,6 @@ const Schedule = sequelize.define(
     { paranoid: true }
 );
 
-/* fiddling with*/
-// const ScheduleQueue = sequelize.define(
-//     'scheduleQueue',
-//     {
-
-//         utcDays:
-//         {
-//             type: DataTypes.ARRAY(DataTypes.STRING),
-//             allowNull: false
-//         },
-
-
-//     },
-//     {
-//         paranoid:true
-//     }
-// );
 
 const UnavailableSchedule = sequelize.define(
     'unavailable_schedule',

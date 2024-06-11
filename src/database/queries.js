@@ -354,23 +354,7 @@ const getUnavailable = async (userId) => {
     return UnavailableSchedule.findAll(filter);
 };
 
-// const
 
-/**
- * 
- * @param {object} entry 
- */
-const checkinQueuePush = async (entry) => {
-
-};
-
-/**
- * 
- * @returns {object} 
- */
-const checkinQueuePop = async () => {
-
-};
 
 module.exports = {
     testQuery,
@@ -383,7 +367,5 @@ module.exports = {
     getCheckInResponses,
     addUnavailable,
     getUnavailable,
-    checkinQueuePush,
-    checkinQueuePop,
     authenticate
 };
