@@ -62,7 +62,8 @@ CREATE INDEX checkin_q_time_inserted_id
 
 -- this is for rose thorn bud responses
 CREATE TABLE checkin_responses (
-    id VARCHAR NOT NULL,
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR NOT NULL,
     rose VARCHAR,
     thorn VARCHAR,
     bud VARCHAR,
