@@ -17,6 +17,7 @@ CREATE TABLE messages (
     id SERIAL PRIMARY KEY,
     user_id VARCHAR NOT NULL,
     content VARCHAR NOT NULL,
+    message_id VARCHAR NOT NULL,
     timestamp TIMESTAMP,
     deleted_at TIMESTAMP
 );

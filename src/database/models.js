@@ -31,12 +31,11 @@ const User = sequelize.define(
 const Message = sequelize.define(
     'message',
     {
-        message_author: 
-        {
-            type: DataTypes.JSON,
+        user_id: {
+            type: DataTypes.STRING,
             allowNull: false
         },
-        message_content:
+        content:
         {
             type: DataTypes.STRING,
             allowNull: false
@@ -46,9 +45,9 @@ const Message = sequelize.define(
             type: DataTypes.STRING,
             allowNull: false
         },
-        message_timestamp:
+        timestamp:
         {
-            type: DataTypes.STRING,
+            type: DataTypes.TIMESTAMP,
             allowNull: false
         }
 
