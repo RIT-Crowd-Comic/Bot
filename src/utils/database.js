@@ -302,6 +302,14 @@ SELECT * FROM checkin_schedules
     return client.query(query, values);
 };
 
+const addCheckinResponse = (response) => {
+
+};
+
+const getCheckinResponse = (userId) => {
+
+};
+
 /**
  * 
  * @param {{

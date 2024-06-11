@@ -41,6 +41,7 @@ CREATE TABLE checkin_schedules (
 -- from/to are dayjs strings. Ex: `JSON.stringify(dayjs())`
 CREATE TABLE unavailable_schedules (
     unavailable_pk SERIAL PRIMARY KEY,
+    user_id VARCHAR NOT NULL,
     from_time VARCHAR,
     to_time VARCHAR,
     reason VARCHAR,
@@ -56,8 +57,18 @@ CREATE TABLE checkin_queue
     payload JSON,
 );
 
-CREATE INDEX checkin_time_inserted_id
+CREATE INDEX checkin_q_time_inserted_id
     ON checkin_queue (time_inserted ASC);
+
+-- this is for rose thorn bud responses
+CREATE TABLE checkin_responses (
+    user_id VARCHAR NOT NULL,
+    rose VARCHAR,
+    thorn VARCHAR,
+    bud VARCHAR,
+    timestamp TIMESTAMP,
+    deleted_at TIMESTAMP
+);
 
 --------------------------                 EXAMPLE SQL QUERIES                 ----------------------
 
