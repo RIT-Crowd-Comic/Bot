@@ -133,8 +133,8 @@ const mergeSchedules = (schedules) => {
         }
         if (!duplicate) {
             mergedSchedules.push({
-                days:            [...s.days],
-                utcTime:         [...s.utcTime],
+                days: [...s.days],
+                utcTime: [...s.utcTime],
                 displaySchedule: s.displaySchedule
             });
         }
@@ -164,6 +164,11 @@ const parseDaysList = (days) => {
 
     // replace abbreviated days
     parsedDays = parsedDays.map(d => abbreviations[d] ?? d);
+
+    // make sure days are distinct
+    parsedDays = parsedDays.filter((value, index, self) => {
+        return self.indexOf(value) === index;
+    });
 
     if (parsedDays.some(d => !validDays.includes(d))) {
         throw new ScheduleError('Invalid list of days. (abbreviations: m t w (th or h) f sa su).');
