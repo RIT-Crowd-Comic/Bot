@@ -312,6 +312,50 @@ const setUnavail = (userId, userTag, dateFrom, dateTo, timeFrom, timeTo, reason,
     }
 };
 
+
+//OpenAi Aval functions
+
+/**
+ * 
+ * @param {string} userId 
+ * @param {string} userTag 
+ * @param {string} dateFrom  date(UTC) from,
+ * @param {string} dateTo    date(UTC) to, 
+ * @param {string} reason 
+ * @param {string} path 
+ * @returns 
+ */
+const setUnavailAI = (userId, userTag, dateFrom, dateTo, reason, path) => {
+    try {
+
+        if (dateTo && !dateFrom)
+            throw new ScheduleError('Please select a start date.');
+        // Create a start and end dayjs obj (Parse times if present and default times to 0:00 if empty)
+        const startUnavail = dayjs(dateFrom);
+        const endUnavail = dayjs(dateTo);
+        // Check if dates are valid
+        if (!dayjs(startUnavail).isValid() || !dayjs(endUnavail).isValid())
+            throw new ScheduleError('Please enter correctly formatted dates and times');
+        const unavail = createUnavailability(startUnavail, endUnavail, reason);
+        // Print data for now
+        let reply = [
+            '```',
+            JSON.stringify(unavail, undefined, 2),
+            '```',
+        ].join('\n');
+        // await interaction.editReply({ content: reply });
+        // Save data to file
+        saveUnavailability(userId, userTag, unavail, path);
+        return { content: reply };
+    }
+    catch (error) {
+        if (error.name === 'ScheduleError')
+            return { content: `*${error.message}*` };
+        console.log(error);
+        return { content: `*${error.message}*` };
+    }
+};
+
 /**
  * Record when a user is typically available
  * @param {string} userId ID of user scheduling availability
@@ -442,5 +486,6 @@ module.exports = {
     setAvail,
     displayAvail,
     displayUnavail,
-    setUnavailAI
+    setUnavailAI,
+    getAvailabilityChannel
 };
