@@ -25,8 +25,12 @@
       - [general](#help-general) 
       - [remember](#help-remember)
       - [availability](#help-availability)
+      - [check-in](#help-check-in)
     - [/check-in-interface](#check-in-interface)
-    - [/schedule-check-in](#schedule-check-in)
+    - [/check-in](#check-in)
+        - [schedule](#schedule-check-in)
+        - [view](#view-check-in)
+        - [remove](#remove-check-in)
     - [/remember](#remember-subcommands)
       - [message](#message)
       - [clear-messages](#clear-messages)
@@ -333,16 +337,18 @@ Shows a brief description of all of the remember subcommands
 
 Shows a brief description of all of the availability subcommands
 
+#### check-in <a name="help-check-in"></a>
+
+Shows a brief description of all of the check-in subcommands
   
 
 ### /check-in-interface <a name="check-in-interface"></a>
 
 Check in with how your are feeling for the day
 
-  
+### /check-in <a name="check-in"></a>
 
-### /schedule-check-in <a name="schedule-check-in"></a>
-
+#### schedule <a name="schedule-check-in"></a>
 Create a schedule for receiving check in notifications
 
 | Parameters | Description |
@@ -359,6 +365,12 @@ Create a schedule for receiving check in notifications
 | Friday | friday, f |
 | Saturday | saturday, sa |
 | Sunday | sunday, su |
+
+#### view <a name="view-check-in"></a>
+View your check-in schedules
+
+#### remove <a name="remove-check-in"></a>
+See a list of schedules to remove
 
 ### /remember <a name="remember-subcommands"></a>
 

@@ -448,5 +448,8 @@ module.exports = {
     setUnavail,
     setAvail,
     displayAvail,
-    displayUnavail
+    displayUnavail,
+    newAvailabilityEntry,
+    createAvailability,
+    createUnavailability
 };
