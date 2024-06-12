@@ -89,16 +89,18 @@ const authenticate = () => {
 
 /**
  * Create a user entry only if the user doesn't already exist
- * @param {{ id: string, tag: string, name: string }} user 
+ * @param {{ id: string, tag: string, display_name: string, global_name: string }} user 
  */
 const touchUser = async (user) => {
     const user_id = user?.id?.toString()?.trim() ?? '';
     const user_tag = user?.tag?.toString()?.trim() ?? '';
-    const user_name = user?.name?.toString()?.trim() ?? '';
+    const display_name = user?.display_name?.toString()?.trim() ?? '';
+    const global_name = user?.global_name?.toString()?.trim() ?? '';
 
     assertArgument(user_id?.length > 0, 'Invalid Argument: user.id');
     assertArgument(user_tag?.length > 0, 'Invalid Argument: user.tag');
-    assertArgument(user_name?.length > 0, 'Invalid Argument: user.name');
+    assertArgument(display_name?.length > 0, 'Invalid Argument: user.display_name');
+    assertArgument(global_name?.length > 0, 'Invalid Argument: user.global_name');
 
     // Create only if user doesn't exist
 
@@ -107,39 +109,57 @@ const touchUser = async (user) => {
     return User
         .findOne(filter)
         .then(user => {
-            if (!user) return User.create({ user_id, user_tag, user_name });
+            if (!user) return User.create({
+                user_id,
+                user_tag,
+                display_name,
+                global_name
+            });
             return user;
         });
 };
 
 /**
  * Create or update a user entry
- * @param {{ id: string, tag: string, name: string }} user 
+ * @param {{ id: string, tag: string, display_name: string, global_name: string }} user 
  */
 const upsertUser = async (user) => {
 
-
     const user_id = user?.id?.toString()?.trim() ?? '';
     const user_tag = user?.tag?.toString()?.trim() ?? '';
-    const user_name = user?.name?.toString()?.trim() ?? '';
+    const display_name = user?.display_name?.toString()?.trim() ?? '';
+    const global_name = user?.global_name?.toString()?.trim() ?? '';
 
-    // must be a valid user
     assertArgument(user_id?.length > 0, 'Invalid Argument: user.id');
     assertArgument(user_tag?.length > 0, 'Invalid Argument: user.tag');
-    assertArgument(user_name?.length > 0, 'Invalid Argument: user.name');
+    assertArgument(display_name?.length > 0, 'Invalid Argument: user.display_name');
+    assertArgument(global_name?.length > 0, 'Invalid Argument: user.global_name');
 
     const filter = { where: { user_id } };
 
     return User
         .findOne(filter)
         .then(user => {
-            if (user) return User.update({ user_tag, user_name });
-            return User.create({ user_id, user_tag, user_name });
+            if (user) return User.update({
+                user_tag,
+                display_name,
+                global_name
+            });
+            return User.create({
+                user_id,
+                user_tag,
+                display_name,
+                global_name
+            });
         });
 };
 
 /**
- * Get a user's id, tag, and name
+ * Get a user's id, tag, and name. Keep in mind
+ * that even if a user's id exists in another table, 
+ * they might not be present in the users table. In that case,
+ * it is a good idea to insert a new user (taking info from the Discord
+ * API) if they don't exist yet
  * @param {string} userId 
  */
 const getUser = async (userId) => {

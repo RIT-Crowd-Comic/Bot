@@ -5,7 +5,8 @@ CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     user_id VARCHAR NOT NULL,
     user_tag VARCHAR NOT NULL,
-    user_name VARCHAR NOT NULL,
+    display_name VARCHAR NOT NULL,
+    global_name VARCHAR NOT NULL,
     deleted_at TIMESTAMP
 );
 
