@@ -72,7 +72,7 @@ const tools = [
         'type':     'function',
         'function': {
             'name':        'rememberUnavailability',
-            'description': 'In relation to the local current  message date, determines future chunks of time that the user is unavailable or busy as well as reasons for that unavailability. In local time.',
+            'description': 'In relation to the local current message date, determines future chunks of time that the user is unavailable or busy as well as reasons for that unavailability. In local time.',
             'parameters':  {
                 'type':       'object',
                 'properties': {
@@ -103,7 +103,7 @@ const tools = [
         'type':     'function',
         'function': {
             'name':        'rememberAvailability',
-            'description': 'Gets the local time the user is generally available using the current message date in local time, and gets which week days the user is available. Each user only has one, and its the default time that the user is available.',
+            'description': 'Gets the local time the user is generally available, and gets which week days the user is available. Each user only has one, and its the default time that the user is available.',
             'parameters':  {
                 'type':       'object',
                 'properties': {
@@ -157,6 +157,33 @@ const tools = [
     },
 ];
 
+
+const examples = 
+   `{
+        'role':    'user',
+        'content': I am busy from 10-12 tommorow,
+    },
+    {
+        'role':    'assistant',
+        'content': {name: 'rememberUnavailability', arguments: '{"times":[{"start":"2024-06-12T10:00:00","end":"2024-06-12T14:00:00","reason":"busy"}]}"}',
+    },
+    {
+        'role':    'user',
+        'content': I am busy all day this upcoming wednesday, thursday i am busy from 10-2 and friday 10-4,
+    },
+    {
+        'role':    'assistant',
+        'content': {name: 'rememberUnavailability', arguments: '{"times":[{"start":"2024-06-12T00:00:00","end":"2024-06-12T23:59:59","reason":"busy"}, {"start":"2024-06-13T10:00:00","end":"2024-06-13T14:00:00","reason":"busy"}, {"start":"2024-06-14T10:00:00","end":"2024-06-14T16:00:00","reason":"busy"}]}"}',
+    },
+    {
+        'role':    'user',
+        'content': I free from 9-5 monday through friday,
+    },
+    {
+        'role':    'assistant',
+        'content': {name: "rememberAvailability", arguments: "{"from":"09:00","to":"17:00","days":[true,true,true,true,true]}",},
+    },
+    `
 /**
  * Given a function object from open ai and a message, attempt to parse 
  * @param {DiscordJS Message} message 
@@ -181,7 +208,9 @@ module.exports = async (client, message) => {
             return;
         }
         const date = new Date(message.createdTimestamp).toLocaleDateString();
-        const prompt = stripIndents`Based on the attached message and examples, use one of the provided tools to parse availability or unavailability. If either don't work call 'unableToParse' from the tools.  The message date is ${date}.`;
+        const prompt = stripIndents`Based on the attached message and examples, 
+        use one of the provided tools to parse unavailability using 'rememberUnavailability' or availability using 'rememberAvailability'. 
+        If either don't work call 'unableToParse' from the tools.The message date is ${date}.`;
         const response = await openAiClient.chat.completions.create({
             model:    'gpt-3.5-turbo',
             messages: [
@@ -189,30 +218,14 @@ module.exports = async (client, message) => {
                     'role':    'system',
                     'content': prompt,
                 },
-                /*{
-                    'role':    'user',
-                    'content': stripIndents`I am busy from 10-12 tommorow`,
+                {
+                    'role': 'system',
+                    'content': stripIndents`These are some example input and outputs to mimic: ${examples}`
                 },
                 {
-                    'role':    'assistant',
-                    'content': `{name: 'rememberUnavailability', arguments: '{"times":[{"start":"2024-06-12T10:00:00","end":"2024-06-12T14:00:00","reason":"busy"}]}"}'`,
-                },
-                {
-                    'role':    'user',
-                    'content': stripIndents`I am busy all day this upcoming wednesday, thursday i am busy from 10-2 and friday 10-4`,
-                },
-                {
-                    'role':    'assistant',
-                    'content': `{name: 'rememberUnavailability', arguments: '{"times":[{"start":"2024-06-12T00:00:00","end":"2024-06-12T23:59:59","reason":"busy"}, {"start":"2024-06-13T10:00:00","end":"2024-06-13T14:00:00","reason":"busy"}, {"start":"2024-06-14T10:00:00","end":"2024-06-14T16:00:00","reason":"busy"}]}"}'`,
-                },
-                {
-                    'role':    'user',
-                    'content': stripIndents`I free from 9-5 monday through friday next week`,
-                },
-                {
-                    'role':    'assistant',
-                    'content': `{name: "rememberAvailability", arguments: "{"from":"09:00","to":"17:00","days":[true,true,true,true,true]}",}`,
-                },*/
+                    'role': 'system',
+                    'content': `Avoid calling both 'rememberUnavailability' and 'rememberAvailability' unless the user's wording makes it clear and necessary. `
+                },        
                 {
                     'role':    'user',
                     'content': stripIndents`${message.content}`,
