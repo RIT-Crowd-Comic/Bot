@@ -1,4 +1,3 @@
-const fs = require('fs');
 const dayjs = require('dayjs');
 const { ScheduleError, parseDaysList } = require('./schedule.js');
 const { EmbedBuilder } = require('discord.js');
