@@ -63,9 +63,12 @@ const createSchedule = (daysList, time) => {
         throw new ScheduleError('Invalid list of days. (abbreviations: m t w (th or h) f sa su).');
     }
 
+    //days should be in chronological order with work week starting on sunday
+    daysList.sort((a, b) => validDays.indexOf(a) - validDays.indexOf(b));
+
+    
     if (!time.isValid) throw new ScheduleError('Invalid time');
     if (!time.isValid()) throw new ScheduleError('Invalid time');
-
     // done validating, create schedule
     const timeHours = time.hour();
     const timeMinutes = time.minute();
@@ -162,7 +165,7 @@ const sendCheckInReminder = async (client, id) => {
         user = await client.users.fetch(id); // fetches user (will add to the cache)
     }
 
-    // checkin interface module
+    // check-in interface module
     let reply = [
         'Would you like to spend a few minutes to describe how you\'re doing? ',
         'Feel free to leave any fields blank. ',
@@ -293,7 +296,7 @@ const validScheduleUser = (user) => {
 
     //todo: command should include a user
     if (!userId) {
-        return { status: 'Fail', description: '*Could not process command*' }
+        return { status: 'Fail', description: '*Invalid user*' }
     }
 
     //verify the person has schedules
@@ -402,5 +405,6 @@ module.exports = {
     scheduleCheckIn,
     queue,
     getScheduleObjs,
-    ScheduleError
+    ScheduleError,
+    validScheduleUser
 };
