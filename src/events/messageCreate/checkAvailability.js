@@ -161,7 +161,7 @@ const tools = [
 const examples = 
    `{
         'role':    'user',
-        'content': I am busy from 10-12 tommorow,
+        'content': I am busy from 10-12 tommorow. Message date 6/12/2024.,
     },
     {
         'role':    'assistant',
@@ -169,7 +169,7 @@ const examples =
     },
     {
         'role':    'user',
-        'content': I am busy all day this upcoming wednesday, thursday i am busy from 10-2 and friday 10-4,
+        'content': I am busy all day this upcoming wednesday, thursday i am busy from 10-2 and friday 10-4. Message date 6/11/2024.,
     },
     {
         'role':    'assistant',
@@ -177,7 +177,7 @@ const examples =
     },
     {
         'role':    'user',
-        'content': I free from 9-5 monday through friday,
+        'content': I free from 9-5 monday through friday. Message date 6/12/2024,
     },
     {
         'role':    'assistant',
@@ -220,7 +220,7 @@ module.exports = async (client, message) => {
                 },
                 {
                     'role': 'system',
-                    'content': stripIndents`These are some example input and outputs to mimic: ${examples}`
+                    'content': stripIndents`These are some example input and outputs to mimic. The dates don't align to the current message date so make sure to parse with the current message date. ${examples}`
                 },
                 {
                     'role': 'system',
