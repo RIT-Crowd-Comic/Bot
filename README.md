@@ -1,4 +1,4 @@
-﻿﻿﻿
+﻿﻿﻿﻿﻿
 # CrowdComic Bot
 
 ## Table of Contents
@@ -21,6 +21,7 @@
       - [How to create a command ](#how-to-create-a-command-)
       - [How to create a subcommand ](#how-to-create-a-subcommand-)
       - [How to add an event ](#how-to-add-an-event-)
+      - [Unit Tests ](#unit-tests-)
   - [Command Documentation ](#command-documentation-)
     - [/help ](#help-)
       - [general ](#general-)
@@ -108,24 +109,34 @@ It's highly recommended to make your own version of the bot for testing purposes
 
 This project uses Node.js with the following dependencies and versions:
 
-  
+ **dependencies**
 
 ```
 
-"dayjs": "^1.11.11",
+    "common-tags": "^1.8.2",
+    
+    "dayjs": "^1.11.11",
 
-"discord.js": "^14.15.2",
+    "discord.js": "^14.15.2",
 
-"dotenv": "^16.4.5",
+    "dotenv": "^16.4.5",
 
-"ms": "^2.1.3",
+    "ms": "^2.1.3",
 
-"nodemon": "^3.1.0"
+    "nodemon": "^3.1.0",
 
-"openai": "^4.47.3"
+    "openai": "^4.47.3"
 
 ```
 
+**devDependencies**
+```
+    "@eslint/js": "^9.3.0",
+    "@stylistic/eslint-plugin-js": "^2.1.0",
+    "eslint": "^9.3.0",
+    "globals": "^15.3.0",
+    "jest": "^29.7.0"
+```
   
 
 #### .env Set Up <a name="env-set-up"></a>
@@ -139,10 +150,8 @@ This project uses Node.js with the following dependencies and versions:
 -  `TESTSERVER_ID` is your server's id, right click on your server's name in the top left, and click `Copy Server ID`
 
 -  `DEV_IDS` is an array of user id's. These are used to restrict who has access to certain commands of the bot. To get your user ID, right click on your account in bottom left icon, click `Copy User ID`
+-  `OPENAI_API_KEY` is your OpenAi api key. Ensure you have an account and have been added to Travis's organization. Then navigate to `API Keys` under `Crowd Comic`, generate a new secret key and add it here.
 
--  `OPENAI_API_KEY` is the key for the OpenAI API. To get this id, make or login to an OpenAI api account, then within the account navigate to the proper organization `
-Travis's Goodtime Fun Company`. Then make sure  navigate to the project `Crowd Comic`. Then find the `API Key` tab and create a new key and copy it into the `.env`.
-**Travis has to add you to his org for this to work**
 3. Verify that all of these ids/tokens are strings.
 
   
@@ -307,6 +316,11 @@ Check out  `./commands/example/exampleCommand.js` for an example.
 
 **Note:** The eventHandler sorts the events in each folder by number, so 1 has greater priority than 2. Example:  `01registerCommands.js`  comes before  `02example.js`.
 
+#### Unit Tests <a name="unit-tests"></a>
+The Jest library is used to create/run unit test. Here is the [documentation](https://jestjs.io/docs/getting-started). All test files are stored in `src/test` and follow this naming convention: `[testName].test.js`
+
+All tests can be run with `npm test`
+
 ## Command Documentation <a name="command-documentation"></a>
 All subcommands append to its parent command with a space afterwards
 - Example: `/remember message`
@@ -423,7 +437,6 @@ Start remembering messages in a specific channel
 
 Stop remembering messages in a specific channel
 ### /role <a name="role"></a>
-Add/remove the unavailable role from a user
 
 #### add <a name="add"></a>
 Adds the unavailable role to a specific user
