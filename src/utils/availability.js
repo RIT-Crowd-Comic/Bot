@@ -491,5 +491,8 @@ module.exports = {
     displayAvail,
     displayUnavail,
     setUnavailAI,
-    getAvailabilityChannel
+    getAvailabilityChannel,
+    newAvailabilityEntry,
+    createAvailability,
+    createUnavailability
 };
