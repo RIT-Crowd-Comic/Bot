@@ -2,48 +2,50 @@
 # CrowdComic Bot
 
 ## Table of Contents
-  - [Introduction ](#introduction)
-    - [Enable Developer Mode](#enable-developer-mode)
-  - [Developer Set Up](#developer-set-up)
-    - [Build Your Own Bot](#build-your-own-bot)
-      - [Initialize Your Bot ](#initialize-your-bot)
-      - [Add the bot to your server](#add-the-bot-to-your-server)
-    - [Project Installation](#project-installation)
-      - [Node Dependencies](#node-dependencies)
-      - [.env Set Up](#env-set-up)
-      - [Linting Rules](#lint-set-up)
-      - [How to run your bot](#how-to-run-your-bot)
-      - [How to enable debugging](#how-to-enable-debugging)
-      - [Resources](#resources)
-      - [Code Structure](#code-structure)
-      - [How to create a command](#how-to-create-a-command)
-      - [How to create a subcommand](#how-to-create-a-subcommand)
-      - [How to add an event](#how-to-add-an-event)
-      - [Unit Tests](#unit-tests)
-  - [Command Documentation](#command-documentation)
-    - [/help](#help)
-      - [general](#help-general) 
-      - [remember](#help-remember)
-      - [availability](#help-availability)
-    - [/check-in-interface](#check-in-interface)
-    - [/schedule-check-in](#schedule-check-in)
-    - [/remember](#remember-subcommands)
-      - [message](#message)
-      - [clear-messages](#clear-messages)
-      - [past](#past)
-      - [recall](#recall)
-      - [number](#number)
-      - [range](#range)
-      - [start-remembering](#start-remembering)
-      - [stop-remembering](#stop-remembering)
-    - [/role](#role)
-      - [add](#add)
-      - [remove](#remove)
-    - [/availability](#availability-subcommands)
-      - [set-availability](#set-availability)
-      - [set-unavailability](#set-unavailability)
-      - [view-availability](#view-availability)
-      - [view-unavailability](#view-unavailability)
+- [CrowdComic Bot](#crowdcomic-bot)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction ](#introduction-)
+    - [Enable Developer Mode ](#enable-developer-mode-)
+  - [Developer Set Up ](#developer-set-up-)
+    - [Build Your Own Bot ](#build-your-own-bot-)
+      - [Initialize Your Bot ](#initialize-your-bot-)
+      - [Add the bot to your server ](#add-the-bot-to-your-server-)
+    - [Project Installation ](#project-installation-)
+      - [Node Dependencies ](#node-dependencies-)
+      - [.env Set Up ](#env-set-up-)
+      - [Linting Rules ](#linting-rules-)
+      - [How to run your bot ](#how-to-run-your-bot-)
+      - [How to enable debugging ](#how-to-enable-debugging-)
+      - [Resources ](#resources-)
+      - [Code Structure ](#code-structure-)
+      - [How to create a command ](#how-to-create-a-command-)
+      - [How to create a subcommand ](#how-to-create-a-subcommand-)
+      - [How to add an event ](#how-to-add-an-event-)
+      - [Unit Tests ](#unit-tests-)
+  - [Command Documentation ](#command-documentation-)
+    - [/help ](#help-)
+      - [general ](#general-)
+      - [remember ](#remember-)
+      - [availability ](#availability-)
+    - [/check-in-interface ](#check-in-interface-)
+    - [/schedule-check-in ](#schedule-check-in-)
+    - [/remember ](#remember--1)
+      - [message ](#message-)
+      - [clear-messages ](#clear-messages-)
+      - [past ](#past-)
+      - [recall ](#recall-)
+      - [number ](#number-)
+      - [range ](#range-)
+      - [start-remembering ](#start-remembering-)
+      - [stop-remembering ](#stop-remembering-)
+    - [/role ](#role-)
+      - [add ](#add-)
+      - [remove ](#remove-)
+    - [/availability ](#availability--1)
+      - [set-availability ](#set-availability-)
+      - [set-unavailability ](#set-unavailability-)
+      - [view-availability ](#view-availability-)
+      - [view-unavailability ](#view-unavailability-)
    
 ## Introduction <a name="introduction"></a>
 
@@ -111,15 +113,19 @@ This project uses Node.js with the following dependencies and versions:
 
 ```
 
-"dayjs": "^1.11.11",
+    "common-tags": "^1.8.2",
+    
+    "dayjs": "^1.11.11",
 
-"discord.js": "^14.15.2",
+    "discord.js": "^14.15.2",
 
-"dotenv": "^16.4.5",
+    "dotenv": "^16.4.5",
 
-"ms": "^2.1.3",
+    "ms": "^2.1.3",
 
-"nodemon": "^3.1.0"
+    "nodemon": "^3.1.0",
+
+    "openai": "^4.47.3"
 
 ```
 
@@ -144,6 +150,7 @@ This project uses Node.js with the following dependencies and versions:
 -  `TESTSERVER_ID` is your server's id, right click on your server's name in the top left, and click `Copy Server ID`
 
 -  `DEV_IDS` is an array of user id's. These are used to restrict who has access to certain commands of the bot. To get your user ID, right click on your account in bottom left icon, click `Copy User ID`
+-  `OPENAI_API_KEY` is your OpenAi api key. Ensure you have an account and have been added to Travis's organization. Then navigate to `API Keys` under `Crowd Comic`, generate a new secret key and add it here.
 
 3. Verify that all of these ids/tokens are strings.
 
