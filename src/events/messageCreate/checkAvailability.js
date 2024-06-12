@@ -158,7 +158,7 @@ const tools = [
 ];
 
 
-const examples = 
+const examples =
    `{
         'role':    'user',
         'content': I am busy from 10-12 tommorow. Message date 6/12/2024.,
@@ -183,7 +183,8 @@ const examples =
         'role':    'assistant',
         'content': {name: "rememberAvailability", arguments: "{"from":"09:00","to":"17:00","days":[true,true,true,true,true]}",},
     },
-    `
+    `;
+
 /**
  * Given a function object from open ai and a message, attempt to parse 
  * @param {DiscordJS Message} message 
@@ -219,13 +220,13 @@ module.exports = async (client, message) => {
                     'content': prompt,
                 },
                 {
-                    'role': 'system',
+                    'role':    'system',
                     'content': stripIndents`These are some example input and outputs to mimic. The dates don't align to the current message date so make sure to parse with the current message date. ${examples}`
                 },
                 {
-                    'role': 'system',
+                    'role':    'system',
                     'content': `Avoid calling both 'rememberUnavailability' and 'rememberAvailability' unless the user's wording makes it clear and necessary. `
-                },        
+                },
                 {
                     'role':    'user',
                     'content': stripIndents`${message.content}`,

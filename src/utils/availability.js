@@ -313,7 +313,7 @@ const setUnavail = (userId, userTag, dateFrom, dateTo, timeFrom, timeTo, reason,
 };
 
 
-//OpenAi Aval functions
+// OpenAi Aval functions
 
 /**
  * 
@@ -330,19 +330,23 @@ const setUnavailAI = (userId, userTag, dateFrom, dateTo, reason, path) => {
 
         if (dateTo && !dateFrom)
             throw new ScheduleError('Please select a start date.');
+
         // Create a start and end dayjs obj (Parse times if present and default times to 0:00 if empty)
         const startUnavail = dayjs(dateFrom);
         const endUnavail = dayjs(dateTo);
+
         // Check if dates are valid
         if (!dayjs(startUnavail).isValid() || !dayjs(endUnavail).isValid())
             throw new ScheduleError('Please enter correctly formatted dates and times');
         const unavail = createUnavailability(startUnavail, endUnavail, reason);
+
         // Print data for now
         let reply = [
             '```',
             JSON.stringify(unavail, undefined, 2),
             '```',
         ].join('\n');
+
         // await interaction.editReply({ content: reply });
         // Save data to file
         saveUnavailability(userId, userTag, unavail, path);
