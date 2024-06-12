@@ -116,6 +116,44 @@ const UnavailableSchedule = sequelize.define(
     { ...paranoidConfig }
 );
 
+const AvailableSchedule = sequelize.define(
+    'available_schedule',
+    {
+        user_id: {
+            type:      DataTypes.STRING,
+            allowNull: false
+        },
+        from_time: {
+            type:      DataTypes.STRING,
+            allowNull: false
+        },
+        to_time: {
+            type:      DataTypes.STRING,
+            allowNull: false
+        },
+        days: {
+            type:      DataTypes.ARRAY(DataTypes.STRING),
+            allowNull: false
+        },
+    },
+    { ...paranoidConfig }
+);
+
+const Config = sequelize.define(
+    'config',
+    {
+        availability_channel_id: {
+            type:      DataTypes.STRING,
+            allowNull: false
+        },
+        server_id: {
+            type:      DataTypes.STRING,
+            allowNull: false
+        }
+    },
+    { ...paranoidConfig }
+);
+
 const CheckInResponse = sequelize.define(
     'checkin_response',
     {
@@ -133,6 +171,8 @@ module.exports = {
     Message,
     Schedule,
     UnavailableSchedule,
+    AvailableSchedule,
+    Config,
     CheckInResponse,
     sequelize
 };
