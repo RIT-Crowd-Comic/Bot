@@ -26,6 +26,7 @@ db.authenticate()
 // test a bunch of database stuff
 // remove this entire section when publishing
 (async () => {
+    console.log('tests starting');
 
     // ESPECIALLY REMOVE .sync()
     // THESE LINES BREAK DATABASES
@@ -33,18 +34,20 @@ db.authenticate()
     await db.Models.UnavailableSchedule.sync({ force: true });
 
     try {
-        await db.addCheckInResponse({
-            id:    '1234',
-            rose:  5,
-            thorn: 'this is a thorn',
-            bud:   'this is a bud',
-        });
+        await db.addCheckInResponse(
+            '1234',
+            {
+                rose:  5,
+                thorn: 'this is a thorn',
+                bud:   'this is a bud',
+            }
+        );
         (await db.getCheckInResponses('1234', 5)).forEach(r => void console.log(r.dataValues));
 
-        await db.addCheckInResponse({
-            id:   '1234',
-            rose: 'this is a rose',
-        });
+        await db.addCheckInResponse(
+            '1234',
+            { rose: 'this is a rose', }
+        );
         (await db.getCheckInResponses('1234', 5)).forEach(r => void console.log(r.dataValues));
 
         await db.addUnavailable({

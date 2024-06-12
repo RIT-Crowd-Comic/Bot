@@ -65,9 +65,7 @@ CREATE INDEX checkin_q_time_inserted_id
 CREATE TABLE checkin_responses (
     id SERIAL PRIMARY KEY,
     user_id VARCHAR NOT NULL,
-    rose VARCHAR,
-    thorn VARCHAR,
-    bud VARCHAR,
+    content JSON
     deleted_at TIMESTAMP
 );
 

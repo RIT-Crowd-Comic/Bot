@@ -5,6 +5,14 @@ const sequelize = new Sequelize(
     { logging: false }
 );
 
+// soft deletion
+const paranoidConfig = Object.freeze({
+    paranoid:  true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+    deletedAt: 'deleted_at'
+});
+
 const User = sequelize.define(
     'user',
     {
@@ -21,11 +29,7 @@ const User = sequelize.define(
             allowNull: false
         }
     },
-    {
-
-        // soft deletion
-        paranoid: true
-    }
+    { ...paranoidConfig }
 );
 
 const Message = sequelize.define(
@@ -52,7 +56,7 @@ const Message = sequelize.define(
         }
 
     },
-    { paranoid: true }
+    { ...paranoidConfig }
 );
 
 const Schedule = sequelize.define(
@@ -105,7 +109,7 @@ const UnavailableSchedule = sequelize.define(
         },
         reason: { type: DataTypes.STRING },
     },
-    { paranoid: true }
+    { ...paranoidConfig }
 );
 
 const CheckInResponse = sequelize.define(
@@ -115,10 +119,9 @@ const CheckInResponse = sequelize.define(
             type:      DataTypes.STRING,
             allowNull: false
         },
-        rose:  { type: DataTypes.STRING, },
-        thorn: { type: DataTypes.STRING, },
-        bud:   { type: DataTypes.STRING, }
-    }
+        content: { type: DataTypes.JSON },
+    },
+    { ...paranoidConfig }
 );
 
 module.exports = {
