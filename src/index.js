@@ -26,7 +26,7 @@ db.authenticate()
 // test a bunch of database stuff
 // remove this entire section when publishing
 (async () => {
-    console.log('tests starting');
+    console.log('database tests starting');
 
     // ESPECIALLY REMOVE .sync()
     // THESE LINES BREAK DATABASES
