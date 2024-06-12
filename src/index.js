@@ -32,8 +32,12 @@ db.authenticate()
     // THESE LINES BREAK DATABASES
     await db.Models.CheckInResponse.sync({ force: true });
     await db.Models.UnavailableSchedule.sync({ force: true });
-
+    await db.Models.AvailableSchedule.sync({ force: true });
+    await db.Models.Config.sync();
     try {
+
+        await db.updateConfig({ availability_channel_id: '1240715737702596689', server_id: '1219755314518163477' });
+
         await db.addCheckInResponse(
             '1234',
             {
@@ -57,6 +61,14 @@ db.authenticate()
             reason: 'going swimming'
         });
         (await db.getUnavailable('1234')).forEach(r => void console.log(r.dataValues));
+
+        await db.setAvailable({
+            id:   '1234',
+            from: dayjs(),
+            to:   dayjs(),
+            days: ['monday', 'wednesday', 'friday']
+        });
+        console.log(await db.getAvailable('1234'));
     }
     catch (err) { console.log(err); }
 

@@ -2,31 +2,38 @@ const fs = require('fs');
 const dayjs = require('dayjs');
 const { ScheduleError, parseDaysList } = require('./schedule.js');
 const { EmbedBuilder } = require('discord.js');
+const {
+    updateConfig, getConfig, addUnavailable, getUnavailable, setAvailable, getAvailable
+} = require('../database');
 
-let availabilityChannel = undefined;
-const getAvailabilityChannel = async () => { return availabilityChannel; };
-const setAvailabilityChannel = channel => { availabilityChannel = channel; };
+/**
+ * Get the channel where availability is being tracked
+ * @returns {string} channel id
+ */
+const getAvailabilityChannel = () => getConfig().availability_channel_id;
 
-const loadAvailability = (path) => {
-    let data = fs.readFileSync(path, { encoding: 'utf8' });
-    data = JSON.parse(data);
-    return data;
-};
+/**
+ * Set the channel where availability should be tracked
+ * @param {string} channelId 
+ * @returns 
+ */
+const setAvailabilityChannel = (channelId) => void updateConfig({ availability_channel_id: channelId });
 
-const newAvailabilityEntry = (userId, userTag) => {
-    return {
-        userId:    userId,
-        userTag:   userTag,
-        available: {
 
-            // Random day used for object creation, has no effect on result
-            from: dayjs('2024 5-20 09:00'),
-            to:   dayjs('2024 8-9 17:00'),
-            days: parseDaysList('daily')
-        },
-        unavailable: []
-    };
-};
+// const newAvailabilityEntry = (userId, userTag) => {
+//     return {
+//         userId:    userId,
+//         userTag:   userTag,
+//         available: {
+
+//             // Random day used for object creation, has no effect on result
+//             from: dayjs('2024 5-20 09:00'),
+//             to:   dayjs('2024 8-9 17:00'),
+//             days: parseDaysList('daily')
+//         },
+//         unavailable: []
+//     };
+// };
 
 /**
  * Create Available object
@@ -66,26 +73,34 @@ const createUnavailability = (start, end, reason) => {
     };
 };
 
-const saveUnavailability = (userId, userTag, unavail, path) => {
-
-    // Get saved data from file and turn into array with objects
-    let fileContent = loadAvailability(path);
-
-    fileContent[userId] ??= newAvailabilityEntry(userId, userTag);
-    fileContent[userId].unavailable.push(unavail);
-
-    // Send data back to file
-    fs.writeFileSync(path, JSON.stringify(fileContent, null, 2), (err) => err && console.error(err));
+/**
+ * Save a user's unavailability schedule
+ * @param {string} userId 
+ * @param {{
+ * from: string,
+ * to: string,
+ * reason: string}} unavail 
+ */
+const saveUnavailability = async (userId, unavail) => {
+    await addUnavailable({
+        id: userId,
+        ...unavail
+    }).catch(err => console.log(err));
 };
 
-const saveAvailability = (userId, userTag, avail, path) => {
-    let fileContent = loadAvailability(path);
-
-    fileContent[userId] ??= newAvailabilityEntry(userId, userTag);
-    fileContent[userId].available = avail;
-
-    // Send data back to file
-    fs.writeFile(path, JSON.stringify(fileContent, null, 2), (err) => err && console.error(err));
+/**
+ * Save a user's availability schedule
+ * @param {string} userId 
+ * @param {{
+* from: string,
+* to: string,
+* days: string[]}} avail 
+*/
+const saveAvailability = async (userId, avail) => {
+    await setAvailable({
+        id: userId,
+        ...avail
+    }).catch(err => console.log(err));
 };
 
 const updateAvailabilityChannel = async newChannel => {
@@ -103,7 +118,7 @@ const updateAvailabilityChannel = async newChannel => {
 };
 
 // Command Functions
-const setUnavail = (userId, userTag, dateFrom, dateTo, timeFrom, timeTo, reason, path) => {
+const setUnavail = async (userId, userTag, dateFrom, dateTo, timeFrom, timeTo, reason) => {
     try {
         if (dateTo && !dateFrom)
             throw new ScheduleError('Please select a start date.');
@@ -136,7 +151,7 @@ const setUnavail = (userId, userTag, dateFrom, dateTo, timeFrom, timeTo, reason,
         // await interaction.editReply({ content: reply });
 
         // Save data to file
-        saveUnavailability(userId, userTag, unavail, path);
+        await saveUnavailability(userId, unavail);
         return { content: reply };
     }
     catch (error) {
@@ -149,7 +164,7 @@ const setUnavail = (userId, userTag, dateFrom, dateTo, timeFrom, timeTo, reason,
     }
 };
 
-const setAvail = (userId, userTag, timeFrom, timeTo, days, path) => {
+const setAvail = async (userId, userTag, timeFrom, timeTo, days) => {
     try {
         if (!timeFrom || !timeTo)
             throw new ScheduleError('Enter both start AND end times');
@@ -176,7 +191,7 @@ const setAvail = (userId, userTag, timeFrom, timeTo, days, path) => {
         ].join('\n');
 
         // Save data to file
-        saveAvailability(userId, userTag, avail, path);
+        await saveAvailability(userId, avail);
         return { content: reply };
     }
     catch (error) {
@@ -190,19 +205,13 @@ const setAvail = (userId, userTag, timeFrom, timeTo, days, path) => {
     }
 };
 
-const displayAvail = (user, member, path) => {
+const displayAvail = async (user, member) => {
     try {
 
         const targetMember = member ? member.user : user;
 
         // Get data saved from file
-        const fileContent = loadAvailability(path);
-
-        // If no matching user was found in the data, 
-        if (!fileContent[targetMember.id])
-            return { content: 'Requested member has no available data' };
-
-        const availability = fileContent[targetMember.id].available;
+        const availability = await getAvailable(user.id);
 
         // Create an embed to send to the user
         const embed = new EmbedBuilder()
@@ -216,32 +225,27 @@ const displayAvail = (user, member, path) => {
     }
 };
 
-const displayUnavail = (user, member, path) => {
+const displayUnavail = async (user, member) => {
     try {
 
         const targetMember = member ? member.user : user;
 
-        // Get data saved from file
-        const fileContent = loadAvailability(path);
-
-        // If no matching user was found in the data, 
-        if (!fileContent[targetMember.id])
-            return { content: 'Requested member has no available data' };
-
-        const unavailability = fileContent[targetMember.id].unavailable;
+        const unavailability = await getUnavailable();
 
         // Create an embed to send to the user
         const embed = new EmbedBuilder()
             .setTitle(`${targetMember.username}'s Unavailability`);
-        for (let i = 0, length = unavailability.length; i < length; i++) {
+
+        // fill embed with list of user's unavailability
+        unavailability.forEach(entry => {
 
             // Check for reason (leave empty if none)
-            const reason = unavailability[i].reason ? `Reason: ${unavailability[i].reason}` : ` `;
+            const reason = entry.reason ? `Reason: ${entry.reason}` : ` `;
             embed.addFields({
-                name:  `From ${dayjs(unavailability[i].from).format('MM-DD hh:mm A')} to ${dayjs(unavailability[i].to).format('MM-DD hh:mm A')}`,
+                name:  `From ${dayjs(entry.from).format('MM-DD hh:mm A')} to ${dayjs(entry.to).format('MM-DD hh:mm A')}`,
                 value: reason
             });
-        }
+        });
         return { embeds: [embed] };
     }
     catch (error) {
@@ -258,8 +262,6 @@ module.exports = {
     updateAvailabilityChannel,
     saveUnavailability,
     saveAvailability,
-    newAvailabilityEntry,
-    loadAvailability,
     setUnavail,
     setAvail,
     displayAvail,
