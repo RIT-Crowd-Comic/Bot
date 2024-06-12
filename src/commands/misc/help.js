@@ -1,5 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { help, helpRemember, helpAvailability, helpCheckIn } = require('../../utils/helpCommands');
+const {
+    help, helpRemember, helpAvailability, helpCheckIn
+} = require('../../utils/helpCommands');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -20,10 +22,10 @@ module.exports = {
 
     async execute(_, interaction) {
         const action = {
-            'general': () => help(),
-            'remember': () => helpRemember(),
+            'general':      () => help(),
+            'remember':     () => helpRemember(),
             'availability': () => helpAvailability(),
-            'check-in': () => helpCheckIn()
+            'check-in':     () => helpCheckIn()
         };
 
         try {
@@ -35,7 +37,7 @@ module.exports = {
         }
         catch (error) {
             await interaction.reply({
-                content: `Something went wrong. ${error}`,
+                content:   `Something went wrong. ${error}`,
                 ephemeral: false,
             });
         }

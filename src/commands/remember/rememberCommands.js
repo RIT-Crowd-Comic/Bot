@@ -232,7 +232,7 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand.setName('stop-remembering')
                 .setDescription('Stop remembering messages in a specific channel')),
-                
+
     // logic, 
     async execute(client, interaction) {
 

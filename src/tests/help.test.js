@@ -1,4 +1,6 @@
-const { help, helpRemember, helpAvailability, helpCheckIn } = require('../utils/helpCommands');
+const {
+    help, helpRemember, helpAvailability, helpCheckIn
+} = require('../utils/helpCommands');
 
 
 // all these commands do is stringify the JSON for the help embed builder and check if the title is what it's supposed to be.

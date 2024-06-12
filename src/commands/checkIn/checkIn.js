@@ -1,5 +1,7 @@
-const { ActionRowBuilder, ButtonStyle, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ButtonBuilder, PermissionFlagsBits, SlashCommandBuilder } = require('discord.js');
-const { getSchedules, scheduleCheckIn, getScheduleObjs } = require('../../utils/schedule')
+const {
+    ActionRowBuilder, ButtonStyle, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ButtonBuilder, PermissionFlagsBits, SlashCommandBuilder
+} = require('discord.js');
+const { getSchedules, scheduleCheckIn, getScheduleObjs } = require('../../utils/schedule');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -22,25 +24,24 @@ module.exports = {
             .setDescription('View your check-in schedules'))
         .addSubcommand(subcommand => subcommand
             .setName('remove')
-            .setDescription('See a list of schedules to remove')
-        ),
+            .setDescription('See a list of schedules to remove')),
 
     async execute(_, interaction) {
         try {
             const action = {
-                'view': () => viewSchedules(interaction),
+                'view':     () => viewSchedules(interaction),
                 'schedule': () => addScheduleCheckIn(interaction),
-                'remove': () => remove(interaction)
-            }
+                'remove':   () => remove(interaction)
+            };
 
             action[interaction.options.getSubcommand()]();
         }
 
         catch (error) {
-            console.log(`${error} ${error.message}`)
+            console.log(`${error} ${error.message}`);
         }
     }
-}
+};
 
 const viewSchedules = async (interaction) => {
     await interaction.deferReply();
@@ -50,7 +51,7 @@ const viewSchedules = async (interaction) => {
         const response = getSchedules(user);
 
         if (response.status === 'Fail') {
-            await interaction.editReply({ content: response.description })
+            await interaction.editReply({ content: response.description });
             return;
         }
 
@@ -70,15 +71,14 @@ const viewSchedules = async (interaction) => {
         row.addComponents(scheduleDropdown);
 
         await interaction.editReply({
-            content: `Here are your schedules`,
+            content:    `Here are your schedules`,
             components: [row]
         });
-    } catch (error) {
-        await interaction.editReply({
-            content: `${error} ${error.message}`,
-        });
     }
-}
+    catch (error) {
+        await interaction.editReply({ content: `${error} ${error.message}`, });
+    }
+};
 
 const addScheduleCheckIn = async (interaction) => {
     await interaction.deferReply({ ephemeral: true });
@@ -88,12 +88,10 @@ const addScheduleCheckIn = async (interaction) => {
 
     const response = scheduleCheckIn(user, rawDays, rawTime);
 
-    await interaction.editReply({
-        content: response.description
-    });
+    await interaction.editReply({ content: response.description });
 
 
-}
+};
 
 const remove = async (interaction) => {
     await interaction.deferReply({ ephemeral: true });
@@ -129,15 +127,14 @@ const remove = async (interaction) => {
         row2.addComponents(removeButton);
 
         await interaction.editReply({
-            content: `Select a schedule to remove`,
+            content:    `Select a schedule to remove`,
             components: [row1, row2]
         });
 
 
-    } catch (error) {
-        await interaction.editReply({
-            content: `${error} ${error.message}`,
-        });
+    }
+    catch (error) {
+        await interaction.editReply({ content: `${error} ${error.message}`, });
     }
 
-}
+};

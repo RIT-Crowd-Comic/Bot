@@ -12,12 +12,12 @@ const fakeScheduleEntry = {};
 const queue = [];
 const validDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 const abbreviations = {
-    'm': 'monday',
-    't': 'tuesday',
-    'w': 'wednesday',
+    'm':  'monday',
+    't':  'tuesday',
+    'w':  'wednesday',
     'th': 'thursday',
-    'h': 'thursday',
-    'f': 'friday',
+    'h':  'thursday',
+    'f':  'friday',
     'sa': 'saturday',
     'su': 'sunday',
 };
@@ -63,12 +63,13 @@ const createSchedule = (daysList, time) => {
         throw new ScheduleError('Invalid list of days. (abbreviations: m t w (th or h) f sa su).');
     }
 
-    //days should be in chronological order with work week starting on sunday
+    // days should be in chronological order with work week starting on sunday
     daysList.sort((a, b) => validDays.indexOf(a) - validDays.indexOf(b));
 
-    
+
     if (!time.isValid) throw new ScheduleError('Invalid time');
     if (!time.isValid()) throw new ScheduleError('Invalid time');
+
     // done validating, create schedule
     const timeHours = time.hour();
     const timeMinutes = time.minute();
@@ -93,8 +94,8 @@ const createSchedule = (daysList, time) => {
     });
 
     return {
-        utcDays: utcDays,
-        utcTime: [utcHour, utcMin],
+        utcDays:   utcDays,
+        utcTime:   [utcHour, utcMin],
         localDays: [...daysList],
         localTime: [timeHours, timeMinutes],
     };
@@ -191,7 +192,7 @@ const sendCheckInReminder = async (client, id) => {
 
     try {
         await user.send({
-            content: reply,
+            content:    reply,
             components: [actions]
         });
 
@@ -215,9 +216,9 @@ const updateQueue = (days, utcTime, id, toRemove = false) => {
     const min = utcTime[1];
 
     const reminder = {
-        'id': id,
+        'id':   id,
         'hour': hour,
-        'min': min
+        'min':  min
     };
 
     // if affects today's queue
@@ -294,60 +295,62 @@ const getQueue = () => {
 const validScheduleUser = (user) => {
     const userId = user?.id;
 
-    //todo: command should include a user
+    // todo: command should include a user
     if (!userId) {
-        return { status: 'Fail', description: '*Invalid user*' }
+        return { status: 'Fail', description: '*Invalid user*' };
     }
 
-    //verify the person has schedules
+    // verify the person has schedules
     if (!fakeScheduleEntry[userId] || fakeScheduleEntry[userId]?.schedules?.length === 0) {
-        return { status: 'Fail', description: '*You have no schedules! Create one with `/check-in schedule`*' }
+        return { status: 'Fail', description: '*You have no schedules! Create one with `/check-in schedule`*' };
     }
 
-    return { status: 'Success' }
-}
+    return { status: 'Success' };
+};
 
-//! The two methods below this comment are very similar, 
-//! they could possibly be refactored into one method, but I am 
-//! unaware of how that will affect where they are used, this 
-//! should be looked at by the initial implementer
+// ! The two methods below this comment are very similar, 
+// ! they could possibly be refactored into one method, but I am 
+// ! unaware of how that will affect where they are used, this 
+// ! should be looked at by the initial implementer
 const getSchedules = (user) => {
 
     try {
         const response = validScheduleUser(user);
         if (response.status === 'Fail') {
             return response;
-            }
-            
+        }
+
         const userId = user?.id;
-        //get and return the schedules
+
+        // get and return the schedules
         const schedules = fakeScheduleEntry[userId]
             ?.schedules
             ?.map(s => displaySchedule(s));
 
-        return { status: 'Success', description: 'Here are your schedules', schedules: schedules }
-    } catch (error) {
-        return { status: 'Fail', description: error }
+        return { status: 'Success', description: 'Here are your schedules', schedules: schedules };
     }
-}
+    catch (error) {
+        return { status: 'Fail', description: error };
+    }
+};
 
 const getScheduleObjs = (user) => {
     const response = validScheduleUser(user);
     if (response.status === 'Fail') {
         return response;
-        }
-        
+    }
+
     const userId = user?.id;
 
     const schedules = fakeScheduleEntry[userId]?.schedules?.map(s => (
         {
-            name: displaySchedule(s),
+            name:     displaySchedule(s),
             schedule: s
         }
     ));
 
     return { status: 'Success', schedules: schedules };
-}
+};
 
 /**
  * Adds a new check in schedule with 
@@ -361,22 +364,22 @@ const scheduleCheckIn = (user, days, time) => {
         const userId = user.id;
         const userTag = user.tag;
 
-        //todo: command should include a user
+        // todo: command should include a user
         if (!userId || !userTag) {
-            return { status: 'Fail', description: '*User is invalid*' }
+            return { status: 'Fail', description: '*User is invalid*' };
         }
 
         const parsedDays = parseDaysList(days);
         const parsedTime = parseTime(time);
         const schedule = createSchedule(parsedDays, parsedTime);
 
-        //update the database
+        // update the database
         fakeScheduleEntry[userId] ??= {};
 
         Object.assign(
             fakeScheduleEntry[userId],
             {
-                id: userId,
+                id:  userId,
                 tag: userTag,
             }
         );
@@ -387,10 +390,11 @@ const scheduleCheckIn = (user, days, time) => {
 
         return { status: 'Success', description: `Check ins scheduled for ${displaySchedule(schedule)}` };
 
-    } catch (error) {
-        return { status: 'Fail', description: error }
     }
-}
+    catch (error) {
+        return { status: 'Fail', description: error };
+    }
+};
 
 module.exports = {
     createSchedule,
