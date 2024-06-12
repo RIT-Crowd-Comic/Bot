@@ -1,16 +1,17 @@
 import globals from 'globals';
 import pluginJs from '@eslint/js';
 import stylisticJs from '@stylistic/eslint-plugin-js';
+import jestPlugin from 'eslint-plugin-jest';
 
 export default [
     {
         files: ['**/*.js'],
         languageOptions:
-        { sourceType: 'commonjs', }
+            { sourceType: 'commonjs', }
     },
     {
         languageOptions:
-        { globals: globals.node }
+            { globals: globals.node }
     },
 
     pluginJs.configs.recommended,
@@ -149,5 +150,11 @@ export default [
 
             // ...
         }
-    }
+    },
+
+    // define the jest globals for all test files
+    {
+        files: ['**/*.test.js'],
+        ...jestPlugin.configs['flat/recommended'],
+    },
 ];
