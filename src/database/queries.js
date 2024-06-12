@@ -257,32 +257,20 @@ SELECT * FROM checkin_schedules
 
 /**
  * Save a user's check-in response form
- * @param {{
- * id: string,
- * rose?: string | undefined,
- * thorn?: string | undefined,
- * bud?: string | undefined,
- * }} response required
+ * @param {string} userId
+ * @param {object} content
  */
-const addCheckInResponse = (response) => {
-    const user_id = response?.id?.toString()?.trim() ?? '';
-    const rose = response?.rose?.toString()?.trim() ?? '';
-    const thorn = response?.thorn?.toString()?.trim() ?? '';
-    const bud = response?.bud?.toString()?.trim() ?? '';
+const addCheckInResponse = (userId, content) => {
+    const user_id = userId?.toString()?.trim() ?? '';
 
-    assertArgument(user_id?.length > 0, 'Invalid Argument: response.id');
+    assertArgument(user_id?.length > 0, 'Invalid Argument: id');
 
-    // rose thorn bud can be empty
-
-    // don't add entry if everything is empty
-    if (rose.length === 0 && thorn.length === 0 && bud.length === 0) return undefined;
-
+    // if content is empty, silently return nothing
+    if (typeof content === 'object' && Object.keys(content).length === 0) return undefined;
 
     return CheckInResponse.create({
         user_id,
-        rose,
-        thorn,
-        bud
+        content
     });
 };
 
@@ -302,7 +290,7 @@ const getCheckInResponses = (userId, limit = 5) => {
     // make sure to get the most recent responses
     const filter = {
         where: { user_id, },
-        order: [['createdAt', 'ASC']],
+        order: [['created_at', 'ASC']],
         limit
     };
 
