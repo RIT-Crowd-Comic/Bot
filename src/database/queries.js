@@ -184,25 +184,26 @@ INSERT INTO messages (user_id, content, timestamp)
 };
 
 // expects 
-const getMessagesRange = async (start_msg_id,end_msg_id) => {
+const getMessagesRange = async (start_msg_id, end_msg_id) => {
     const start = start_msg_id;
     const end = end_msg_id;
 
     assertArgument(start.length > 0, 'Invalid argument: start_msg_id');
     assertArgument(end.length > 0, 'Invalid argument: end_msg_id');
 
-    const values = [start,end];
+    const values = [start, end];
     const query =
-`
-SELECT  * FROM messages
-    WHERE message_id BETWEEN $1 AND $2
-    ORDER BY message_ts ASC;
-`;
+    `
+    SELECT  * FROM messages
+        WHERE message_id BETWEEN $1 AND $2
+        ORDER BY message_ts ASC;
+    `;
     return pool.query(query, values);
 };
+
 const getMessage = async (msg_id) => {
     const message_id = msg_id;
-    assertArgument( message_id.length > 0 , 'Invalid argument: msg_id');
+    assertArgument(message_id.length > 0, 'Invalid argument: msg_id');
 
     const values = [message_id];
     const query =
@@ -211,13 +212,12 @@ const getMessage = async (msg_id) => {
         WHERE message_id = $1
         ORDER BY message_ts ASC;
     `;
-    return pool.query(query,values);
+    return pool.query(query, values);
 };
 
-const getMessagesByTimestamp = async (msg_timestamp) =>
-{
+const getMessagesByTimestamp = async (msg_timestamp) => {
     const message_timestamp = msg_timestamp;
-    assertArgument( message_timestamp.length > 0 , 'Invalid argument: msg_timestamp');
+    assertArgument(message_timestamp.length > 0, 'Invalid argument: msg_timestamp');
     const values = [message_timestamp];
     const query =
     `
@@ -225,8 +225,8 @@ const getMessagesByTimestamp = async (msg_timestamp) =>
         WHERE message_ts = $1
         ORDER BY message_ts ASC;
     `;
-    return pool.query(query,values);
-}
+    return pool.query(query, values);
+};
 
 
 /**
