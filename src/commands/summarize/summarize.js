@@ -23,8 +23,6 @@ module.exports = {
             //defer reply
             await interaction.deferReply();
 
-            const numWordsStr = numWords !== null ? `The summary has to be ${numWords.toString()} words long.` : 'The summary can be any length.'
-
             //get messages and remove piece of the message object we dont want to reduce tokens
 
             const messages = getRememberedMessages().map(message =>{
@@ -36,9 +34,15 @@ module.exports = {
   
             const splitMessages = splitMessageToFitTokenLimit(JSON.stringify(messages, null, 2));
             //openai stuff
-            const prompt = stripIndent`Summarize the 'content' of the following array of messages, 
-            listing the messages in the order they appear. ${numWordsStr}: 
-            ${splitMessages[0]}`
+            const prompt = stripIndent`
+            Summarize the 'content' of the following array of messages, listing the messages in the order they appear. 
+
+            ${numWords != null
+                ?`The summary has to be ${numWords.toString()} words long`
+                : 'The summary can be any length.'
+            }.
+            ${splitMessages[0]}
+            `;
 
             const response = await openAiClient.chat.completions.create({
                 model:    'gpt-3.5-turbo',
