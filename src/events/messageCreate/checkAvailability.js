@@ -161,15 +161,15 @@ const tools = [
 const examples =
    `{
         'role':    'user',
-        'content': I am busy from 10-12 tommorow. Message date 6/12/2024.,
+        'content': I am busy from 10-12 tommorow. Message date 6/12/2024. Day is wednesday.,
     },
     {
         'role':    'assistant',
-        'content': {name: 'rememberUnavailability', arguments: '{"times":[{"start":"2024-06-12T10:00:00","end":"2024-06-12T14:00:00","reason":"busy"}]}"}',
+        'content': {name: 'rememberUnavailability', arguments: '{"times":[{"start":"2024-06-13T10:00:00","end":"2024-06-13T14:00:00","reason":"busy"}]}"}',
     },
     {
         'role':    'user',
-        'content': I am busy all day this upcoming wednesday, thursday i am busy from 10-2 and friday 10-4. Message date 6/11/2024.,
+        'content': I am busy all day this upcoming wednesday, thursday i am busy from 10-2 and friday 10-4. Message date 6/11/2024. Day is tuesday.,
     },
     {
         'role':    'assistant',
@@ -177,7 +177,7 @@ const examples =
     },
     {
         'role':    'user',
-        'content': I free from 9-5 monday through friday. Message date 6/12/2024,
+        'content': I free from 9-5 monday through friday. Message date 6/12/2024, day is wednesday,
     },
     {
         'role':    'assistant',
@@ -209,23 +209,20 @@ module.exports = async (client, message) => {
             return;
         }
         const date = new Date(message.createdTimestamp).toLocaleDateString();
+        const day = new Date(message.createdTimestamp).getDay();
+        
         const prompt = stripIndents`Based on the attached message and examples, 
         use one of the provided tools to parse unavailability using 'rememberUnavailability' or availability using 'rememberAvailability'. 
-        If either don't work call 'unableToParse' from the tools.The message date is ${date}.`;
+        Availability represents the general default time the user is free to work during the week. Unavailability are the times the user cannot work during the week.
+        Avoid calling both 'rememberUnavailability' and 'rememberAvailability' unless the user's wording makes it clear and necessary.
+        If neither work, call 'unableToParse' from the tools. The message date is ${date} and the current day of the week is ${day}.
+        These are some example input and outputs to mimic. The dates within the example don't align to the current message date so make sure to parse with the current message date. ${examples}.`;
         const response = await openAiClient.chat.completions.create({
             model:    'gpt-3.5-turbo',
             messages: [
                 {
                     'role':    'system',
                     'content': prompt,
-                },
-                {
-                    'role':    'system',
-                    'content': stripIndents`These are some example input and outputs to mimic. The dates don't align to the current message date so make sure to parse with the current message date. ${examples}`
-                },
-                {
-                    'role':    'system',
-                    'content': `Avoid calling both 'rememberUnavailability' and 'rememberAvailability' unless the user's wording makes it clear and necessary. `
                 },
                 {
                     'role':    'user',
