@@ -54,7 +54,7 @@ module.exports = {
                 ]
             });
             let reply = `${response.choices[0].message.content} `
-            if(splitMessages.length > 1) reply += '\n\nMessages to summarize had to be clamped.';
+            if(splitMessages.length > 1) reply += '\n\nWarning: Messages to summarize had to be clamped.';
             await interaction.editReply(reply);
         }
         catch (error) {
