@@ -22,7 +22,7 @@ module.exports = {
             // todo future: make it so the channel is saved somewhere, so when the bot goes offline for a bit, messages will still be read when it goes back up
         }
         catch (error) {
-            interaction.editReply({ content: `Error ${error}` });
+            await interaction.editReply({ content: `Error ${error}` });
         }
     }
 };
