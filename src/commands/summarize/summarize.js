@@ -9,7 +9,7 @@ module.exports = {
         .setName('summarize')
         .setDescription('Summarizes messages that were remembered.')
         .addNumberOption(option =>
-            option.setName('number-words')
+            option.setName('word-count')
                 .setDescription('Length in words of the summary')
                 .setRequired(false)),
 
