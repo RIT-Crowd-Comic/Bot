@@ -33,19 +33,29 @@ db.authenticate()
     await db.Models.CheckInResponse.sync({ force: true });
     await db.Models.UnavailableSchedule.sync({ force: true });
     await db.Models.AvailableSchedule.sync({ force: true });
+    await db.Models.User.sync({ force: true });
     await db.Models.Config.sync();
+
     try {
 
-        await db.updateConfig({ availability_channel_id: '1240715737702596689', server_id: '1219755314518163477' });
+        // await db.updateConfig({ availability_channel_id: '1240715737702596689', server_id: '1219755314518163477' });
+        await db.touchUser({
+            id:           '1234',
+            tag:          '.user',
+            display_name: 'BIG MAN 67',
+            global_name:  'name'
+        });
 
-        await db.addCheckInResponse(
+        console.log(await db.addCheckInResponse(
             '1234',
             {
                 rose:  5,
                 thorn: 'this is a thorn',
                 bud:   'this is a bud',
             }
-        );
+        ));
+
+
         (await db.getCheckInResponses('1234', 5)).forEach(r => void console.log(r.dataValues));
 
         await db.addCheckInResponse(
