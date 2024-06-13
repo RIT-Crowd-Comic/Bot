@@ -5,7 +5,9 @@ const { Pool } = require('pg');
 
 const { ArgumentError, ConnectionError } = require('./errors');
 const {
-    User, sequelize, UnavailableSchedule, CheckInResponse
+    User, sequelize, UnavailableSchedule, CheckInResponse,
+    Config,
+    AvailableSchedule
 } = require('./models');
 
 // configuration variables must be in .env
@@ -140,7 +142,7 @@ const upsertUser = async (user) => {
     return User
         .findOne(filter)
         .then(user => {
-            if (user) return User.update({
+            if (user) return user.update({
                 user_tag,
                 display_name,
                 global_name
@@ -352,7 +354,7 @@ const getCheckInResponses = (userId, limit = 5) => {
     // make sure to get the most recent responses
     const filter = {
         where: { user_id, },
-        order: [['created_at', 'ASC']],
+        order: [['created_at', 'DESC']],
         limit
     };
 
@@ -373,9 +375,9 @@ const addUnavailable = async (schedule) => {
     const to_time = schedule?.to?.toString()?.trim() ?? '';
     const reason = schedule?.reason?.toString()?.trim() ?? '';
 
-    assertArgument(user_id?.length > 0, 'Invalid Argument: schedule.id');
-    assertArgument(from_time?.length > 0, 'Invalid Argument: schedule.from');
-    assertArgument(to_time?.length > 0, 'Invalid Argument: schedule.to');
+    assertArgument(user_id.length > 0, 'Invalid Argument: schedule.id');
+    assertArgument(from_time.length > 0, 'Invalid Argument: schedule.from');
+    assertArgument(to_time.length > 0, 'Invalid Argument: schedule.to');
 
     // reason can be empty, no need to assert :)
 
@@ -395,7 +397,7 @@ const addUnavailable = async (schedule) => {
 const getUnavailable = async (userId) => {
     const user_id = userId?.toString()?.trim() ?? '';
 
-    assertArgument(user_id?.length > 0, 'Invalid Argument: userId');
+    assertArgument(user_id.length > 0, 'Invalid Argument: userId');
 
     // TODO: figure out a way to filter out past dates
     // TODO: figure out a way to delete past schedules
@@ -404,7 +406,108 @@ const getUnavailable = async (userId) => {
     return UnavailableSchedule.findAll(filter);
 };
 
+/**
+ * Add an unavailable schedule to a user
+ * @param {{
+* id: string
+* from: string,
+* to: string,
+* days: string[]}} schedule required
+*/
+const setAvailable = async (schedule) => {
+    const user_id = schedule?.id?.toString()?.trim() ?? '';
+    const from_time = schedule?.from?.toString()?.trim() ?? '';
+    const to_time = schedule?.to?.toString()?.trim() ?? '';
+    const days = schedule?.days?.map(day => day.toString().trim().toLocaleLowerCase());
 
+    assertArgument(user_id.length > 0, 'Invalid Argument: schedule.id');
+    assertArgument(from_time.length > 0, 'Invalid Argument: schedule.from');
+    assertArgument(to_time.length > 0, 'Invalid Argument: schedule.to');
+    assertArgument(days.length > 0, 'Invalid Argument: schedule.days');
+
+    // create or update
+    const filter = {
+        where: { user_id },
+        order: [['created_at', 'DESC']],
+        limit: 1
+    };
+    return AvailableSchedule.findOne(filter)
+        .then(available => {
+            if (available) return available.update({
+                user_id,
+                from_time,
+                to_time,
+                days
+            });
+            return AvailableSchedule.create({
+                user_id,
+                from_time,
+                to_time,
+                days
+            });
+        });
+};
+
+/**
+* Get a list of unavailable dates for a user 
+* @param {string} userId required
+* @returns 
+*/
+const getAvailable = async (userId) => {
+    const user_id = userId?.toString()?.trim() ?? '';
+
+    assertArgument(user_id.length > 0, 'Invalid Argument: userId');
+
+    // TODO: figure out a way to filter out past dates
+    // TODO: figure out a way to delete past schedules
+
+    const filter = { where: { user_id } };
+    return AvailableSchedule.findOne(filter);
+};
+
+/**
+ * Update config variables. Only include properties that should be changed
+ * @param {{
+ * availability_channel_id?: string,
+ * server_id?: string}} config
+ */
+const updateConfig = (config) => {
+
+    // this would need to be updated if the Model options change
+    const hiddenAttributes = ['created_at', 'updated_at', 'deleted_at', 'id'];
+
+    const configAttributes = Object.keys(Config.getAttributes())
+        .filter(value => !hiddenAttributes.includes(value));
+
+    assertArgument(
+        Object.keys(config).every(attr => configAttributes.includes(attr)),
+        `Invalid argument: config can only include {${configAttributes.join(',')}}`
+    );
+
+    const filter = {
+        order: [['created_at', 'DESC']],
+        limit: 1
+    };
+
+    return Config.findOne(filter).then(configRow => {
+        if (configRow) return configRow.update(config);
+        return Config.create(config);
+    });
+};
+
+/**
+ * Get the most recent config vars
+ * @param {string} channelId required
+ * @param {string} channelName optional
+ */
+const getConfig = () => {
+
+    const filter = {
+        order: [['created_at', 'DESC']],
+        limit: 1
+    };
+    return Config.findOne(filter);
+};
 
 module.exports = {
     testQuery,
@@ -417,5 +520,9 @@ module.exports = {
     getCheckInResponses,
     addUnavailable,
     getUnavailable,
+    setAvailable,
+    getAvailable,
+    updateConfig,
+    getConfig,
     authenticate
 };

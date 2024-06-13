@@ -49,6 +49,20 @@ CREATE TABLE unavailable_schedules (
     reason VARCHAR,
     deleted_at TIMESTAMP
 );
+CREATE TABLE available_schedules (
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR NOT NULL,
+    from_time VARCHAR,
+    to_time VARCHAR,
+    days VARCHAR[],
+    deleted_at TIMESTAMP
+);
+
+CREATE TABLE config (
+  id SERIAL PRIMARY KEY,
+  availability_channel_id VARCHAR NOT NULL,
+  server_id VARCHAR NOT NULL
+);
 
 -- this is not yet determined
 -- instead of payload, consider using regular entries
