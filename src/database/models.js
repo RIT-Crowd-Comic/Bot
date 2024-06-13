@@ -127,7 +127,24 @@ const CheckInResponse = sequelize.define(
     },
     { ...paranoidConfig }
 );
-
+const Reminder = sequelize.define(
+    'reminder',
+    {
+        user_id: {
+            type:      DataTypes.STRING,
+            allowNull: false
+        },
+        hour: {
+            type:      DataTypes.INTEGER,
+            allowNull: false
+        },
+        min: {
+            type:      DataTypes.INTEGER,
+            allowNull: false
+        },
+    },
+    { ...paranoidConfig }
+);
 module.exports = {
     User,
     Message,
