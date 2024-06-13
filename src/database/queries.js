@@ -7,7 +7,8 @@ const { ArgumentError, ConnectionError } = require('./errors');
 const {
     User, sequelize, UnavailableSchedule, CheckInResponse,
     Config,
-    AvailableSchedule
+    AvailableSchedule,
+    Reminder
 } = require('./models');
 
 // configuration variables must be in .env
@@ -302,21 +303,36 @@ const deleteCheckinSchedule = (schedule) => {
  * @param {string} userId 
  * @returns 
  */
-const getCheckinSchedules = (userId) => {
+const getUserCheckinSchedules = (id) => {
 
 
-    const id = userId?.toString()?.trim() ?? '';
+    const user_id = id?.toString()?.trim() ?? '';
 
-    assertArgument(id.length > 0, 'Invalid argument: userId');
+    assertArgument(user_id.length > 0, 'Invalid argument: userId');
 
-    const values = [id];
-    const query =
-`
-SELECT * FROM checkin_schedules
-    WHERE user_id = $1
-    ORDER BY checkin_schedule_pk ASC;
-`;
-    return pool.query(query, values);
+    const filter = { where: { user_id } };
+
+    return Reminder.findAll(filter);
+};
+
+/**
+ * Get a list of check in schedules for a that contain today utc day
+ * @param {string} utcDay 
+ * @returns 
+ */
+const getDaySchedules = (utcDay) => {
+
+
+    const day = utcDay?.toString()?.trim() ?? '';
+
+    assertArgument(day.length > 0, 'Invalid argument: day');
+
+    const filter = {
+        where: { [Op.in]: [day], },
+        order: [['hour', 'ASC']]
+    };
+
+    return Reminder.findAll(filter);
 };
 
 /**
@@ -359,6 +375,38 @@ const getCheckInResponses = (userId, limit = 5) => {
     };
 
     return CheckInResponse.findAll(filter);
+};
+
+/**
+ * Adds a reminder object to the day queue db table
+ * @param {{
+* id: string
+* hour: int,
+* min: int}} reminder required
+*/
+const addQueue = async (schedule) => {
+    const user_id = schedule?.id?.toString()?.trim() ?? '';
+    const hour = schedule?.utcTime[0];
+    const min = schedule?.utcTime[1];
+
+    assertArgument(user_id.length > 0, 'Invalid Argument: schedule.id');
+
+    return Reminder.create({
+        user_id,
+        hour,
+        min
+    });
+};
+
+/**
+ * 
+ * @param {string} userId 
+ */
+const getDBQueue = async () => {
+
+    const filter = { order: [['hour', 'ASC']] };
+
+    return Reminder.findAll(filter);
 };
 
 /**

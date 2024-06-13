@@ -191,5 +191,6 @@ module.exports = {
     AvailableSchedule,
     Config,
     CheckInResponse,
+    Reminder,
     sequelize
 };
