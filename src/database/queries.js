@@ -7,7 +7,8 @@ const { ArgumentError, ConnectionError } = require('./errors');
 const {
     User, sequelize, UnavailableSchedule, CheckInResponse,
     Config,
-    AvailableSchedule
+    AvailableSchedule,
+    Message
 } = require('./models');
 
 // configuration variables must be in .env
@@ -213,41 +214,49 @@ const getMessagesRange = async (start_msg_id, end_msg_id) => {
     assertArgument(start.length > 0, 'Invalid argument: start_msg_id');
     assertArgument(end.length > 0, 'Invalid argument: end_msg_id');
 
-    const values = [start, end];
-    const query =
-    `
-    SELECT  * FROM messages
-        WHERE message_id BETWEEN $1 AND $2
-        ORDER BY message_ts ASC;
-    `;
-    return pool.query(query, values);
+    const filter = {
+        where: { 
+            message_id : {
+                [sequelize.between] : [start,end]
+            }
+        },
+        order: [['message_ts', 'ASC']]
+    };
+
+    return Message.findAll(filter);
 };
 
 const getMessage = async (msg_id) => {
-    const message_id = msg_id;
+    const ms_id = msg_id;
     assertArgument(message_id.length > 0, 'Invalid argument: msg_id');
 
-    const values = [message_id];
-    const query =
-    `
-    SELECT * FROM messages
-        WHERE message_id = $1
-        ORDER BY message_ts ASC;
-    `;
-    return pool.query(query, values);
+    
+    const filter = {
+        where: { 
+            message_id : {
+                [sequelize.eq] : ms_id
+            }
+        },
+        order: [['message_ts', 'ASC']]
+    };
+
+    return Message.findOne(filter);
 };
 
 const getMessagesByTimestamp = async (msg_timestamp) => {
     const message_timestamp = msg_timestamp;
     assertArgument(message_timestamp.length > 0, 'Invalid argument: msg_timestamp');
-    const values = [message_timestamp];
-    const query =
-    `
-    SELECT * FROM messages
-        WHERE message_ts = $1
-        ORDER BY message_ts ASC;
-    `;
-    return pool.query(query, values);
+
+    const filter = {
+        where: { 
+            message_ts : {
+                [sequelize.eq] : message_timestamp
+            }
+        },
+        order: [['message_ts', 'ASC']]
+    };
+
+    return Message.findOne(filter);
 };
 
 
@@ -316,6 +325,8 @@ SELECT * FROM checkin_schedules
     WHERE user_id = $1
     ORDER BY checkin_schedule_pk ASC;
 `;
+
+
     return pool.query(query, values);
 };
 
@@ -353,7 +364,7 @@ const getCheckInResponses = (userId, limit = 5) => {
 
     // make sure to get the most recent responses
     const filter = {
-        where: { user_id, },
+        where: { user_id },
         order: [['created_at', 'DESC']],
         limit
     };
