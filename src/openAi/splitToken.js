@@ -8,18 +8,20 @@ const TOKEN_LIMIT = 4096;
  * @param {number} tokenLimit 
  * @returns 
  */
-const  splitMessageToFitTokenLimit = (prompt, tokenLimit = TOKEN_LIMIT) => {
-    //encode
+const splitMessageToFitTokenLimit = (prompt, tokenLimit = TOKEN_LIMIT) => {
+
+    // encode
     const tokens = encode(prompt);
-    //grab num tokens
+
+    // grab num tokens
     const tokenCount = tokens.length;
 
-    //if under return
+    // if under return
     if (tokenCount <= tokenLimit) {
         return [prompt];
     }
 
-    //split into segments and return array
+    // split into segments and return array
     const segments = [];
     let start = 0;
     while (start < tokenCount) {
@@ -31,8 +33,6 @@ const  splitMessageToFitTokenLimit = (prompt, tokenLimit = TOKEN_LIMIT) => {
     }
 
     return segments;
-}
+};
 
-module.exports = {
-    splitMessageToFitTokenLimit
-}
+module.exports = { splitMessageToFitTokenLimit };
