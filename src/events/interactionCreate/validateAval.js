@@ -8,13 +8,13 @@ module.exports = async (client, interaction) => {
     if (action === 'v-a-y') {
         interaction.reply({ content: 'Data Saved', ephemeral: true });
 
-        const mappedDays = [monday, tuesday, wednesday, thursday, friday]
+        const mappedDays = [false, monday, tuesday, wednesday, thursday, friday, false]
             .map((value, index) => ((value === 't') ? daysOfWeek[index] : null)) // Map days to corresponding day names or null
             .filter(day => day !== null);
 
         const user = await client.users.fetch(id);
 
-        setAvail(id, user.globalName, start, end, mappedDays, path);
+        setAvail(id, user.username, start, end, mappedDays, path);
 
         // Remove the button by editing the message
         await interaction.message.edit({ components: [] });
