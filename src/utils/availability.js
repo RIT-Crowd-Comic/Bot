@@ -39,10 +39,10 @@ const newAvailabilityEntry = (userId, userTag) => {
 //             from: dayjs('2024 5-20 09:00'),
 //             to:   dayjs('2024 8-9 17:00'),
 //             days: parseDaysList('daily')
-//         },
+        },
 //         unavailable: []
-//     };
-// };
+    };
+};
 
 /**
  * Create Available object
