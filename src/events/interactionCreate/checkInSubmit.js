@@ -1,4 +1,5 @@
-const scheduleUtils = require('../../utils/schedule')
+const scheduleUtils = require('../../utils/schedule');
+
 /**
  * 
  * Handle when a user submits the check in modal survey. 
@@ -33,12 +34,12 @@ module.exports = async (client, interaction) => {
         let budResponse = interaction.fields?.getTextInputValue('check-in-form-buds') ?? '';
         let thornResponse = interaction.fields?.getTextInputValue('check-in-form-thorns') ?? '';
 
-        roseResponse = roseResponse ? `"${roseResponse}"` : 'N/A'
-        budResponse = budResponse ? `"${budResponse}"` : 'N/A'
-        thornResponse = thornResponse ? `"${thornResponse}"` : 'N/A'
+        roseResponse = roseResponse ? `"${roseResponse}"` : 'N/A';
+        budResponse = budResponse ? `"${budResponse}"` : 'N/A';
+        thornResponse = thornResponse ? `"${thornResponse}"` : 'N/A';
 
         const response = scheduleUtils.parseResponse(roseResponse, budResponse, thornResponse, user, new Date().getTime().toString());
-        scheduleUtils.addResponse(response)
+        scheduleUtils.addResponse(response);
         let reply = ['Thanks for responding! Make sure to take short breaks and to drink plenty of water!',].join('\n');
 
         // user finished form, give them words of encouragement

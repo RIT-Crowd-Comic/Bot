@@ -1,4 +1,5 @@
 const availabilityUtils  = require('../../utils/availability');
+
 /**
  * Repeats the message that was sent in the availability channel
  * @param {Client} client 

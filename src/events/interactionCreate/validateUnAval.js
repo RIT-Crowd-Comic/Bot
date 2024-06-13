@@ -8,7 +8,7 @@ module.exports = async (client, interaction) => {
     const [action, id, start, end, reason] = interaction.customId.split('_');
     if (action === 'v-unA-y') {
         interaction.reply({ content: 'Data Saved', ephemeral: true });
-        
+
         const user = await client.users.fetch(id);
 
         setUnavailAI(id, user.globalName, start, end, reason, path);

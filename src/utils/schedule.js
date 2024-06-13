@@ -6,7 +6,7 @@ const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { findRole, hasRole } = require('../utils/roles');
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
-const serverUsersUtils = require('../utils/serverUsers')
+const serverUsersUtils = require('../utils/serverUsers');
 
 dayjs.extend(utc);
 dayjs.extend(weekday);
@@ -16,12 +16,12 @@ const fakeScheduleEntry = {};
 const queue = [];
 const validDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 const abbreviations = {
-    'm': 'monday',
-    't': 'tuesday',
-    'w': 'wednesday',
+    'm':  'monday',
+    't':  'tuesday',
+    'w':  'wednesday',
     'th': 'thursday',
-    'h': 'thursday',
-    'f': 'friday',
+    'h':  'thursday',
+    'f':  'friday',
     'sa': 'saturday',
     'su': 'sunday',
 };
@@ -107,8 +107,8 @@ const createSchedule = (daysList, time) => {
     });
 
     return {
-        utcDays: utcDays,
-        utcTime: [utcHour, utcMin],
+        utcDays:   utcDays,
+        utcTime:   [utcHour, utcMin],
         localDays: [...daysList],
         localTime: [timeHours, timeMinutes],
     };
@@ -205,7 +205,7 @@ const sendCheckInReminder = async (client, id) => {
 
     try {
         await user.send({
-            content: reply,
+            content:    reply,
             components: [actions]
         });
 
@@ -229,9 +229,9 @@ const updateQueue = (days, utcTime, id, toRemove = false) => {
     const min = utcTime[1];
 
     const reminder = {
-        'id': id,
+        'id':   id,
         'hour': hour,
-        'min': min
+        'min':  min
     };
 
     // if affects today's queue
@@ -308,7 +308,7 @@ const getQueue = () => {
 const validScheduleUser = (user) => {
     const userId = user?.id;
 
-    //command should include a user
+    // command should include a user
     if (!userId) {
         return { status: 'Fail', description: '*Invalid user*' };
     }
@@ -357,7 +357,7 @@ const getScheduleObjs = (user) => {
 
     const schedules = fakeScheduleEntry[userId]?.schedules?.map(s => (
         {
-            name: displaySchedule(s),
+            name:     displaySchedule(s),
             schedule: s
         }
     ));
@@ -392,7 +392,7 @@ const scheduleCheckIn = (user, days, time) => {
         Object.assign(
             fakeScheduleEntry[userId],
             {
-                id: userId,
+                id:  userId,
                 tag: userTag,
             }
         );
@@ -415,21 +415,21 @@ const scheduleCheckIn = (user, days, time) => {
  * @returns 
  */
 const viewCheckInResponses = async (user, commandUser) => {
-    const adminName = 'top diggity dogs'
-    const adminRole = await findRole(adminName)
+    const adminName = 'top diggity dogs';
+    const adminRole = await findRole(adminName);
 
-    //don't continue the command if the commandUser doesn't have the top dog role
-    //check if admin role exists
+    // don't continue the command if the commandUser doesn't have the top dog role
+    // check if admin role exists
     if (!adminRole) {
         return { status: 'Fail', description: `Role '${adminName}' does not exist` };
     }
 
-    //check if the commandUser has the role
+    // check if the commandUser has the role
     if (!await hasRole(commandUser, adminRole)) {
-        return { status: 'Fail', description: `You do not have permission to use this command` }
+        return { status: 'Fail', description: `You do not have permission to use this command` };
     }
 
-    //if user is undefined, get all of the responses of all users
+    // if user is undefined, get all of the responses of all users
     if (!user) {
         const response = getResponses();
 
@@ -440,7 +440,7 @@ const viewCheckInResponses = async (user, commandUser) => {
         return { status: 'Success', description: `Here are all the responses`, responses: response };
     }
 
-    //if user is defined get all of that user's responses
+    // if user is defined get all of that user's responses
     const response = getResponses(user);
 
     if (response.length === 0) {
@@ -448,7 +448,7 @@ const viewCheckInResponses = async (user, commandUser) => {
     }
 
     return { status: 'Success', description: `Here are <@${user.id}>'s response(s)`, responses: response };
-}
+};
 
 
 /**
@@ -461,16 +461,16 @@ const viewCheckInResponses = async (user, commandUser) => {
  * @returns {Response Object} an object of the response
  */
 const parseResponse = (rose, bud, thorn, user, timeStamp) => {
-    const date = new Date(Number(timeStamp))
+    const date = new Date(Number(timeStamp));
     const dateString = date.toLocaleString();
     return {
-        userId: user.id,
-        rose: rose,
-        bud: bud,
-        thorn: thorn,
+        userId:    user.id,
+        rose:      rose,
+        bud:       bud,
+        thorn:     thorn,
         timeStamp: dateString
-    }
-}
+    };
+};
 
 /**
  * 
@@ -478,7 +478,8 @@ const parseResponse = (rose, bud, thorn, user, timeStamp) => {
  * @returns {String} the response in string format
  */
 const displayResponse = async (response) => {
-    //todo: get the user's user name in the server
+
+    // todo: get the user's user name in the server
     const serverUser = serverUsersUtils.findUser(response.userId);
     const nick = serverUser.nick;
     const global = serverUser.user.global_name;
@@ -487,8 +488,8 @@ const displayResponse = async (response) => {
         ${response.timeStamp}
             Rose: ${response.rose}
             Bud: ${response.bud}
-            Thorn ${response.thorn}`
-}
+            Thorn ${response.thorn}`;
+};
 
 module.exports = {
     createSchedule,

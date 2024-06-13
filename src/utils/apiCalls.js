@@ -113,12 +113,12 @@ const getServerUser = async (serverId, userId) => {
  * @param {boolean} excludeBots if bots will be excluded in the results 
  */
 const getServerUsers = async (serverId, excludeBots) => {
-    let response = await getAPICall(`${baseUrl}/guilds/${serverId}/members?limit=1000`)
-    if(excludeBots) {
-        response = response.filter(user => !user.bot)
+    let response = await getAPICall(`${baseUrl}/guilds/${serverId}/members?limit=1000`);
+    if (excludeBots) {
+        response = response.filter(user => !user.bot);
     }
     return response;
-}
+};
 
 
 

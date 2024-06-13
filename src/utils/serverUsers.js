@@ -1,6 +1,7 @@
-//list of all the users in the server
+// list of all the users in the server
 let severUsers = [];
-const apiCalls = require('./apiCalls')
+const apiCalls = require('./apiCalls');
+
 /**
  * Updates the list of users in a server
  * @param {String} serverId the server that the bot is in
@@ -8,7 +9,8 @@ const apiCalls = require('./apiCalls')
  */
 const updateServerUsers = async (serverId, excludeBots) => {
     severUsers = await apiCalls.getServerUsers(serverId, excludeBots);
-}
+};
+
 /**
  * Finds a user in the server list
  * @param {String} id the id of the user
@@ -16,7 +18,7 @@ const updateServerUsers = async (serverId, excludeBots) => {
  */
 const findUser = (id) => {
     return severUsers.find(user => user.user.id === id);
-}
+};
 
 /**
  * Returns a list of users that are in the server
@@ -28,4 +30,4 @@ module.exports = {
     updateServerUsers,
     getServerUsers,
     findUser
-}
+};

@@ -1,6 +1,6 @@
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
-const serverUserUtils = require('../../utils/serverUsers')
+const serverUserUtils = require('../../utils/serverUsers');
 
 /**
  * Updates the internal list of users in the server after an interval
@@ -17,4 +17,4 @@ module.exports = async (_) => {
     catch (error) {
         console.log(`There was an error: ${error}`);
     }
-}
+};

@@ -2,7 +2,7 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const apiCalls = require('./apiCalls');
 const addUnavailableRole = async (user) => {
-    const unavailableRole = await findRole('unavailable')
+    const unavailableRole = await findRole('unavailable');
 
     // make sure a role called 'unavailable' exists
     if (!unavailableRole) {
@@ -20,12 +20,12 @@ const addUnavailableRole = async (user) => {
     }
 
     // add the role to the user
-    return await apiCalls.addRole(serverId, user.id, unavailableRole.id);
+    return await apiCalls.addRole(process.env.TESTSERVER_ID, user.id, unavailableRole.id);
 };
 
 const removeUnavailableRole = async (user) => {
     const serverId = process.env.TESTSERVER_ID;
-    const unavailableRole = await findRole(user, "unavailable")
+    const unavailableRole = await findRole(user, 'unavailable');
 
     // make sure the role exists
     if (!unavailableRole) {
@@ -49,7 +49,7 @@ const removeUnavailableRole = async (user) => {
 const findRole = async (roleName) => {
     const roles = await apiCalls.getRoles(process.env.TESTSERVER_ID);
     return roles.find(role => role.name.toLowerCase() === roleName.toLowerCase());
-}
+};
 
 /**
  * Checks if a user has a specific role
@@ -59,8 +59,8 @@ const findRole = async (roleName) => {
  */
 const hasRole = async (user, role) => {
     const serverUser = await apiCalls.getServerUser(process.env.TESTSERVER_ID, user.id);
-    return serverUser.roles.some(id => id === role.id)
-}
+    return serverUser.roles.some(id => id === role.id);
+};
 
 module.exports = {
     addUnavailableRole,

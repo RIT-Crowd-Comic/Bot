@@ -61,8 +61,8 @@ describe('schedule utils', () => {
         test('adminRole not existing should return a failure', async () => {
             roleUtils.findRole.mockResolvedValue(undefined);
             const response = await scheduleUtils.viewCheckInResponses(user, commandUser);
-            expect(response.status).toBe('Fail')
-            expect(response.description.includes(`does not exist`)).toBeTruthy()
-        })
-    })
+            expect(response.status).toBe('Fail');
+            expect(response.description.includes(`does not exist`)).toBeTruthy();
+        });
+    });
 });

@@ -30,15 +30,14 @@ module.exports = {
             .setDescription('See all the check in responses (admin only)')
             .addUserOption(option => option
                 .setName('user')
-                .setDescription('The user you would like to see check ins of'))
-        ),
+                .setDescription('The user you would like to see check ins of'))),
 
     async execute(_, interaction) {
         try {
             const action = {
-                'view': () => viewSchedules(interaction),
-                'schedule': () => addScheduleCheckIn(interaction),
-                'remove': () => remove(interaction),
+                'view':      () => viewSchedules(interaction),
+                'schedule':  () => addScheduleCheckIn(interaction),
+                'remove':    () => remove(interaction),
                 'responses': () => viewResponses(interaction)
             };
 
@@ -56,7 +55,7 @@ const viewSchedules = async (interaction) => {
 
     try {
         const user = interaction.member.user;
-        const response = getSchedules(user);
+        const response = scheduleUtils.getSchedules(user);
 
         if (response.status === 'Fail') {
             await interaction.editReply({ content: response.description });
@@ -79,7 +78,7 @@ const viewSchedules = async (interaction) => {
         row.addComponents(scheduleDropdown);
 
         await interaction.editReply({
-            content: `Here are your schedules`,
+            content:    `Here are your schedules`,
             components: [row]
         });
     }
@@ -135,7 +134,7 @@ const remove = async (interaction) => {
         row2.addComponents(removeButton);
 
         await interaction.editReply({
-            content: `Select a schedule to remove`,
+            content:    `Select a schedule to remove`,
             components: [row1, row2]
         });
 
@@ -158,23 +157,25 @@ const viewResponses = async (interaction) => {
     }
 
     const filePath = './src/checkInResponses.txt';
-    let content = "";
-    for(r of response.responses) {
+    let content = '';
+    for (const r of response.responses) {
         content += await scheduleUtils.displayResponse(r) + `\n\n`;
-        //delay to slow down requests
 
-          
+        // delay to slow down requests
+
+
     }
     await interaction.editReply({ content: 'responses sent in dms' });
+
     // send the json
     fs.writeFile(filePath, content, err => err && console.error(err));
     await interaction.user.send({
         content: response.description,
-        files: [
+        files:   [
             {
                 attachment: filePath,
                 name:       './src/checkInResponses.txt'
             }
         ]
     });
-}
+};
