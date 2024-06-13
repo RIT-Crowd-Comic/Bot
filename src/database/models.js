@@ -66,7 +66,7 @@ const Message = sequelize.define(
     { ...paranoidConfig }
 );
 
-const Schedule = sequelize.define(
+const CheckInSchedule = sequelize.define(
     'schedule',
     {
         discord_user_id: {
@@ -179,7 +179,7 @@ const CheckInResponse = sequelize.define(
 User.hasMany(CheckInResponse, user_fk);
 CheckInResponse.belongsTo(User);
 
-const Reminder = sequelize.define(
+const CheckInReminder = sequelize.define(
     'reminder',
     {
         user_id: {
@@ -200,11 +200,11 @@ const Reminder = sequelize.define(
 module.exports = {
     User,
     Message,
-    Schedule,
+    CheckInSchedule,
     UnavailableSchedule,
     AvailableSchedule,
     Config,
     CheckInResponse,
-    Reminder,
+    CheckInReminder,
     sequelize
 };

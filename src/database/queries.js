@@ -8,7 +8,7 @@ const {
     User, sequelize, UnavailableSchedule, CheckInResponse,
     Config,
     AvailableSchedule,
-    Reminder,
+    CheckInReminder,
     Message
 } = require('./models');
 
@@ -309,7 +309,7 @@ const getUserCheckinSchedules = (id) => {
 
     const filter = { where: { user_id } };
 
-    return Reminder.findAll(filter);
+    return CheckInReminder.findAll(filter);
 };
 
 /**
@@ -329,7 +329,7 @@ const getDaySchedules = (utcDay) => {
         order: [['hour', 'ASC']]
     };
 
-    return Reminder.findAll(filter);
+    return CheckInReminder.findAll(filter);
 };
 
 /**
@@ -391,7 +391,7 @@ const addQueue = async (schedule) => {
 
     assertArgument(user_id.length > 0, 'Invalid Argument: schedule.id');
 
-    return Reminder.create({
+    return CheckInReminder.create({
         user_id,
         hour,
         min
@@ -406,7 +406,7 @@ const getDBQueue = async () => {
 
     const filter = { order: [['hour', 'ASC']] };
 
-    return Reminder.findAll(filter);
+    return CheckInReminder.findAll(filter);
 };
 
 /**
