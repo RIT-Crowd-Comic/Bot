@@ -451,5 +451,6 @@ module.exports = {
     displayUnavail,
     newAvailabilityEntry,
     createAvailability,
-    createUnavailability
+    createUnavailability,
+    getAvailabilityChannel
 };

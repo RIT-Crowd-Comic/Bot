@@ -3,6 +3,12 @@ const utc = require('dayjs/plugin/utc');
 const weekday = require('dayjs/plugin/weekday');
 const localizedFormat = require('dayjs/plugin/localizedFormat');
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { findRole, hasRole } = require('../utils/roles');
+const apiCalls = require('../utils/apiCalls');
+const path = require('path');
+const { timeStamp } = require('console');
+const { prependListener } = require('process');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 dayjs.extend(utc);
 dayjs.extend(weekday);
@@ -12,15 +18,24 @@ const fakeScheduleEntry = {};
 const queue = [];
 const validDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 const abbreviations = {
-    'm':  'monday',
-    't':  'tuesday',
-    'w':  'wednesday',
+    'm': 'monday',
+    't': 'tuesday',
+    'w': 'wednesday',
     'th': 'thursday',
-    'h':  'thursday',
-    'f':  'friday',
+    'h': 'thursday',
+    'f': 'friday',
     'sa': 'saturday',
     'su': 'sunday',
 };
+
+let responses = [];
+
+const addResponse = response => { responses.push(response); };
+const getResponses = (user) => {
+    const clone = structuredClone(responses);
+    return user ? clone.filter(response => response.userId === user.id) : clone;
+};
+const clearResponses = () => { responses = []; return { content: 'Success' }; };
 
 class ScheduleError extends Error {
     constructor(message) {
@@ -94,8 +109,8 @@ const createSchedule = (daysList, time) => {
     });
 
     return {
-        utcDays:   utcDays,
-        utcTime:   [utcHour, utcMin],
+        utcDays: utcDays,
+        utcTime: [utcHour, utcMin],
         localDays: [...daysList],
         localTime: [timeHours, timeMinutes],
     };
@@ -192,7 +207,7 @@ const sendCheckInReminder = async (client, id) => {
 
     try {
         await user.send({
-            content:    reply,
+            content: reply,
             components: [actions]
         });
 
@@ -216,9 +231,9 @@ const updateQueue = (days, utcTime, id, toRemove = false) => {
     const min = utcTime[1];
 
     const reminder = {
-        'id':   id,
+        'id': id,
         'hour': hour,
-        'min':  min
+        'min': min
     };
 
     // if affects today's queue
@@ -344,7 +359,7 @@ const getScheduleObjs = (user) => {
 
     const schedules = fakeScheduleEntry[userId]?.schedules?.map(s => (
         {
-            name:     displaySchedule(s),
+            name: displaySchedule(s),
             schedule: s
         }
     ));
@@ -379,7 +394,7 @@ const scheduleCheckIn = (user, days, time) => {
         Object.assign(
             fakeScheduleEntry[userId],
             {
-                id:  userId,
+                id: userId,
                 tag: userTag,
             }
         );
@@ -396,6 +411,59 @@ const scheduleCheckIn = (user, days, time) => {
     }
 };
 
+const viewCheckInResponses = async (user, commandUser) => {
+    const adminName = 'top diggity dogs'
+    const adminRole = await findRole(adminName)
+
+    //don't continue the command if the commandUser doesn't have the top dog role
+    //check if admin role exists
+    if (!adminRole) {
+        return { status: 'Fail', description: `Role '${adminName}' does not exist` };
+    }
+
+    //check if the commandUser has the role
+    if (!await hasRole(commandUser, adminRole)) {
+        return { status: 'Fail', description: `You do not have permission to use this command` }
+    }
+
+    //todo: if user is undefined, get all of the responses of all users
+    if (!user) {
+        return;
+    }
+
+    //todo: if user is defined get all of that user's responses
+    const response = getResponses(user);
+
+    if (response.length === 0) {
+        return { status: 'Fail', description: `<@${user.id}> does not have any responses` };
+    }
+
+    return { status: 'Success', description: `Here are <@${user.id}>'s response(s)`, responses: response };
+}
+
+const parseResponse = (rose, bud, thorn, user, timeStamp) => {
+    const date = new Date(Number(timeStamp))
+    const dateString = date.toLocaleString();
+    return {
+        userId: user.id,
+        rose: rose,
+        bud: bud,
+        thorn: thorn,
+        timeStamp: dateString
+    }
+}
+
+const displayResponse = async (response) => {
+    //todo: get the user's user name in the server
+    const serverUser = await apiCalls.getServerUser(process.env.TESTSERVER_ID,response.userId);
+    console.log(serverUser.nick);
+    return `${serverUser.nick}
+        ${response.timeStamp }
+            Rose: ${response.rose}
+            Bud: ${response.bud}
+            Thorn ${response.thorn}`
+}
+
 module.exports = {
     createSchedule,
     parseDaysList,
@@ -410,5 +478,11 @@ module.exports = {
     queue,
     getScheduleObjs,
     ScheduleError,
-    validScheduleUser
+    validScheduleUser,
+    viewCheckInResponses,
+    addResponse,
+    getResponses,
+    clearResponses,
+    parseResponse,
+    displayResponse
 };

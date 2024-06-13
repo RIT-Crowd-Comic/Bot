@@ -1,8 +1,8 @@
 const {
     ActionRowBuilder, ButtonStyle, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ButtonBuilder, PermissionFlagsBits, SlashCommandBuilder
 } = require('discord.js');
-const { getSchedules, scheduleCheckIn, getScheduleObjs } = require('../../utils/schedule');
-
+const scheduleUtils = require('../../utils/schedule');
+const fs = require('fs');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('check-in')
@@ -24,14 +24,22 @@ module.exports = {
             .setDescription('View your check-in schedules'))
         .addSubcommand(subcommand => subcommand
             .setName('remove')
-            .setDescription('See a list of schedules to remove')),
+            .setDescription('See a list of schedules to remove'))
+        .addSubcommand(subcommand => subcommand
+            .setName('responses')
+            .setDescription('See all the check in responses (admin only)')
+            .addUserOption(option => option
+                .setName('user')
+                .setDescription('The user you would like to see check ins of'))
+        ),
 
     async execute(_, interaction) {
         try {
             const action = {
-                'view':     () => viewSchedules(interaction),
+                'view': () => viewSchedules(interaction),
                 'schedule': () => addScheduleCheckIn(interaction),
-                'remove':   () => remove(interaction)
+                'remove': () => remove(interaction),
+                'responses': () => viewResponses(interaction)
             };
 
             action[interaction.options.getSubcommand()]();
@@ -71,7 +79,7 @@ const viewSchedules = async (interaction) => {
         row.addComponents(scheduleDropdown);
 
         await interaction.editReply({
-            content:    `Here are your schedules`,
+            content: `Here are your schedules`,
             components: [row]
         });
     }
@@ -86,7 +94,7 @@ const addScheduleCheckIn = async (interaction) => {
     const rawDays = interaction.options.get('days').value;
     const rawTime = interaction.options.get('time').value;
 
-    const response = scheduleCheckIn(user, rawDays, rawTime);
+    const response = scheduleUtils.scheduleCheckIn(user, rawDays, rawTime);
 
     await interaction.editReply({ content: response.description });
 
@@ -98,7 +106,7 @@ const remove = async (interaction) => {
     const user = interaction.member.user;
 
     try {
-        const response = getScheduleObjs(user);
+        const response = scheduleUtils.getScheduleObjs(user);
 
         if (response.status === 'Fail') {
             await interaction.editReply({ content: response.description });
@@ -127,7 +135,7 @@ const remove = async (interaction) => {
         row2.addComponents(removeButton);
 
         await interaction.editReply({
-            content:    `Select a schedule to remove`,
+            content: `Select a schedule to remove`,
             components: [row1, row2]
         });
 
@@ -138,3 +146,42 @@ const remove = async (interaction) => {
     }
 
 };
+
+const viewResponses = async (interaction) => {
+    await interaction.deferReply({ ephemeral: false });
+    const user = interaction.options.getUser('user');
+    const commandUser = interaction.member.user;
+    const response = await scheduleUtils.viewCheckInResponses(user, commandUser);
+    if (response.status === 'Fail') {
+        await interaction.editReply({ content: response.description });
+        return;
+    }
+
+    //todo get all the schedules
+    if(response.description.includes('all')) {
+        await interaction.editReply({ content: 'Not implemented yet' });
+        return;
+    }
+    const filePath = './src/checkInResponses.txt';
+    let content = "";
+    for(r of response.responses) {
+        content += await scheduleUtils.displayResponse(r) + `\n\n`;
+    }
+    await interaction.editReply({ content: response.description });
+    // send the json
+    fs.writeFile(filePath, content, err => err && console.error(err));
+    await interaction.channel.send({
+        files: [
+            {
+                attachment: filePath,
+                name:       './src/checkInResponses.txt'
+            }
+        ]
+    });
+
+
+
+
+
+
+}

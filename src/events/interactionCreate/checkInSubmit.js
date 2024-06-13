@@ -1,3 +1,4 @@
+const scheduleUtils = require('../../utils/schedule')
 /**
  * 
  * Handle when a user submits the check in modal survey. 
@@ -18,22 +19,26 @@ module.exports = async (client, interaction) => {
     if (!interaction?.isModalSubmit()) return;
     if (interaction.customId !== 'check-in-form-modal') return;
 
-    const userId = interaction?.user?.id;
-    const userTag = interaction?.user?.tag;
-
     await interaction.deferReply({ ephemeral: true });
-
-    if (userId === undefined || userTag === undefined) {
-        await interaction.editReply(`Could not process form data`);
+    const user = interaction.user;
+    if (!user) {
+        await interaction.editReply(`User is undefined`);
         return;
     }
 
     try {
 
         // TODO: save to a database and provide feedback
-        // const roseResponse = interaction.fields?.getTextInputValue('check-in-form-roses') ?? '';
-        // const thornResponse = interaction.fields?.getTextInputValue('check-in-form-thorns') ?? '';
+        let roseResponse = interaction.fields?.getTextInputValue('check-in-form-roses') ?? '';
+        let budResponse = interaction.fields?.getTextInputValue('check-in-form-buds') ?? '';
+        let thornResponse = interaction.fields?.getTextInputValue('check-in-form-thorns') ?? '';
 
+        roseResponse = roseResponse ? `"${roseResponse}"` : 'N/A'
+        budResponse = budResponse ? `"${budResponse}"` : 'N/A'
+        thornResponse = thornResponse ? `"${thornResponse}"` : 'N/A'
+
+        const response = scheduleUtils.parseResponse(roseResponse, budResponse, thornResponse, user, new Date().getTime().toString());
+        scheduleUtils.addResponse(response)
         let reply = ['Thanks for responding! Make sure to take short breaks and to drink plenty of water!',].join('\n');
 
         // user finished form, give them words of encouragement

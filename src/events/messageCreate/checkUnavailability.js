@@ -1,7 +1,7 @@
-const { getAvailabilityChannel } = require('../../utils/availability');
+const availabilityUtils  = require('../../utils/availability');
 module.exports = async (client, message) => {
     try {
-        const availabilityChannel = await getAvailabilityChannel();
+        const availabilityChannel = await availabilityUtils.getAvailabilityChannel();
 
         // only send a message if it's not from a bot and it's from the available channel
         if (message.author.bot || !availabilityChannel || message.channelId !== availabilityChannel.id) {

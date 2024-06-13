@@ -1,5 +1,8 @@
 const dayjs = require('dayjs');
 const scheduleUtils = require('../utils/schedule');
+const roleUtils = require('../utils/roles');
+jest.mock('../utils/roles');
+
 describe('schedule utils', () => {
     describe('parseDaysList', () => {
         test('"daily" should return all days in the week', () => {
@@ -48,4 +51,18 @@ describe('schedule utils', () => {
             expect(scheduleUtils.validScheduleUser({}).status).toBe('Fail');
         });
     });
+
+    describe('viewCheckInResponses', () => {
+        beforeEach(() => {
+            jest.clearAllMocks();
+        });
+        const user = {};
+        const commandUser = {};
+        test('adminRole not existing should return a failure', async () => {
+            roleUtils.findRole.mockResolvedValue(undefined);
+            const response = await scheduleUtils.viewCheckInResponses(user, commandUser);
+            expect(response.status).toBe('Fail')
+            expect(response.description.includes(`does not exist`)).toBeTruthy()
+        })
+    })
 });
