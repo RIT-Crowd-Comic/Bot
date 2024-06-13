@@ -157,20 +157,19 @@ const viewResponses = async (interaction) => {
         return;
     }
 
-    //todo get all the schedules
-    if(response.description.includes('all')) {
-        await interaction.editReply({ content: 'Not implemented yet' });
-        return;
-    }
     const filePath = './src/checkInResponses.txt';
     let content = "";
     for(r of response.responses) {
         content += await scheduleUtils.displayResponse(r) + `\n\n`;
+        //delay to slow down requests
+
+          
     }
-    await interaction.editReply({ content: response.description });
+    await interaction.editReply({ content: 'responses sent in dms' });
     // send the json
     fs.writeFile(filePath, content, err => err && console.error(err));
-    await interaction.channel.send({
+    await interaction.user.send({
+        content: response.description,
         files: [
             {
                 attachment: filePath,
@@ -178,10 +177,4 @@ const viewResponses = async (interaction) => {
             }
         ]
     });
-
-
-
-
-
-
 }

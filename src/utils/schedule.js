@@ -9,6 +9,7 @@ const path = require('path');
 const { timeStamp } = require('console');
 const { prependListener } = require('process');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+const serverUsersUtils = require('../utils/serverUsers')
 
 dayjs.extend(utc);
 dayjs.extend(weekday);
@@ -28,7 +29,43 @@ const abbreviations = {
     'su': 'sunday',
 };
 
-let responses = [];
+let responses = [
+    {
+        userId: '330475170835726347',
+        rose: '"a"',
+        bud: 'N/A',
+        thorn: 'N/A',
+        timeStamp: '6/13/2024, 3:54:09 PM'
+    },
+    {
+        userId: '330475170835726347',
+        rose: 'N/A',
+        bud: 'N/A',
+        thorn: '"b"',
+        timeStamp: '6/13/2024, 3:54:20 PM'
+    },
+    {
+        userId: '330475170835726347',
+        rose: 'N/A',
+        bud: '"c"',
+        thorn: 'N/A',
+        timeStamp: '6/13/2024, 3:54:26 PM'
+    },
+    {
+        userId: '1242465242773192816',
+        rose: '"Bot Test"',
+        bud: 'N/A',
+        thorn: 'N/A',
+        timeStamp: '6/13/2024, 3:54:26 PM'
+    },
+    {
+        userId: '612292802977726464',
+        rose: '"Other user"',
+        bud: 'N/A',
+        thorn: 'N/A',
+        timeStamp: '6/13/2024, 3:55:26 PM'
+    }
+];
 
 const addResponse = response => { responses.push(response); };
 const getResponses = (user) => {
@@ -428,10 +465,16 @@ const viewCheckInResponses = async (user, commandUser) => {
 
     //todo: if user is undefined, get all of the responses of all users
     if (!user) {
-        return;
+        const response = getResponses();
+
+        if (response.length === 0) {
+            return { status: 'Fail', description: `No responses have been logged` };
+        }
+
+        return { status: 'Success', description: `Here are all the responses`, responses: response };
     }
 
-    //todo: if user is defined get all of that user's responses
+    //if user is defined get all of that user's responses
     const response = getResponses(user);
 
     if (response.length === 0) {
@@ -455,10 +498,12 @@ const parseResponse = (rose, bud, thorn, user, timeStamp) => {
 
 const displayResponse = async (response) => {
     //todo: get the user's user name in the server
-    const serverUser = await apiCalls.getServerUser(process.env.TESTSERVER_ID,response.userId);
-    console.log(serverUser.nick);
-    return `${serverUser.nick}
-        ${response.timeStamp }
+    const serverUser = serverUsersUtils.findUser(response.userId);
+    const nick = serverUser.nick;
+    const global = serverUser.user.global_name;
+    const username = serverUser.user.username;
+    return `${nick != null ? nick : global != null ? global : username}
+        ${response.timeStamp}
             Rose: ${response.rose}
             Bud: ${response.bud}
             Thorn ${response.thorn}`

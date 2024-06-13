@@ -1,6 +1,8 @@
 const { version } = require('../../config.json');
 const baseUrl = `https://discord.com/api/${version}`;
 
+
+
 // helper method for discord get requests
 const getAPICall = async (url, body = {
     method:  'GET',
@@ -118,6 +120,8 @@ const getServerUsers = async (serverId, excludeBots) => {
     return response;
 }
 
+
+
 // adds a role to a user
 const addRole = async (serverId, userId, roleId) => {
     return await putAPICall(`${baseUrl}/guilds/${serverId}/members/${userId}/roles/${roleId}`);
@@ -141,5 +145,5 @@ module.exports = {
     getServerUser,
     addRole,
     removeRole,
-    getServerUsers
+    getServerUsers,
 };
