@@ -4,45 +4,34 @@ dayjs.extend(utc);
 const { ScheduleError, parseDaysList } = require('./schedule.js');
 const { addUnavailableRole, removeUnavailableRole } = require('./roles.js');
 const { EmbedBuilder } = require('discord.js');
+const { addUnavailable, setAvailable, upsertUser, getConfig, updateConfig, getAvailable, getUnavailable } = require('../database');
 
-let availabilityChannel = undefined;
-const getAvailabilityChannel = async () => { return availabilityChannel; };
-const setAvailabilityChannel = channel => { availabilityChannel = channel; };
+/**
+ * Get the channel where availability is being tracked
+ * @returns {string} channel id
+ */
+const getAvailabilityChannel = async () => getConfig().availability_channel_id;
+
+/**
+ * Set the channel where availability should be tracked
+ * @param {string} channelId 
+ * @returns 
+ */
+const setAvailabilityChannel = async (channelId) => updateConfig({ availability_channel_id: channelId });
 
 const startQueue = [];
 const endQueue = [];
 
-/**
- * Get availability data from JSON file
- * @param {string} path path to JSON file
- * @returns object with data from JSON
- */
-const loadAvailability = (path) => {
-    let data = fs.readFileSync(path, { encoding: 'utf8' });
-    data = JSON.parse(data);
-    return data;
-};
-
-/**
- * Generate a default availability entry for a user
- * @param {string} userId ID of user to create object for
- * @param {string} userTag tag of user to create object for
- * @returns default availability object
- */
-const newAvailabilityEntry = (userId, userTag) => {
-    return {
-        userId:    userId,
-        userTag:   userTag,
-        available: {
-
-//             // Random day used for object creation, has no effect on result
-//             from: dayjs('2024 5-20 09:00'),
-//             to:   dayjs('2024 8-9 17:00'),
-//             days: parseDaysList('daily')
-        },
-//         unavailable: []
-    };
-};
+// /**
+//  * Get availability data from JSON file
+//  * @param {string} path path to JSON file
+//  * @returns object with data from JSON
+//  */
+// const loadAvailability = (path) => {
+//     let data = fs.readFileSync(path, { encoding: 'utf8' });
+//     data = JSON.parse(data);
+//     return data;
+// };
 
 /**
  * Create Available object
@@ -84,6 +73,8 @@ const createUnavailability = (start, end, reason) => {
     };
 };
 
+
+/////////////////////// UPDATE vvvvvvvvvvvvvvvvvvvvv
 /**
  * Removes any unavailability events that have passed for a specific user
  * @param {object} data Data from the savedAvailability file
@@ -110,36 +101,20 @@ const removeExpired = (data, userId) => {
  * @param {object} unavail object to be pushed to the "unavailable" property's array
  * @param {string} path path to JSON file
  */
-const saveUnavailability = (userId, userTag, unavail, path) => {
+const saveUnavailability = async (userId, userTag, unavail) => {
 
-    // Get saved data from file and turn into array with objects
-    let fileContent = loadAvailability(path);
-
-    fileContent[userId] ??= newAvailabilityEntry(userId, userTag);
-
-    // Store unavailability in the list in chronological order
-    for (let i = 0, list = fileContent[userId].unavailable; i < list.length; i++) {
-        if (dayjs(list[i].from).isAfter(dayjs(unavail.from))) {
-            list.splice(i, 0, unavail);
-            break;
-        }
-        else if (i == list.length - 1) {
-            list.push(unavail);
-            break;
-        }
-    }
-
-    // If there was no prior unavailability saved, save now
-    if (fileContent[userId].unavailable.length == 0) { fileContent[userId].unavailable.push(unavail); }
-
-    // Check if any times in unavailability have passed and need to be removed
-    fileContent = removeExpired(fileContent, userId);
-
-    // Send data back to file
-    fs.writeFileSync(path, JSON.stringify(fileContent, null, 2), (err) => err && console.error(err));
+    await upsertUser({
+        id: userId,
+        tag: userTag
+    })
+    .then(() => addUnavailable({
+        id: userId,
+        ...unavail
+    }));
 
     // Update queues
     getQueues('./src/savedAvailability.json');
+    throw new Error("Make sure the above statement is used correctly");
 };
 
 /**
@@ -149,18 +124,23 @@ const saveUnavailability = (userId, userTag, unavail, path) => {
  * @param {object} avail object to fill the "available" property of this user
  * @param {string} path path to JSON file
  */
-const saveAvailability = (userId, userTag, avail, path) => {
-    let fileContent = loadAvailability(path);
-
-    fileContent[userId] ??= newAvailabilityEntry(userId, userTag);
-    fileContent[userId].available = avail;
-
-    // Send data back to file
-    fs.writeFile(path, JSON.stringify(fileContent, null, 2), (err) => err && console.error(err));
+const saveAvailability =  async (userId, userTag, avail) => {
+    
+    await upsertUser({
+        id: userId,
+        tag: userTag
+    })
+    .then(() => setAvailable({
+        id: userId,
+        ...avail
+    }));
 
     // Update queues
     getQueues('./src/savedAvailability.json');
 };
+
+/////////////////////// UPDATE ^^^^^^^^^^^^^^^^^^^^^^
+
 
 const updateAvailabilityChannel = async newChannel => {
     const oldChannel = await getAvailabilityChannel();
@@ -264,10 +244,9 @@ const getQueues = (path) => {
  * @param {string} timeFrom time on start date unavailability begins at
  * @param {string} timeTo time on end date unavailability stops at
  * @param {string} reason reason for unavailability
- * @param {string} path path to JSON file
  * @returns Message contents to send
  */
-const setUnavail = (userId, userTag, dateFrom, dateTo, timeFrom, timeTo, reason, path) => {
+const setUnavail = async (userId, userTag, dateFrom, dateTo, timeFrom, timeTo, reason) => {
     try {
         if (dateTo && !dateFrom)
             throw new ScheduleError('Please select a start date.');
@@ -298,7 +277,11 @@ const setUnavail = (userId, userTag, dateFrom, dateTo, timeFrom, timeTo, reason,
         ].join('\n');
 
         // Save data to file
-        await saveUnavailability(userId, unavail);
+        await saveUnavailability(userId, userTag, unavail)
+        .catch(err => {
+            reply = `*Failed to save to database*`
+            console.log(err);
+    });
         return { content: reply };
     }
     catch (error) {
@@ -321,10 +304,9 @@ const setUnavail = (userId, userTag, dateFrom, dateTo, timeFrom, timeTo, reason,
  * @param {string} dateFrom  date(UTC) from,
  * @param {string} dateTo    date(UTC) to, 
  * @param {string} reason 
- * @param {string} path 
  * @returns 
  */
-const setUnavailAI = (userId, userTag, dateFrom, dateTo, reason, path) => {
+const setUnavailAI = async (userId, userTag, dateFrom, dateTo, reason) => {
     try {
 
         if (dateTo && !dateFrom)
@@ -348,7 +330,10 @@ const setUnavailAI = (userId, userTag, dateFrom, dateTo, reason, path) => {
 
         // await interaction.editReply({ content: reply });
         // Save data to file
-        saveUnavailability(userId, userTag, unavail, path);
+        await saveUnavailability(userId, userTag, unavail).catch(err => {
+            reply = `*Failed to save to database*`
+            console.log(err);
+    });;
         return { content: reply };
     }
     catch (error) {
@@ -366,10 +351,9 @@ const setUnavailAI = (userId, userTag, dateFrom, dateTo, reason, path) => {
  * @param {string} timeFrom start time on available days
  * @param {string} timeTo end time on available days
  * @param {string} days days of the week a user works
- * @param {string} path path to the JSON file
  * @returns Message contents to send
  */
-const setAvail = (userId, userTag, timeFrom, timeTo, days, path) => {
+const setAvail = async (userId, userTag, timeFrom, timeTo, days) => {
     try {
         if (!timeFrom || !timeTo)
             throw new ScheduleError('Enter both start AND end times');
@@ -396,7 +380,10 @@ const setAvail = (userId, userTag, timeFrom, timeTo, days, path) => {
         ].join('\n');
 
         // Save data to file
-        await saveAvailability(userId, avail);
+        await saveAvailability(userId, avail).catch(err => {
+            reply = `*Failed to save to database*`
+            console.log(err);
+    });;
         return { content: reply };
     }
     catch (error) {
@@ -409,6 +396,12 @@ const setAvail = (userId, userTag, timeFrom, timeTo, days, path) => {
     }
 };
 
+/**
+ * 
+ * @param {User} user 
+ * @param {GuildMember} member 
+ * @returns 
+ */
 const displayAvail = async (user, member) => {
     try {
 
@@ -433,25 +426,14 @@ const displayAvail = async (user, member) => {
  * Display the availability of self or requested server member
  * @param {User} user User object of user that called the command
  * @param {GuildMember} member object of the (optional) requested member
- * @param {string} path path to the JSON file
  * @returns Embed that displays unavailability
  */
-const displayUnavail = (user, member, path) => {
+const displayUnavail = async (user, member) => {
     try {
 
         const targetMember = member ? member.user : user;
 
-        // Get data saved from file
-        let fileContent = loadAvailability(path);
-
-        // If no matching user was found in the data, 
-        if (!fileContent[targetMember.id])
-            return { content: 'Requested member has no available data' };
-
-        // Check if old unavailability needs to be removed
-        fileContent = removeExpired(fileContent, targetMember.id);
-
-        const unavailability = fileContent[targetMember.id].unavailable;
+        const unavailability = await getUnavailable();
 
         // Create an embed to send to the user
         const embed = new EmbedBuilder()

@@ -27,14 +27,8 @@ const User = sequelize.define(
             type:      DataTypes.STRING,
             allowNull: false
         },
-        display_name: {
-            type:      DataTypes.STRING,
-            allowNull: false
-        },
-        global_name: {
-            type:      DataTypes.STRING,
-            allowNull: false
-        }
+        display_name: { type: DataTypes.STRING },
+        global_name: { type: DataTypes.STRING }
     },
     { ...paranoidConfig }
 );

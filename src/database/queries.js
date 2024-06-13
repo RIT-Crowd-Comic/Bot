@@ -98,13 +98,13 @@ const authenticate = () => {
 const touchUser = async (user) => {
     const discord_user_id = user?.id?.toString()?.trim() ?? '';
     const tag = user?.tag?.toString()?.trim() ?? '';
-    const display_name = user?.display_name?.toString()?.trim() ?? '';
-    const global_name = user?.global_name?.toString()?.trim() ?? '';
+
+    // these can be null/undefined
+    const display_name = user?.display_name?.toString()?.trim();
+    const global_name = user?.global_name?.toString()?.trim();
 
     assertArgument(discord_user_id?.length > 0, 'Invalid Argument: user.id');
     assertArgument(tag?.length > 0, 'Invalid Argument: user.tag');
-    assertArgument(display_name?.length > 0, 'Invalid Argument: user.display_name');
-    assertArgument(global_name?.length > 0, 'Invalid Argument: user.global_name');
 
     // Create only if user doesn't exist
 
@@ -131,24 +131,26 @@ const upsertUser = async (user) => {
 
     const discord_user_id = user?.id?.toString()?.trim() ?? '';
     const tag = user?.tag?.toString()?.trim() ?? '';
-    const display_name = user?.display_name?.toString()?.trim() ?? '';
-    const global_name = user?.global_name?.toString()?.trim() ?? '';
+
+    // these can be undefined
+    const display_name = user?.display_name?.toString()?.trim();
+    const global_name = user?.global_name?.toString()?.trim();
 
     assertArgument(discord_user_id?.length > 0, 'Invalid Argument: user.id');
     assertArgument(tag?.length > 0, 'Invalid Argument: user.tag');
-    assertArgument(display_name?.length > 0, 'Invalid Argument: user.display_name');
-    assertArgument(global_name?.length > 0, 'Invalid Argument: user.global_name');
 
     const filter = { where: { discord_user_id } };
+
+    // don't want to modify any columns that are null/undefined
+    const updates = { tag };
+    if (display_name) updates.display_name = display_name;
+    if (global_name) updates.global_name = global_name;
+
 
     return User
         .findOne(filter)
         .then(user => {
-            if (user) return user.update({
-                tag,
-                display_name,
-                global_name
-            });
+            if (user) return user.update(updates);
             return User.create({
                 discord_user_id,
                 tag,
