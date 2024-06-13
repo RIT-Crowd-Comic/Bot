@@ -23,7 +23,7 @@ const User = sequelize.define(
             type:      DataTypes.STRING,
             allowNull: false
         },
-        user_tag: {
+        tag: {
             type:      DataTypes.STRING,
             allowNull: false
         },

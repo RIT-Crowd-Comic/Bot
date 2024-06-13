@@ -97,12 +97,12 @@ const authenticate = () => {
  */
 const touchUser = async (user) => {
     const discord_user_id = user?.id?.toString()?.trim() ?? '';
-    const user_tag = user?.tag?.toString()?.trim() ?? '';
+    const tag = user?.tag?.toString()?.trim() ?? '';
     const display_name = user?.display_name?.toString()?.trim() ?? '';
     const global_name = user?.global_name?.toString()?.trim() ?? '';
 
     assertArgument(discord_user_id?.length > 0, 'Invalid Argument: user.id');
-    assertArgument(user_tag?.length > 0, 'Invalid Argument: user.tag');
+    assertArgument(tag?.length > 0, 'Invalid Argument: user.tag');
     assertArgument(display_name?.length > 0, 'Invalid Argument: user.display_name');
     assertArgument(global_name?.length > 0, 'Invalid Argument: user.global_name');
 
@@ -115,7 +115,7 @@ const touchUser = async (user) => {
         .then(user => {
             if (!user) return User.create({
                 discord_user_id,
-                user_tag,
+                tag,
                 display_name,
                 global_name
             });
@@ -130,12 +130,12 @@ const touchUser = async (user) => {
 const upsertUser = async (user) => {
 
     const discord_user_id = user?.id?.toString()?.trim() ?? '';
-    const user_tag = user?.tag?.toString()?.trim() ?? '';
+    const tag = user?.tag?.toString()?.trim() ?? '';
     const display_name = user?.display_name?.toString()?.trim() ?? '';
     const global_name = user?.global_name?.toString()?.trim() ?? '';
 
     assertArgument(discord_user_id?.length > 0, 'Invalid Argument: user.id');
-    assertArgument(user_tag?.length > 0, 'Invalid Argument: user.tag');
+    assertArgument(tag?.length > 0, 'Invalid Argument: user.tag');
     assertArgument(display_name?.length > 0, 'Invalid Argument: user.display_name');
     assertArgument(global_name?.length > 0, 'Invalid Argument: user.global_name');
 
@@ -145,13 +145,13 @@ const upsertUser = async (user) => {
         .findOne(filter)
         .then(user => {
             if (user) return user.update({
-                user_tag,
+                tag,
                 display_name,
                 global_name
             });
             return User.create({
                 discord_user_id,
-                user_tag,
+                tag,
                 display_name,
                 global_name
             });
