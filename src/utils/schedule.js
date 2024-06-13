@@ -63,6 +63,10 @@ const createSchedule = (daysList, time) => {
         throw new ScheduleError('Invalid list of days. (abbreviations: m t w (th or h) f sa su).');
     }
 
+    // days should be in chronological order with work week starting on sunday
+    daysList.sort((a, b) => validDays.indexOf(a) - validDays.indexOf(b));
+
+
     if (!time.isValid) throw new ScheduleError('Invalid time');
     if (!time.isValid()) throw new ScheduleError('Invalid time');
 
@@ -98,53 +102,6 @@ const createSchedule = (daysList, time) => {
 };
 
 /**
- * Remove any duplicate time entries
- * @param {*} schedules 
- * @returns 
- */
-// eslint-disable-next-line
-const mergeSchedules = (schedules) => {
-
-    // current issue:
-    // displaySchedule will not update after schedules are 
-    // merged. Figure out some better way to deal with that
-
-    // clone 2 levels deep
-    /*
-    const mergedSchedules = [];
-    schedules.forEach(s => {
-        let duplicate = false;
-
-        // iterate backwards because we're modifying the array
-        for (let i = mergedSchedules.length - 1; i >= 0; i--) {
-            const m = mergedSchedules[i];
-
-            // find matching times
-            if (s.utcTime.every((t, i) => t === m.utcTime[i])) {
-                s.days.forEach(d => {
-                    if (!m.days.includes(d)) {
-                        m.days.push(d);
-                    }
-                });
-                duplicate = true;
-            }
-
-            // otherwise, add schedule to list
-        }
-        if (!duplicate) {
-            mergedSchedules.push({
-                days:            [...s.days],
-                utcTime:         [...s.utcTime],
-                displaySchedule: s.displaySchedule
-            });
-        }
-    });
-    return mergedSchedules;
-    */
-};
-
-
-/**
  * Parse a string of days into a valid list of days
  * @param {string} days list of days separated by regex [,\s|]
  * @returns {string[]}
@@ -164,6 +121,11 @@ const parseDaysList = (days) => {
 
     // replace abbreviated days
     parsedDays = parsedDays.map(d => abbreviations[d] ?? d);
+
+    // make sure days are distinct
+    parsedDays = parsedDays.filter((value, index, self) => {
+        return self.indexOf(value) === index;
+    });
 
     if (parsedDays.some(d => !validDays.includes(d))) {
         throw new ScheduleError('Invalid list of days. (abbreviations: m t w (th or h) f sa su).');
@@ -197,14 +159,14 @@ const parseTime = (time) => {
  * @param {*} client 
  * @param {string} id user id
  */
-const sendCheckInReminder = async (client, id)=>{
+const sendCheckInReminder = async (client, id) => {
 
     let user = await client.users.cache.get(id);
     if (!user) { // checks if user is already in cache
         user = await client.users.fetch(id); // fetches user (will add to the cache)
     }
 
-    // checkin interface module
+    // check-in interface module
     let reply = [
         'Would you like to spend a few minutes to describe how you\'re doing? ',
         'Feel free to leave any fields blank. ',
@@ -249,7 +211,7 @@ const sendCheckInReminder = async (client, id)=>{
  * @param {string} id user id
  * @param {bool} toRemove whether or not you want to remove (default=false)
  */
-const updateQueue = (days, utcTime, id, toRemove = false)=>{
+const updateQueue = (days, utcTime, id, toRemove = false) => {
     const hour = utcTime[0];
     const min = utcTime[1];
 
@@ -290,7 +252,7 @@ const updateQueue = (days, utcTime, id, toRemove = false)=>{
  * gets the current day's scheduled times & users
  * orders them chronologically in the queue[]
  */
-const getDayOrder = ()=>{
+const getDayOrder = () => {
 
     /**
     * checks to see if users have a scheduled day today
@@ -311,7 +273,7 @@ const getDayOrder = ()=>{
  * converts number to name of day
  * @returns {string} currentDayOfWeek: current utc day of the week
  */
-const checkCurrentDay = ()=>{
+const checkCurrentDay = () => {
     const now = dayjs.utc();// .format()
     const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     const currentDayOfWeek = daysOfWeek[now.weekday()];
@@ -321,12 +283,118 @@ const checkCurrentDay = ()=>{
 /**
  * creates a new queue
  */
-const getQueue = ()=>{
+const getQueue = () => {
     getDayOrder(checkCurrentDay());
 };
 
+/** 
+* Checks to see if a user has any schedules
+* @param {object} user - The discord user who's schedules are being checked
+* @return {object} a response that states if the user doesn't have any schedules or an error occurred, or if they do
+*/
+const validScheduleUser = (user) => {
+    const userId = user?.id;
 
+    // todo: command should include a user
+    if (!userId) {
+        return { status: 'Fail', description: '*Invalid user*' };
+    }
 
+    // verify the person has schedules
+    if (!fakeScheduleEntry[userId] || fakeScheduleEntry[userId]?.schedules?.length === 0) {
+        return { status: 'Fail', description: '*You have no schedules! Create one with `/check-in schedule`*' };
+    }
+
+    return { status: 'Success' };
+};
+
+// ! The two methods below this comment are very similar, 
+// ! they could possibly be refactored into one method, but I am 
+// ! unaware of how that will affect where they are used, this 
+// ! should be looked at by the initial implementer
+const getSchedules = (user) => {
+
+    try {
+        const response = validScheduleUser(user);
+        if (response.status === 'Fail') {
+            return response;
+        }
+
+        const userId = user?.id;
+
+        // get and return the schedules
+        const schedules = fakeScheduleEntry[userId]
+            ?.schedules
+            ?.map(s => displaySchedule(s));
+
+        return { status: 'Success', description: 'Here are your schedules', schedules: schedules };
+    }
+    catch (error) {
+        return { status: 'Fail', description: error };
+    }
+};
+
+const getScheduleObjs = (user) => {
+    const response = validScheduleUser(user);
+    if (response.status === 'Fail') {
+        return response;
+    }
+
+    const userId = user?.id;
+
+    const schedules = fakeScheduleEntry[userId]?.schedules?.map(s => (
+        {
+            name:     displaySchedule(s),
+            schedule: s
+        }
+    ));
+
+    return { status: 'Success', schedules: schedules };
+};
+
+/**
+ * Adds a new check in schedule with 
+ * @param {object} user the discord user who's schedule will be updated
+ * @param {String} days the day(s) the user will be reminded
+ * @param {String} time the time the user will be reminded
+ * @returns either a successful response, or a failed one with a description as to why
+ */
+const scheduleCheckIn = (user, days, time) => {
+    try {
+        const userId = user.id;
+        const userTag = user.tag;
+
+        // todo: command should include a user
+        if (!userId || !userTag) {
+            return { status: 'Fail', description: '*User is invalid*' };
+        }
+
+        const parsedDays = parseDaysList(days);
+        const parsedTime = parseTime(time);
+        const schedule = createSchedule(parsedDays, parsedTime);
+
+        // update the database
+        fakeScheduleEntry[userId] ??= {};
+
+        Object.assign(
+            fakeScheduleEntry[userId],
+            {
+                id:  userId,
+                tag: userTag,
+            }
+        );
+        fakeScheduleEntry[userId].schedules ??= [];
+        fakeScheduleEntry[userId].schedules.push(schedule);
+
+        updateQueue(schedule.utcDays, schedule.utcTime, userId);
+
+        return { status: 'Success', description: `Check ins scheduled for ${displaySchedule(schedule)}` };
+
+    }
+    catch (error) {
+        return { status: 'Fail', description: error };
+    }
+};
 
 module.exports = {
     createSchedule,
@@ -337,6 +405,10 @@ module.exports = {
     getQueue,
     updateQueue,
     fakeScheduleEntry,
+    getSchedules,
+    scheduleCheckIn,
     queue,
-    ScheduleError
+    getScheduleObjs,
+    ScheduleError,
+    validScheduleUser
 };
