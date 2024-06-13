@@ -210,7 +210,7 @@ module.exports = async (client, message) => {
         }
         const date = new Date(message.createdTimestamp).toLocaleDateString();
         const day = new Date(message.createdTimestamp).getDay();
-        
+
         const prompt = stripIndents`Based on the attached message and examples, 
         use one of the provided tools to parse unavailability using 'rememberUnavailability' or availability using 'rememberAvailability'. 
         Availability represents the general default time the user is free to work during the week. Unavailability are the times the user cannot work during the week.

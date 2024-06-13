@@ -129,7 +129,9 @@ This project uses Node.js with the following dependencies and versions:
 
     "nodemon": "^3.1.0",
 
-    "openai": "^4.47.3"
+    "openai": "^4.47.3",
+
+    "gpt-3-encoder": "^1.1.4",
 
 ```
 
