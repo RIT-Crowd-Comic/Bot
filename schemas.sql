@@ -3,7 +3,7 @@
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    user_id VARCHAR NOT NULL,
+    discord_user_id VARCHAR NOT NULL,
     user_tag VARCHAR NOT NULL,
     display_name VARCHAR NOT NULL,
     global_name VARCHAR NOT NULL,
@@ -16,7 +16,8 @@ CREATE TABLE users (
 -- and VARCHAR has a limit of 10485760
 CREATE TABLE messages (
     id SERIAL PRIMARY KEY,
-    user_id VARCHAR NOT NULL,
+    user_id REFERENCES users(id),
+    discord_user_id VARCHAR NOT NULL,
     content VARCHAR NOT NULL,
     message_id VARCHAR NOT NULL,
     message_ts VARCHAR NOT NULL,
@@ -26,7 +27,8 @@ CREATE TABLE messages (
 -- keep in mind, array size is just verbose and effectively does nothing
 CREATE TABLE checkin_schedules (
     id SERIAL PRIMARY KEY,
-    user_id VARCHAR NOT NULL,
+    user_id REFERENCES users(id),
+    discord_user_id VARCHAR NOT NULL,
     utc_days VARCHAR[],
     utc_time INT[2],
     local_days VARCHAR[],
@@ -43,7 +45,8 @@ CREATE TABLE checkin_schedules (
 -- from/to are dayjs strings. Ex: `JSON.stringify(dayjs())`
 CREATE TABLE unavailable_schedules (
     id SERIAL PRIMARY KEY,
-    user_id VARCHAR NOT NULL,
+    user_id REFERENCES users(id),
+    discord_user_id VARCHAR NOT NULL,
     from_time VARCHAR,
     to_time VARCHAR,
     reason VARCHAR,
@@ -51,7 +54,8 @@ CREATE TABLE unavailable_schedules (
 );
 CREATE TABLE available_schedules (
     id SERIAL PRIMARY KEY,
-    user_id VARCHAR NOT NULL,
+    user_id REFERENCES users(id),
+    discord_user_id VARCHAR NOT NULL,
     from_time VARCHAR,
     to_time VARCHAR,
     days VARCHAR[],
@@ -79,7 +83,8 @@ CREATE INDEX checkin_q_time_inserted_id
 -- this is for rose thorn bud responses
 CREATE TABLE checkin_responses (
     id SERIAL PRIMARY KEY,
-    user_id VARCHAR NOT NULL,
+    user_id REFERENCES users(id),
+    discord_user_id VARCHAR NOT NULL,
     content JSON
     deleted_at TIMESTAMP
 );
@@ -94,13 +99,13 @@ BEGIN touch_user;
         SELECT * FROM users WITH (
             UPDLOCK, SERIALIZABLE
         )
-        WHERE user_id = $1
+        WHERE discord_user_id = $1
     )
         UPDATE users
         SET user_tag = $2, user_name = $3
-        WHERE user_id = $1
+        WHERE discord_user_id = $1
     ELSE
-        INSERT INTO users (user_id, user_tag, user_name)
+        INSERT INTO users (discord_user_id, user_tag, user_name)
         VALUES ($1, $2, $3);
 COMMIT touch_user;
 

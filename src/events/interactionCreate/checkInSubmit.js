@@ -45,9 +45,9 @@ module.exports = async (client, interaction) => {
                 tag:          interaction?.user?.tag,
                 display_name: interaction?.user?.displayName,
                 global_name:  interaction?.user?.globalName,
+            }).then(() => {
+                db.addCheckInResponse(userId, response);
             });
-
-            db.addCheckInResponse(interaction?.user?.id, response);
         }
         catch {
             reply = 'Error saving to database.';
