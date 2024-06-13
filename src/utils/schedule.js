@@ -4,10 +4,7 @@ const weekday = require('dayjs/plugin/weekday');
 const localizedFormat = require('dayjs/plugin/localizedFormat');
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { findRole, hasRole } = require('../utils/roles');
-const apiCalls = require('../utils/apiCalls');
 const path = require('path');
-const { timeStamp } = require('console');
-const { prependListener } = require('process');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const serverUsersUtils = require('../utils/serverUsers')
 
@@ -29,43 +26,7 @@ const abbreviations = {
     'su': 'sunday',
 };
 
-let responses = [
-    {
-        userId: '330475170835726347',
-        rose: '"a"',
-        bud: 'N/A',
-        thorn: 'N/A',
-        timeStamp: '6/13/2024, 3:54:09 PM'
-    },
-    {
-        userId: '330475170835726347',
-        rose: 'N/A',
-        bud: 'N/A',
-        thorn: '"b"',
-        timeStamp: '6/13/2024, 3:54:20 PM'
-    },
-    {
-        userId: '330475170835726347',
-        rose: 'N/A',
-        bud: '"c"',
-        thorn: 'N/A',
-        timeStamp: '6/13/2024, 3:54:26 PM'
-    },
-    {
-        userId: '1242465242773192816',
-        rose: '"Bot Test"',
-        bud: 'N/A',
-        thorn: 'N/A',
-        timeStamp: '6/13/2024, 3:54:26 PM'
-    },
-    {
-        userId: '612292802977726464',
-        rose: '"Other user"',
-        bud: 'N/A',
-        thorn: 'N/A',
-        timeStamp: '6/13/2024, 3:55:26 PM'
-    }
-];
+let responses = [];
 
 const addResponse = response => { responses.push(response); };
 const getResponses = (user) => {
@@ -347,7 +308,7 @@ const getQueue = () => {
 const validScheduleUser = (user) => {
     const userId = user?.id;
 
-    // todo: command should include a user
+    //command should include a user
     if (!userId) {
         return { status: 'Fail', description: '*Invalid user*' };
     }
@@ -448,6 +409,11 @@ const scheduleCheckIn = (user, days, time) => {
     }
 };
 
+/**
+ * @param {Discord User Object} user the user who responses want to be seen
+ * @param {Discord User Object} commandUser the user who sent the command
+ * @returns 
+ */
 const viewCheckInResponses = async (user, commandUser) => {
     const adminName = 'top diggity dogs'
     const adminRole = await findRole(adminName)
@@ -463,7 +429,7 @@ const viewCheckInResponses = async (user, commandUser) => {
         return { status: 'Fail', description: `You do not have permission to use this command` }
     }
 
-    //todo: if user is undefined, get all of the responses of all users
+    //if user is undefined, get all of the responses of all users
     if (!user) {
         const response = getResponses();
 
@@ -484,6 +450,16 @@ const viewCheckInResponses = async (user, commandUser) => {
     return { status: 'Success', description: `Here are <@${user.id}>'s response(s)`, responses: response };
 }
 
+
+/**
+ * 
+ * @param {*} rose the pros of th report
+ * @param {*} bud the cons of the report
+ * @param {*} thorn what could be improved on in the report
+ * @param {*} user the person who sent the report
+ * @param {*} timeStamp when the user sent the report
+ * @returns {Response Object} an object of the response
+ */
 const parseResponse = (rose, bud, thorn, user, timeStamp) => {
     const date = new Date(Number(timeStamp))
     const dateString = date.toLocaleString();
@@ -496,6 +472,11 @@ const parseResponse = (rose, bud, thorn, user, timeStamp) => {
     }
 }
 
+/**
+ * 
+ * @param {Response Object} response 
+ * @returns {String} the response in string format
+ */
 const displayResponse = async (response) => {
     //todo: get the user's user name in the server
     const serverUser = serverUsersUtils.findUser(response.userId);

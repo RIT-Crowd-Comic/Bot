@@ -2,7 +2,10 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const serverUserUtils = require('../../utils/serverUsers')
 
-module.exports = async (client) => {
+/**
+ * Updates the internal list of users in the server after an interval
+ */
+module.exports = async (_) => {
     await serverUserUtils.updateServerUsers(process.env.TESTSERVER_ID, false);
     try {
 

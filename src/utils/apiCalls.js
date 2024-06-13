@@ -108,7 +108,7 @@ const getServerUser = async (serverId, userId) => {
     return await getAPICall(`${baseUrl}/guilds/${serverId}/members/${userId}`);
 };
 
-/* Gets the first 1000 users of a sever
+/** Gets the first 1000 users of a sever
  * @param {String} serverId the id of the server 
  * @param {boolean} excludeBots if bots will be excluded in the results 
  */

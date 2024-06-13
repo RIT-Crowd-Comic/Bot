@@ -1,4 +1,10 @@
 const availabilityUtils  = require('../../utils/availability');
+/**
+ * Repeats the message that was sent in the availability channel
+ * @param {Client} client 
+ * @param {CommandInteraction} interaction 
+ * @returns N/A
+ */
 module.exports = async (client, message) => {
     try {
         const availabilityChannel = await availabilityUtils.getAvailabilityChannel();
