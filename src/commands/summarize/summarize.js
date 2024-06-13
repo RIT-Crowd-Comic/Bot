@@ -34,10 +34,11 @@ module.exports = {
                 };
             }); 
   
+            const splitMessages = splitMessageToFitTokenLimit(JSON.stringify(messages, null, 2));
             //openai stuff
             const prompt = stripIndent`Summarize the 'content' of the following array of messages, 
             listing the messages in the order they appear. ${numWordsStr}: 
-            ${splitMessageToFitTokenLimit(JSON.stringify(messages, null, 2))[0]}`
+            ${splitMessages[0]}`
 
             const response = await openAiClient.chat.completions.create({
                 model:    'gpt-3.5-turbo',
@@ -48,12 +49,13 @@ module.exports = {
                     }
                 ]
             });
-
-            await interaction.editReply(response.choices[0].message.content);
+            let reply = `${response.choices[0].message.content} `
+            if(splitMessages.length > 1) reply += '\n\nMessages to summarize had to be clamped.';
+            await interaction.editReply(reply);
         }
         catch (error) {
             await interaction.editReply({
-                content:   `Something went wrong.  Ensure that not too many messages are being summarized. ${error}`,
+                content:   `Something went wrong. ${error}`,
                 ephemeral: false,
             });
         }
