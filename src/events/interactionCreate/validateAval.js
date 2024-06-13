@@ -4,15 +4,17 @@ const path = './src/savedAvailability.json';
 module.exports = async (client, interaction) => {
     if (!interaction.isButton()) return;
 
-    const [action, globalName, id, start, end, monday, tuesday, wednesday, thursday, friday] = interaction.customId.split('_');
+    const [action, id, start, end, monday, tuesday, wednesday, thursday, friday] = interaction.customId.split('_');
     if (action === 'v-a-y') {
         interaction.reply({ content: 'Data Saved', ephemeral: true });
 
-        const mappedDays = [monday, tuesday, wednesday, thursday, friday]
+        const mappedDays = [false, monday, tuesday, wednesday, thursday, friday, false]
             .map((value, index) => ((value === 't') ? daysOfWeek[index] : null)) // Map days to corresponding day names or null
             .filter(day => day !== null);
 
-        setAvail(id, globalName, start, end, mappedDays, path);
+        const user = await client.users.fetch(id);
+
+        setAvail(id, user.username, start, end, mappedDays, path);
 
         // Remove the button by editing the message
         await interaction.message.edit({ components: [] });

@@ -5,10 +5,13 @@ const path = './src/savedAvailability.json';
 module.exports = async (client, interaction) => {
     if (!interaction.isButton()) return;
 
-    const [action, globalName, id, start, end, reason] = interaction.customId.split('_');
+    const [action, id, start, end, reason] = interaction.customId.split('_');
     if (action === 'v-unA-y') {
         interaction.reply({ content: 'Data Saved', ephemeral: true });
-        setUnavailAI(id, globalName, start, end, reason, path);
+        
+        const user = await client.users.fetch(id);
+
+        setUnavailAI(id, user.globalName, start, end, reason, path);
 
         // Remove the button by editing the message
         await interaction.message.edit({ components: [] });

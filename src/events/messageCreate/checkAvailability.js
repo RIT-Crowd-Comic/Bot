@@ -20,7 +20,7 @@ const rememberUnavailability = async(message, times) => {
         const row = new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()
-                    .setCustomId(`v-unA-y_${message.author.globalName}_${message.author.id}_${start}_${end}_${reason}`)
+                    .setCustomId(`v-unA-y_${message.author.id}_${start}_${end}_${reason}`)
                     .setLabel('Yes')
                     .setStyle(ButtonStyle.Primary),
                 new ButtonBuilder()
@@ -48,7 +48,7 @@ const rememberAvailability = async(message, times) => {
     const row = new ActionRowBuilder()
         .addComponents(
             new ButtonBuilder()// save the data to the message id, days[i][0] represents the first char of a bool, so t
-                .setCustomId(`v-a-y_${message.author.globalName}_${message.author.id}_${from}_${to}_${daysString[0][0]}_${daysString[1][0]}_${daysString[2][0]}_${daysString[3][0]}_${daysString[4][0]}`)
+                .setCustomId(`v-a-y_${message.author.id}_${from}_${to}_${daysString[0][0]}_${daysString[1][0]}_${daysString[2][0]}_${daysString[3][0]}_${daysString[4][0]}`)
                 .setLabel('Yes')
                 .setStyle(ButtonStyle.Primary),
             new ButtonBuilder()
@@ -196,7 +196,8 @@ const parseResults = (message, calledFunction) =>{
         'rememberAvailability':   () => rememberAvailability(message, JSON.parse(calledFunction.arguments)),
         'unableToParse':          () => unableToParse(message),
     };
-    action[calledFunction.name]();
+    
+    try {action[calledFunction.name]()}catch(error){console.log(`There was an issue ${error}`)};
 };
 
 // checks the message sent in the channel and sends it to openai to parse, then if possible saves the availability data
