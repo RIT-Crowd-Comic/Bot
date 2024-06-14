@@ -4,6 +4,7 @@ const path = './src/savedAvailability.json';
 module.exports = async (client, interaction) => {
     if (!interaction.isButton()) return;
 
+    try{
     const [action, id, start, end, monday, tuesday, wednesday, thursday, friday] = interaction.customId.split('_');
     if (action === 'v-a-y') {
         interaction.reply({ content: 'Data Saved', ephemeral: true });
@@ -26,5 +27,6 @@ module.exports = async (client, interaction) => {
         // Remove the button by editing the message
         await interaction.message.edit({ components: [] });
     }
+}catch(error){interaction.channel.send({content:'Failed to save data: ' + error})};
 
 };
