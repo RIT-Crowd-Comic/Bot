@@ -198,6 +198,54 @@ const CheckInReminder = sequelize.define(
     },
     { ...paranoidConfig }
 );
+
+User.hasMany(CheckInReminder, user_fk);
+CheckInReminder.belongsTo(User);
+
+const UnavailableStart = sequelize.define(
+    'unavailableStart',
+    {
+        discord_user_id: {
+            type:      DataTypes.STRING,
+            allowNull: false
+        },
+        hour: {
+            type:      DataTypes.INTEGER,
+            allowNull: false
+        },
+        min: {
+            type:      DataTypes.INTEGER,
+            allowNull: false
+        },
+    },
+    { ...paranoidConfig }
+);
+
+User.hasMany(UnavailableStart, user_fk);
+UnavailableStart.belongsTo(User);
+
+const UnavailableStop = sequelize.define(
+    'unavailableStop',
+    {
+        discord_user_id: {
+            type:      DataTypes.STRING,
+            allowNull: false
+        },
+        hour: {
+            type:      DataTypes.INTEGER,
+            allowNull: false
+        },
+        min: {
+            type:      DataTypes.INTEGER,
+            allowNull: false
+        },
+    },
+    { ...paranoidConfig }
+);
+
+User.hasMany(UnavailableStop, user_fk);
+UnavailableStop.belongsTo(User);
+
 module.exports = {
     User,
     Message,
@@ -207,5 +255,7 @@ module.exports = {
     Config,
     CheckInResponse,
     CheckInReminder,
+    UnavailableStart,
+    UnavailableStop,
     sequelize
 };
