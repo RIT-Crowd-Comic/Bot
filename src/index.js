@@ -31,11 +31,11 @@ db.authenticate()
 
     // ESPECIALLY REMOVE .sync()
     // THESE LINES BREAK DATABASES IN PRODUCTION
+    await db.Models.User.sync({ force: true });
     await db.Models.CheckInResponse.sync({ force: true });
     await db.Models.UnavailableSchedule.sync({ force: true });
     await db.Models.AvailableSchedule.sync({ force: true });
     await db.Models.CheckInSchedule.sync({ force: true });
-    await db.Models.User.sync({ force: true });
     await db.Models.Config.sync();
     await db.Models.Message.sync({ force: true });
 

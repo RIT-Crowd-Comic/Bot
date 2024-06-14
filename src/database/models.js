@@ -1,13 +1,17 @@
 const { DataTypes, Sequelize } = require('sequelize');
 
+const sslOptions = process.env.NODE_ENV === 'production' ?
+    { dialectOptions: { ssl: { rejectUnauthorized: false }, }, } :
+    {};
+
 const sequelize = new Sequelize(
     process.env.DATABASE_URL ?? `postgres://${process.env.PGUSER}:${process.env.PGPASSWORD}@${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PGDATABASE}`,
     {
-        logging:        false,
-        protocol:       'postgres',
-        dialect:        'postgres',
-        dialectOptions: { ssl: { rejectUnauthorized: false }, },
-        pool:           {
+        logging:  false,
+        protocol: 'postgres',
+        dialect:  'postgres',
+        ...sslOptions,
+        pool:     {
             max:     5,
             min:     0,
             acquire: 30000,
