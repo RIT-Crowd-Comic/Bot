@@ -168,10 +168,6 @@ CheckInResponse.belongsTo(User);
 const CheckInReminder = sequelize.define(
     'checkin_reminder',
     {
-        discord_user_id: {
-            type:      DataTypes.STRING,
-            allowNull: false
-        },
         hour: {
             type:      DataTypes.INTEGER,
             allowNull: false
@@ -190,10 +186,6 @@ CheckInReminder.belongsTo(User);
 const UnavailableStart = sequelize.define(
     'unavailableStart',
     {
-        discord_user_id: {
-            type:      DataTypes.STRING,
-            allowNull: false
-        },
         hour: {
             type:      DataTypes.INTEGER,
             allowNull: false
@@ -212,10 +204,7 @@ UnavailableStart.belongsTo(User);
 const UnavailableStop = sequelize.define(
     'unavailableStop',
     {
-        discord_user_id: {
-            type:      DataTypes.STRING,
-            allowNull: false
-        },
+        
         hour: {
             type:      DataTypes.INTEGER,
             allowNull: false
