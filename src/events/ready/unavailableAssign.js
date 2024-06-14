@@ -26,12 +26,13 @@ const checkQueues = async (client) => {
         }
         if (startQueue[0]?.min >= today.minute() || (today.minute() >= startQueue[0]?.min && today.minute() <= endQueue[0]?.min) || startQueue[0]?.hour > today.hour())
             changeRole(client, startQueue[0].id, true); // Give user the unavailable role
+            
     }
 };
 
 module.exports = (client) =>{
 
-    getQueues('./src/savedAvailability.json');
+    getQueues();
 
     try {
         setInterval(()=>{ checkQueues(client); }, 20 * 1000);// check every 20 seconds

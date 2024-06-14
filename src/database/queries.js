@@ -698,20 +698,31 @@ const getUnavailable = async (userId) => {
 };
 
 /**
- * Get a list of unavailable dates for a user 
- * @param {string} userId required
+ * Get a list of all unavailable dates
  * @returns 
  */
-const getUnavailableToday = async (userId,day) => {
-    const discord_user_id = userId?.toString()?.trim() ?? '';
-
-    assertArgument(discord_user_id.length > 0, 'Invalid Argument: userId');
+const getAllUnavailable = async () => {
 
     // TODO: figure out a way to filter out past dates
     // TODO: figure out a way to delete past schedules
 
-    const filter = { where: { discord_user_id } };
-    return UnavailableSchedule.findAll(filter);
+    return UnavailableSchedule.findAll();
+};
+
+/**
+ * Soft deletes an unavailableSchedule
+  * @param {
+* id:string,
+* hour:number,
+* min:number
+* } schedule
+ */
+const deleteUnavailableSchedule = async (schedule) => {
+    return UnavailableStop.destroy({ where: {
+        id: schedule.id,
+        hour:schedule.hour,
+        min:schedule.min
+       } });
 };
 
 /**
@@ -845,6 +856,8 @@ module.exports = {
     getUnavailable,
     setAvailable,
     getAvailable,
+    getAllUnavailable,
+    deleteUnavailableSchedule,
     getDaySchedules,
     addCheckInQueue,
     addAvailableQueue,

@@ -6,9 +6,9 @@ const { addUnavailableRole, removeUnavailableRole } = require('./roles.js');
 const { EmbedBuilder } = require('discord.js');
 const {
     addUnavailable, setAvailable, upsertUser, getConfig, updateConfig, 
-    getAvailable, getUnavailable,
+    getAvailable, getUnavailable,getAllUnavailable,
     addAvailableQueue,addUnavailableQueue,
-    deleteUnavailableStart,deleteUnavailableStop
+    deleteUnavailableStart,deleteUnavailableStop,deleteUnavailableSchedule
 } = require('../database');
 
 /**
@@ -82,20 +82,20 @@ const createUnavailability = (start, end, reason) => {
 // ///////////////////// UPDATE vvvvvvvvvvvvvvvvvvvvv
 /**
  * Removes any unavailability events that have passed for a specific user
- * @param {object} data Data from the savedAvailability file
- * @param {string} userId ID of user to check unavailability of
- * @returns {object} altered data
+ * @param {object[]} data array of UnavailableSchedules
+ * @returns {object[]} altered data
  */
-const removeExpired = (data, userId) => {
+const removeExpired =async (data) => {
     const expiredObjects = [];
-    for (let i = 0, list = data[userId].unavailable; i < list.length; i++) {
-        if (dayjs(list[i].to).isBefore(dayjs()))
-            expiredObjects.push(list[i]);
+    for (let i = 0; i < data.length; i++) {
+        if (dayjs(data[i].to_time).isBefore(dayjs()))
+            expiredObjects.push(data[i]);
     }
 
     // Remove expired unavailability from the data
     for (let obj of expiredObjects)
-        data[userId].unavailable.splice(data[userId].unavailable.indexOf(obj), 1);
+        data.splice(data.indexOf(obj), 1);
+        await deleteUnavailableSchedule(obj)
     return data;
 };
 
@@ -118,7 +118,7 @@ const saveUnavailability = async (userId, userTag, unavail) => {
         }));
 
     // Update queues
-    getQueues('./src/savedAvailability.json');
+    getQueues();
     throw new Error('Make sure the above statement is used correctly');
 };
 
@@ -141,7 +141,7 @@ const saveAvailability =  async (userId, userTag, avail) => {
         }));
 
     // Update queues
-    getQueues('./src/savedAvailability.json');
+    getQueues();
 };
 
 // ///////////////////// UPDATE ^^^^^^^^^^^^^^^^^^^^^^
@@ -222,36 +222,42 @@ const updateQueue = async (queue, time, id,queueType) => {
 /**
  * Add or remove the unavailable role from a server member
  * @param {Client} client Discord client
- * @param {string} id User ID of user change role of
+ * @param {string} queueItem queue item user change role of
  * @param {boolean} isUnavail Add(true) or remove(false) unavailable role
  */
-const changeRole = async (client, id, isUnavail) => {
-    let user = await client.users.cache.get(id); // Get user if already in cache
+const changeRole = async (client, queueItem, isUnavail) => {
+    let user = await client.users.cache.get(queueItem.id); // Get user if already in cache
     if (!user)
-        user = await client.users.fetch(id); // Fetches user and adds to cache
+        user = await client.users.fetch(queueItem.id); // Fetches user and adds to cache
 
     // Add or remove unavailable role depending on isUnavail
-    isUnavail ? addUnavailableRole(user) : removeUnavailableRole(user);
+    if(isUnavail){
+        addUnavailableRole(user)
+        await deleteUnavailableStart(queueItem)
+    }else{
+        removeUnavailableRole(user);
+        await deleteUnavailableStop(queueItem)
+    }
 };
 
 /**
  * Populate the start and end queues with most up to date unavailability info
- * @param {string} path path to JSON file with availability data
  */
 const getQueues = async() => {
-    let data = loadAvailability(path);
-
-    // Empty queues when reloading from file
-    startQueue.length = 0;
-    endQueue.length = 0;
-    for (let user in data) {
-        data = removeExpired(data, user);
-        for (let i = 0, length = data[user].unavailable.length; i < length; i++) {
-            await updateQueue(startQueue, data[user].unavailable[i].from, user,"start");
-            await updateQueue(endQueue, data[user].unavailable[i].to, user,"stop");
-        }
-    }
+    await getAllUnavailable().then(async data=>{//returns list of unavailable start and stop
+        // Empty queues when reloading from file
+        startQueue.length = 0;
+        endQueue.length = 0;
+        await removeExpired(data).then(async data=>{
+            for (let i = 0; i < data.length; i++) {
+                await updateQueue(startQueue, data[i].from_time, user,"start");////get user ID from user table object *vNote*
+                await updateQueue(endQueue, data[i].to_time, user,"stop");
+            }
+        })
+            
+    })
 };
+
 
 // Command Functions
 /**

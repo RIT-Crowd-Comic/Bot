@@ -184,7 +184,7 @@ User.hasMany(CheckInReminder, user_fk);
 CheckInReminder.belongsTo(User);
 
 const UnavailableStart = sequelize.define(
-    'unavailableStart',
+    'unavailable_start',
     {
         hour: {
             type:      DataTypes.INTEGER,
@@ -202,7 +202,7 @@ User.hasMany(UnavailableStart, user_fk);
 UnavailableStart.belongsTo(User);
 
 const UnavailableStop = sequelize.define(
-    'unavailableStop',
+    'unavailable_stop',
     {
         
         hour: {
