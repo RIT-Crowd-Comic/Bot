@@ -1,17 +1,13 @@
 const { EmbedBuilder } = require('@discordjs/builders');
 
-const help = () =>{
+const help = () => {
 
     // Create an embed to send to the user
     const embed = new EmbedBuilder()
         .setTitle('General Server Commands')
         .addFields(
             {
-
-                // name - /[name of command]
-                name: '/help remember',
-
-                // value - description of command
+                name:  '/help remember',
                 value: 'Shows a brief description of all of the remember subcommands'
             },
             {
@@ -19,12 +15,12 @@ const help = () =>{
                 value: 'Shows a brief description of all of the availability subcommands'
             },
             {
-                name:  '/check-in-interface',
-                value: 'Check in with how your are feeling for the day'
+                name:  '/help check-in',
+                value: 'Shows a brief description of all of the check-in subcommands'
             },
             {
-                name:  '/schedule-check-in',
-                value: 'Create a schedule for receiving check in notifications'
+                name:  '/check-in-interface',
+                value: 'Check in with how your are feeling for the day'
             },
             {
                 name:  '/role add',
@@ -39,7 +35,7 @@ const help = () =>{
     return { embeds: [embed], ephemeral: true };
 };
 
-const helpRemember = () =>{
+const helpRemember = () => {
 
     // Create an embed to send to the user
     const embed = new EmbedBuilder()
@@ -47,11 +43,7 @@ const helpRemember = () =>{
         .setDescription('Commands relating to message storage and retrieval')
         .addFields(
             {
-
-                // name - /[name of command]
-                name: '/remember message',
-
-                // value - description of command
+                name:  '/remember message',
                 value: 'Remember and save a specific message'
             },
             {
@@ -87,18 +79,14 @@ const helpRemember = () =>{
     return { embeds: [embed], ephemeral: true };
 };
 
-const helpAvailability = () =>{
+const helpAvailability = () => {
 
     // Create an embed to send to the user
     const embed = new EmbedBuilder()
-        .setTitle('General Server Commands')
+        .setTitle('Availability Commands')
         .addFields(
             {
-
-                // name - /[name of command]
-                name: '/availability set-availability',
-
-                // value - description of command
+                name:  '/availability set-availability',
                 value: 'Saves the times and days provided by the user to record when they are (typically) available during the week'
             },
             {
@@ -118,8 +106,30 @@ const helpAvailability = () =>{
     return { embeds: [embed], ephemeral: true };
 };
 
+const helpCheckIn = () => {
+    const embed = new EmbedBuilder()
+        .setTitle('Check in Commands')
+        .addFields(
+            {
+                name:  '/check-in view',
+                value: 'View your check-in schedules'
+            },
+            {
+                name:  '/check-in schedule',
+                value: 'Schedule a day and time to be notified'
+            },
+            {
+                name:  '/check-in remove',
+                value: 'See a list of schedules to remove'
+            }
+        );
+
+    return { embeds: [embed], ephemeral: true };
+};
+
 module.exports = {
     help,
     helpRemember,
-    helpAvailability
+    helpAvailability,
+    helpCheckIn
 };

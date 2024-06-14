@@ -137,14 +137,12 @@ const stopRemember = async(client, interaction)=>{
     interaction.editReply(reply);
 };
 
-// remembers a message based on a message id parameter
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('remember')
         .setDescription('Stores messages in a variety of ways')
         .setDefaultMemberPermissions(PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ReadMessageHistory)
 
-        // remember message
         .addSubcommand(subcommand =>
             subcommand.setName('message')
                 .setDescription('Stores a message from the current channel based on its message-id')
@@ -157,7 +155,6 @@ module.exports = {
                     .setDescription('text channel')
                     .addChannelTypes(ChannelType.GuildText)))
 
-        // remember past
         .addSubcommand(subcommand =>
             subcommand.setName('past')
                 .setDescription('Saves messages from past set amount of "hours" and "minutes" in the current channel.')
@@ -180,17 +177,14 @@ module.exports = {
                     option.setName('exclude-bot-messages')
                         .setDescription(`If bot messages should be excluded in the message collection. Default is ${defaultExcludeBotMessages.rememberPast}`)))
 
-        // remember recall
         .addSubcommand(subcommand =>
             subcommand.setName('recall')
                 .setDescription('Creates a JSON of all the saved message'))
 
-        // remember clear
         .addSubcommand(subcommand =>
             subcommand.setName('clear-messages')
                 .setDescription('Clear all messages currently saved in remembrance'))
 
-        // remember number
         .addSubcommand(subcommand =>
             subcommand.setName('number')
                 .setDescription('Saves the last x messages from the current channel. Has an option to save from a specific channel.')
@@ -206,7 +200,6 @@ module.exports = {
                     option.setName('exclude-bot-messages')
                         .setDescription(`If bot messages should be excluded in the message collection. Default is ${defaultExcludeBotMessages.rememberNumber}`)))
 
-        // remember range
         .addSubcommand(subcommand =>
             subcommand.setName('range')
                 .setDescription('Remember all messages between two specific messages (inclusively)')
@@ -239,15 +232,6 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand.setName('stop-remembering')
                 .setDescription('Stop remembering messages in a specific channel')),
-
-
-    options:
-    {
-        devOnly:  false,
-        testOnly: false,
-        deleted:  false,
-    },
-
 
     // logic, 
     async execute(client, interaction) {

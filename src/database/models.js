@@ -13,25 +13,22 @@ const paranoidConfig = Object.freeze({
     deletedAt: 'deleted_at'
 });
 
+const user_fk = { foreignKey: { name: 'user_id' } };
+
+
 const User = sequelize.define(
     'user',
     {
-        user_id: {
+        discord_user_id: {
             type:      DataTypes.STRING,
             allowNull: false
         },
-        user_tag: {
+        tag: {
             type:      DataTypes.STRING,
             allowNull: false
         },
-        display_name: {
-            type:      DataTypes.STRING,
-            allowNull: false
-        },
-        global_name: {
-            type:      DataTypes.STRING,
-            allowNull: false
-        }
+        display_name: { type: DataTypes.STRING },
+        global_name:  { type: DataTypes.STRING }
     },
     { ...paranoidConfig }
 );
@@ -39,7 +36,7 @@ const User = sequelize.define(
 const Message = sequelize.define(
     'message',
     {
-        user_id: {
+        discord_user_id: {
             type:      DataTypes.STRING,
             allowNull: false
         },
@@ -63,43 +60,50 @@ const Message = sequelize.define(
     { ...paranoidConfig }
 );
 
-const Schedule = sequelize.define(
-    'schedule',
+const CheckInSchedule = sequelize.define(
+    'checkin_schedule',
     {
-        user_id: {
+        discord_user_id: {
             type:      DataTypes.STRING,
             allowNull: false
         },
-        utcDays:
+        utc_days:
         {
             type:      DataTypes.ARRAY(DataTypes.STRING),
             allowNull: false
         },
-        utcTime:
+        utc_time:
         {
             type:      DataTypes.ARRAY(DataTypes.INTEGER),
             allowNull: false
         },
-        localDays:
+        local_days:
         {
             type:      DataTypes.ARRAY(DataTypes.STRING),
             allowNull: false
         },
-        localTime:
+        local_time:
         {
             type:      DataTypes.ARRAY(DataTypes.INTEGER),
             allowNull: false
+        },
+        mark_delete: {
+            type:         DataTypes.BOOLEAN,
+            defaultValue: false
         }
 
     },
     { paranoid: true }
 );
 
+User.hasMany(CheckInSchedule, user_fk);
+CheckInSchedule.belongsTo(User);
+
 
 const UnavailableSchedule = sequelize.define(
     'unavailable_schedule',
     {
-        user_id: {
+        discord_user_id: {
             type:      DataTypes.STRING,
             allowNull: false
         },
@@ -116,10 +120,13 @@ const UnavailableSchedule = sequelize.define(
     { ...paranoidConfig }
 );
 
+User.hasMany(UnavailableSchedule, user_fk);
+UnavailableSchedule.belongsTo(User);
+
 const AvailableSchedule = sequelize.define(
     'available_schedule',
     {
-        user_id: {
+        discord_user_id: {
             type:      DataTypes.STRING,
             allowNull: false
         },
@@ -139,6 +146,10 @@ const AvailableSchedule = sequelize.define(
     { ...paranoidConfig }
 );
 
+
+User.hasOne(AvailableSchedule, user_fk);
+AvailableSchedule.belongsTo(User);
+
 const Config = sequelize.define(
     'config',
     {
@@ -157,7 +168,7 @@ const Config = sequelize.define(
 const CheckInResponse = sequelize.define(
     'checkin_response',
     {
-        user_id: {
+        discord_user_id: {
             type:      DataTypes.STRING,
             allowNull: false
         },
@@ -166,13 +177,35 @@ const CheckInResponse = sequelize.define(
     { ...paranoidConfig }
 );
 
+User.hasMany(CheckInResponse, user_fk);
+CheckInResponse.belongsTo(User);
+
+const CheckInReminder = sequelize.define(
+    'checkin_reminder',
+    {
+        discord_user_id: {
+            type:      DataTypes.STRING,
+            allowNull: false
+        },
+        hour: {
+            type:      DataTypes.INTEGER,
+            allowNull: false
+        },
+        min: {
+            type:      DataTypes.INTEGER,
+            allowNull: false
+        },
+    },
+    { ...paranoidConfig }
+);
 module.exports = {
     User,
     Message,
-    Schedule,
+    CheckInSchedule,
     UnavailableSchedule,
     AvailableSchedule,
     Config,
     CheckInResponse,
+    CheckInReminder,
     sequelize
 };
