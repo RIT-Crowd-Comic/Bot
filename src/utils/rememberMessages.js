@@ -2,8 +2,6 @@ const apiCalls = require('./apiCalls');
 const { clamp } = require(`./mathUtils`);
 const ms = require('ms'); // converts time to ms
 const query = require('../database/queries');
-const { Message } = require('../database/models');
-let rememberedMessages = [];
 
 // const addMessage = message => { rememberedMessages.push(message); };
 /**

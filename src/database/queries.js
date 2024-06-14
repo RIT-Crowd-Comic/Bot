@@ -210,8 +210,6 @@ const addMessage = async (message) => {
             message_id,
             message_ts
         }));
-
-    return pool.query(query, values);
 };
 
 // expects 
