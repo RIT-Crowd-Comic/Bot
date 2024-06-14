@@ -3,7 +3,7 @@ const utc = require('dayjs/plugin/utc');
 const {
     startQueue, endQueue, getQueues, changeRole
 } = require('../../utils/availability.js');
-const{getDBQueue,deleteWholeQueue}=require('../../database')
+const { getDBQueue, deleteWholeQueue } = require('../../database');
 dayjs.extend(utc);
 
 
@@ -12,8 +12,8 @@ const checkQueues = async (client) => {
 
     if (today.hour() == 0 && today.minute() == 1) {
 
-        await deleteWholeQueue("unavailable").then(async ()=>{await deleteWholeQueue("unavailable").then(()=>{getQueues('./src/savedAvailability.json')})})
-        
+        await deleteWholeQueue('unavailable').then(async ()=>{ await deleteWholeQueue('unavailable').then(()=>{ getQueues('./src/savedAvailability.json'); }); });
+
     }
 
     // Check to add role
@@ -26,7 +26,7 @@ const checkQueues = async (client) => {
         }
         if (startQueue[0]?.min >= today.minute() || (today.minute() >= startQueue[0]?.min && today.minute() <= endQueue[0]?.min) || startQueue[0]?.hour > today.hour())
             changeRole(client, startQueue[0].id, true); // Give user the unavailable role
-            
+
     }
 };
 

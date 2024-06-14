@@ -480,7 +480,7 @@ const getDaySchedules = (utcDay) => {
     assertArgument(day.length > 0, 'Invalid argument: day');
 
     const filter = {
-        where: { utc_day:{[Op.contains]: [day], }},
+        where: { utc_day: { [Op.contains]: [day], } },
         order: [['hour', 'DESC']]
     };
 
@@ -503,14 +503,13 @@ const addCheckInQueue = async (schedule) => {
 
     // make sure to set the user_id foreign key
     return getUser(discord_user_id)
-        .then(
-            user => CheckInReminder.create({
+        .then(user => CheckInReminder.create({
             user_id: user.id,
             discord_user_id,
             hour,
             min
         }));
-    
+
 };
 
 /**
@@ -535,7 +534,7 @@ const addUnavailableQueue = async (schedule) => {
             hour,
             min
         }));
-    
+
 };
 
 /**
@@ -560,7 +559,7 @@ const addAvailableQueue = async (schedule) => {
             hour,
             min
         }));
-    
+
 };
 
 /**
@@ -569,18 +568,18 @@ const addAvailableQueue = async (schedule) => {
  */
 const getDBQueue = async (queue) => {
 
-    const filter = { 
-        order: [['hour', 'DESC']] 
-    };
+    const filter = { order: [['hour', 'DESC']] };
 
-    if(queue=="checkIn"){
+    if (queue == 'checkIn') {
         return CheckInReminder.findAll(filter);
-    }else if(queue=="unavailable"){
+    }
+    else if (queue == 'unavailable') {
         return UnavailableStart.findAll(filter);
-    }else if(queue=="available"){
+    }
+    else if (queue == 'available') {
         return UnavailableStop.findAll(filter);
     }
-   
+
 };
 
 /**
@@ -592,11 +591,13 @@ const getDBQueue = async (queue) => {
  * } schedule
  */
 const deleteCheckInReminder = async (schedule) => {
-    return CheckInReminder.destroy({ where: {
-         id: schedule.id,
-         hour:schedule.hour,
-         min:schedule.min
-        } });
+    return CheckInReminder.destroy({
+        where: {
+            id:   schedule.id,
+            hour: schedule.hour,
+            min:  schedule.min
+        }
+    });
 };
 
 /**
@@ -608,11 +609,13 @@ const deleteCheckInReminder = async (schedule) => {
 * } schedule
  */
 const deleteUnavailableStart = async (schedule) => {
-    return UnavailableStart.destroy({ where: {
-        id: schedule.id,
-        hour:schedule.hour,
-        min:schedule.min
-       } });
+    return UnavailableStart.destroy({
+        where: {
+            id:   schedule.id,
+            hour: schedule.hour,
+            min:  schedule.min
+        }
+    });
 };
 
 /**
@@ -624,11 +627,13 @@ const deleteUnavailableStart = async (schedule) => {
 * } schedule
  */
 const deleteUnavailableStop = async (schedule) => {
-    return UnavailableStop.destroy({ where: {
-        id: schedule.id,
-        hour:schedule.hour,
-        min:schedule.min
-       } });
+    return UnavailableStop.destroy({
+        where: {
+            id:   schedule.id,
+            hour: schedule.hour,
+            min:  schedule.min
+        }
+    });
 };
 
 /**
@@ -636,16 +641,18 @@ const deleteUnavailableStop = async (schedule) => {
  * @param {string} queue which queue to delete : checkIn,unavailable,available
  * @returns 
  */
-const deleteWholeQueue=async (queue)=>{
-    if(queue=="checkIn"){
-        return CheckInReminder.truncate()
-    }else if(queue=="unavailable"){
-        return UnavailableStart.truncate()
-    }else if(queue=="available"){
-        return UnavailableStop.truncate()
+const deleteWholeQueue = async (queue)=>{
+    if (queue == 'checkIn') {
+        return CheckInReminder.truncate();
     }
-    
-}
+    else if (queue == 'unavailable') {
+        return UnavailableStart.truncate();
+    }
+    else if (queue == 'available') {
+        return UnavailableStop.truncate();
+    }
+
+};
 
 
 
@@ -718,11 +725,13 @@ const getAllUnavailable = async () => {
 * } schedule
  */
 const deleteUnavailableSchedule = async (schedule) => {
-    return UnavailableStop.destroy({ where: {
-        id: schedule.id,
-        hour:schedule.hour,
-        min:schedule.min
-       } });
+    return UnavailableStop.destroy({
+        where: {
+            id:   schedule.id,
+            hour: schedule.hour,
+            min:  schedule.min
+        }
+    });
 };
 
 /**

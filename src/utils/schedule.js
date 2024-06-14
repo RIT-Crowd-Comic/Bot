@@ -3,7 +3,9 @@ const utc = require('dayjs/plugin/utc');
 const weekday = require('dayjs/plugin/weekday');
 const localizedFormat = require('dayjs/plugin/localizedFormat');
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const { addCheckInSchedule, getCheckInSchedules, upsertUser,getDBQueue,addCheckInQueue,deleteCheckInReminder } = require('../database');
+const {
+    addCheckInSchedule, getCheckInSchedules, upsertUser, getDBQueue, addCheckInQueue, deleteCheckInReminder
+} = require('../database');
 
 dayjs.extend(utc);
 dayjs.extend(weekday);
@@ -228,11 +230,11 @@ const updateQueue = async (days, utcTime, id, toRemove = false) => {
         let index = queue.indexOf(reminder);
         if (index && toRemove) { // if it exists in the queue and we want to remove
             queue.splice(index, 1);
-            await deleteCheckInReminder(reminder)
+            await deleteCheckInReminder(reminder);
         }
         else if (index == -1 && queue.length == 0) { // if queue is empty
             queue.push(reminder);
-            await addCheckInQueue(reminder)
+            await addCheckInQueue(reminder);
         }
         else { // inserting into queue
             for (let t = 0; t < queue.length; t++) {
@@ -246,7 +248,7 @@ const updateQueue = async (days, utcTime, id, toRemove = false) => {
                     queue.push(reminder);
                     return;
                 }
-                await addCheckInQueue(reminder)
+                await addCheckInQueue(reminder);
             }
         }
 
@@ -290,10 +292,10 @@ const checkCurrentDay = () => {
  * then orders it chronologically into the queue via updateQueue()
  */
 const getQueue = async() => {
-    queue.length=0
-    await getDBQueue("checkIn").then(reminder=>{
-        updateQueue(reminder)
-    } )
+    queue.length = 0;
+    await getDBQueue('checkIn').then(reminder=>{
+        updateQueue(reminder);
+    });
     getDayOrder(checkCurrentDay());
 };
 

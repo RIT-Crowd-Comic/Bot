@@ -2,8 +2,10 @@ const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
 const weekday = require('dayjs/plugin/weekday');
 const timezone = require('dayjs/plugin/timezone');
-const { queue, sendCheckInReminder, getQueue,getDayOrder } = require('../../utils/schedule');
-const {deleteWholeQueue}= require('../../database');
+const {
+    queue, sendCheckInReminder, getQueue, getDayOrder
+} = require('../../utils/schedule');
+const { deleteWholeQueue } = require('../../database');
 dayjs.extend(utc);
 dayjs.extend(weekday);
 dayjs.extend(timezone);
@@ -14,7 +16,7 @@ dayjs.extend(timezone);
  * if the first item in the queue has passed or is the current time
  * then it will send the reminder and remove from the queue
  */
-const checkQueue=()=>{
+const checkQueue = ()=>{
     while (queue.length > 0 && queue[0].hour <= today.hour()) {
         if (queue[0].min <= today.minute() || queue[0].hour < today.hour()) {
             sendCheckInReminder(client, queue[0].id); // send dm reminder message
@@ -22,7 +24,7 @@ const checkQueue=()=>{
         }
         else { break; }
     }
-}
+};
 
 /**
  * checks the first item in the day's queue to see if the time has passed or is the current time
@@ -35,12 +37,13 @@ const checkList = async ()=>{
     const today = dayjs.utc();
 
     if (today.hour() == 0 && today.minute() == 1) {
-        await deleteWholeQueue().then(async()=>{await getDayOrder().then(()=>{checkQueue()})});
-        
-    }else{
-        checkQueue()
+        await deleteWholeQueue().then(async()=>{ await getDayOrder().then(()=>{ checkQueue(); }); });
+
     }
-    
+    else {
+        checkQueue();
+    }
+
 
 };
 
