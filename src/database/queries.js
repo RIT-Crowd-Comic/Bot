@@ -12,11 +12,7 @@ const {
     Message,
     CheckInSchedule
 } = require('./models');
-<<<<<<< HEAD
 const { measureMemory } = require('vm');
-=======
-const { Op } = require('sequelize');
->>>>>>> 4d41815065a2f7bb36408876eff2409c20a206cc
 
 // configuration variables must be in .env
 
@@ -599,20 +595,16 @@ module.exports = {
     upsertUser,
     getUser,
     addMessage,
-<<<<<<< HEAD
     getMessage,
     getMessagesByTimestamp,
     getMessagesRange,
     getMessageTable,
-    addCheckinSchedule,
-=======
     addCheckInSchedule,
     deleteCheckInSchedule,
     markCheckInScheduleForDelete,
     getCheckInSchedulesMarkedForDelete,
     deleteMarkedCheckInSchedules,
     getCheckInSchedules,
->>>>>>> 4d41815065a2f7bb36408876eff2409c20a206cc
     addCheckInResponse,
     getCheckInResponses,
     addUnavailable,
