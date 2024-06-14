@@ -12,11 +12,7 @@ const {
     Message,
     CheckInSchedule
 } = require('./models');
-<<<<<<< HEAD
-const { measureMemory } = require('vm');
-=======
 const { Op } = require('sequelize');
->>>>>>> 4d41815065a2f7bb36408876eff2409c20a206cc
 
 // configuration variables must be in .env
 
@@ -198,20 +194,22 @@ const getUser = async (userId) => {
 const addMessage = async (message) => {
 
 
-    const id = message?.userId?.toString().trim() ?? '';
+    const discord_user_id = message?.discord_user_id?.toString().trim() ?? '';
     const content = message?.content?.toString().trim() ?? '';
-    const msg_id = message?.id?.toString().trim() ?? '';
-    const timestamp = message?.timestamp?.toString().trim() ??
+    const message_id = message?.id?.toString().trim() ?? '';
+    const message_ts = message?.timestamp?.toString().trim() ??
         'CURRENT_TIMESTAMP';
 
-    assertArgument(id.length > 0, 'Invalid argument: message.id');
+    assertArgument(discord_user_id.length > 0, 'Invalid argument: message.id');
 
-    const values = [id, content, msg_id, timestamp];
-    const query =
-`
-INSERT INTO messages (user_id, content, message_id, message_ts)
-    VALUES ($1, $2, $3, $4);
-`;
+    return getUser(discord_user_id).then(user =>
+        Message.create({
+            user_id: user.id,
+            discord_user_id,
+            content,
+            message_id,
+            message_ts
+        }));
 
     return pool.query(query, values);
 };
@@ -233,12 +231,12 @@ const getMessagesRange = async (start_msg_id, end_msg_id) => {
 };
 
 const getMessage = async (msg_id) => {
-    const ms_id = msg_id;
+    const message_id = msg_id;
     assertArgument(message_id.length > 0, 'Invalid argument: msg_id');
 
 
     const filter = {
-        where: { message_id: { [sequelize.eq]: ms_id } },
+        where: { message_id },
         order: [['message_ts', 'ASC']]
     };
 
@@ -246,19 +244,34 @@ const getMessage = async (msg_id) => {
 };
 
 const getMessagesByTimestamp = async (msg_timestamp) => {
-    const message_timestamp = msg_timestamp;
-    assertArgument(message_timestamp.length > 0, 'Invalid argument: msg_timestamp');
+    const message_ts = msg_timestamp;
+    assertArgument(message_ts.length > 0, 'Invalid argument: msg_timestamp');
 
     const filter = {
-        where: { message_ts: { [sequelize.eq]: message_timestamp } },
+        where: { message_ts },
         order: [['message_ts', 'ASC']]
     };
 
     return Message.findOne(filter);
 };
 
-const getMessageTable = async() => {
-    return Message.findAll();
+const getAllMessages = async() => {
+
+    const filter = { order: [['message_ts', 'ASC']] };
+
+    return Message.findAll(filter)
+        .then(messages => messages.map(message =>
+            ({
+                authorId:  message.discord_user_id,
+                timestamp: message.message_ts,
+                messageId: message.message_id,
+                content:   message.content,
+            })));
+};
+
+const deleteAllMessages = async () => {
+    await Message.truncate();
+    return { content: 'Success' };
 };
 
 
@@ -599,20 +612,17 @@ module.exports = {
     upsertUser,
     getUser,
     addMessage,
-<<<<<<< HEAD
     getMessage,
     getMessagesByTimestamp,
     getMessagesRange,
-    getMessageTable,
-    addCheckinSchedule,
-=======
+    getAllMessages,
+    deleteAllMessages,
     addCheckInSchedule,
     deleteCheckInSchedule,
     markCheckInScheduleForDelete,
     getCheckInSchedulesMarkedForDelete,
     deleteMarkedCheckInSchedules,
     getCheckInSchedules,
->>>>>>> 4d41815065a2f7bb36408876eff2409c20a206cc
     addCheckInResponse,
     getCheckInResponses,
     addUnavailable,

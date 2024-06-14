@@ -2,34 +2,48 @@ const apiCalls = require('./apiCalls');
 const { clamp } = require(`./mathUtils`);
 const ms = require('ms'); // converts time to ms
 const query = require('../database/queries');
-const {Message} = require('../database/models');
+const { Message } = require('../database/models');
 let rememberedMessages = [];
 
-//const addMessage = message => { rememberedMessages.push(message); };
-const addMessage = message => { query.addMessage(message); };
-//const addMessages = messages => { rememberedMessages = rememberedMessages.concat(messages); };
+// const addMessage = message => { rememberedMessages.push(message); };
+/**
+ * Upserts a user before adding a message
+ * @param {{
+ * discord_user_id: string,
+ * tag: string,
+ * display_name: string,
+ * global_name: string,
+ * content: string,
+ * id: string,
+ * timestamp}} message 
+ */
+const addMessage = async message => {
+    return query.upsertUser({
+        id:           message.discord_user_id,
+        tag:          message.tag,
+        display_name: message.display_name,
+        global_name:  message.global_name,
+    }).then(() => query.addMessage(message));
+};
 
-const addMessages = messages => {
-    messages.forEach(element => {
-        query.addMessage(element);
-    });
-}
+// const addMessages = messages => { rememberedMessages = rememberedMessages.concat(messages); };
 
-const getRememberedMessages = () => { return Message.findAll(); };
-
-//unused for now, TODO port to SQL
-//const clearRememberedMessages = () => { rememberedMessages = []; return { content: 'Success' }; };
+const addMessages = async messages => {
+    return Promise.all(messages.map(message => addMessage(message)));
+};
 
 // parses message api response json to message object 
 // including message, who sent it, and what time
 // ? assuming that all time are in UTC 
 const parseMessage = message => {
     return {
-        user_id:    message.author.id,
-        globalName: message.author.global_name ?? message.author.globalName,
-        content:   message.content,
-        id:        message.id,
-        timestamp: message.timestamp ?? message.createdTimestamp
+        discord_user_id: message.author.id,
+        tag:             message.author.tag ?? message.author.username,
+        display_name:    message.author.displayName,
+        global_name:     message.author.globalName ?? message.author.globalName,
+        content:         message.content,
+        id:              message.id,
+        timestamp:       message.timestamp ?? message.createdTimestamp
     };
 };
 
@@ -167,7 +181,7 @@ const rememberRangeGrab = async (channelId, startMessageId, endMessageId, exclud
 
         // sort messages before being added just for good measure
         messagesToSave.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-        addMessages(messagesToSave);
+        await addMessages(messagesToSave);
 
         return { status: 'Success' };
 
@@ -187,7 +201,7 @@ const rememberOneMessage = async(channelId, messageId) =>{
     const parsedMessage = parseMessage(msg);
 
     // save the message
-    addMessage(parsedMessage);
+    await addMessage(parsedMessage);
 
     return {
         content:   `Remembered: "${msg.content}"`,
@@ -211,7 +225,7 @@ const rememberPast = async (numberOfHours, numberOfMinutes, channel, excludeBotM
     const messagesToSave = await getMessagesByTime(channel, pastTime, excludeBotMessages, accuracy);
 
     messagesToSave.forEach(m => console.log(m));
-    addMessages(messagesToSave);
+    await addMessages(messagesToSave);
 
     // show that it saved
     return {
@@ -245,7 +259,7 @@ const rememberNumber = async (numberOfMessages, channel, excludeBotMessages) =>{
     }
 
     messagesToSave.forEach(m => console.log(m));
-    addMessages(messagesToSave);
+    await addMessages(messagesToSave);
 
 
     return {
@@ -303,12 +317,11 @@ const stopRemembering = async () =>{
 module.exports = {
     addMessage,
     addMessages,
-    getRememberedMessages,
     parseMessage,
     rememberRangeGrab,
     rememberOneMessage,
     rememberPast,
     rememberNumber,
     startRemembering,
-    stopRemembering
+    stopRemembering,
 };

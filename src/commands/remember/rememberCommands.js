@@ -2,11 +2,12 @@ const {
     SlashCommandBuilder, PermissionFlagsBits, ActivityType, ChannelType
 } = require('discord.js');
 const {
-    getRememberedMessages, clearRememberedMessages, rememberRangeGrab, rememberOneMessage, rememberPast, rememberNumber, startRemembering, stopRemembering
+    rememberRangeGrab, rememberOneMessage, rememberPast, rememberNumber, startRemembering, stopRemembering
 } = require('../../utils/rememberMessages');
 const fs = require('fs');
 const { defaultExcludeBotMessages, ephemeral } = require('../../../config.json');
 const { clamp } = require(`../../utils/mathUtils`);
+const { deleteAllMessages, getAllMessages } = require('../../database');
 
 // Callbacks
 // remember message 
@@ -57,7 +58,7 @@ const rememberPastMessages = async (client, interaction) => {
 const rememberRecall = async interaction =>{
     await interaction.deferReply(); // defer waits for logic to finish
     const jsonFilePath = './src/rememberedMessages.json';
-    const json = JSON.stringify(getRememberedMessages(), null, 2);
+    const json = JSON.stringify(await getAllMessages(), null, 2);
     interaction.editReply('Success');
 
     // send the json
@@ -75,7 +76,7 @@ const rememberRecall = async interaction =>{
 // remember clear
 const rememberClear = async interaction =>{
     await interaction.deferReply(); // defer waits for logic to finish
-    await interaction.editReply(clearRememberedMessages());
+    await interaction.editReply(await deleteAllMessages());
 };
 
 // remember number

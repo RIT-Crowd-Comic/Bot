@@ -59,6 +59,8 @@ const Message = sequelize.define(
     },
     { ...paranoidConfig }
 );
+User.hasMany(Message, user_fk);
+Message.belongsTo(User);
 
 const CheckInSchedule = sequelize.define(
     'checkin_schedule',
