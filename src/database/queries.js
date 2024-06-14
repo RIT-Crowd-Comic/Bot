@@ -10,6 +10,7 @@ const {
     AvailableSchedule,
     Message
 } = require('./models');
+const { measureMemory } = require('vm');
 
 // configuration variables must be in .env
 
@@ -191,16 +192,17 @@ const addMessage = async (message) => {
 
     const id = message?.userId?.toString().trim() ?? '';
     const content = message?.content?.toString().trim() ?? '';
+    const msg_id = message?.id?.toString().trim() ?? '';
     const timestamp = message?.timestamp?.toString().trim() ??
         'CURRENT_TIMESTAMP';
 
     assertArgument(id.length > 0, 'Invalid argument: message.id');
 
-    const values = [id, content, timestamp];
+    const values = [id, content, msg_id, timestamp];
     const query =
 `
-INSERT INTO messages (user_id, content, timestamp)
-    VALUES ($1, $2, $3);
+INSERT INTO messages (user_id, content, message_id, message_ts)
+    VALUES ($1, $2, $3, $4);
 `;
 
     return pool.query(query, values);
@@ -257,6 +259,10 @@ const getMessagesByTimestamp = async (msg_timestamp) => {
     };
 
     return Message.findOne(filter);
+};
+
+const getMessageTable = async() => {
+    return Message.findAll();
 };
 
 
@@ -526,6 +532,10 @@ module.exports = {
     upsertUser,
     getUser,
     addMessage,
+    getMessage,
+    getMessagesByTimestamp,
+    getMessagesRange,
+    getMessageTable,
     addCheckinSchedule,
     addCheckInResponse,
     getCheckInResponses,

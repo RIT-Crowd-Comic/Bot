@@ -1,22 +1,32 @@
 const apiCalls = require('./apiCalls');
 const { clamp } = require(`./mathUtils`);
 const ms = require('ms'); // converts time to ms
+const query = require('../database/queries');
+const {Message} = require('../database/models');
 let rememberedMessages = [];
 
-const addMessage = message => { rememberedMessages.push(message); };
-const addMessages = messages => { rememberedMessages = rememberedMessages.concat(messages); };
-const getRememberedMessages = () => { return structuredClone(rememberedMessages); };
-const clearRememberedMessages = () => { rememberedMessages = []; return { content: 'Success' }; };
+//const addMessage = message => { rememberedMessages.push(message); };
+const addMessage = message => { query.addMessage(message); };
+//const addMessages = messages => { rememberedMessages = rememberedMessages.concat(messages); };
+
+const addMessages = messages => {
+    messages.forEach(element => {
+        query.addMessage(element);
+    });
+}
+
+const getRememberedMessages = () => { return Message.findAll(); };
+
+//unused for now, TODO port to SQL
+//const clearRememberedMessages = () => { rememberedMessages = []; return { content: 'Success' }; };
 
 // parses message api response json to message object 
 // including message, who sent it, and what time
 // ? assuming that all time are in UTC 
 const parseMessage = message => {
     return {
-        author: {
-            id:         message.author.id,
-            globalName: message.author.global_name ?? message.author.globalName,
-        },
+        user_id:    message.author.id,
+        globalName: message.author.global_name ?? message.author.globalName,
         content:   message.content,
         id:        message.id,
         timestamp: message.timestamp ?? message.createdTimestamp
@@ -294,7 +304,6 @@ module.exports = {
     addMessage,
     addMessages,
     getRememberedMessages,
-    clearRememberedMessages,
     parseMessage,
     rememberRangeGrab,
     rememberOneMessage,
