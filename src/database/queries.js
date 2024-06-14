@@ -9,8 +9,10 @@ const {
     Config,
     AvailableSchedule,
     CheckInReminder,
-    Message
+    Message,
+    CheckInSchedule
 } = require('./models');
+const { Op } = require('sequelize');
 
 // configuration variables must be in .env
 
@@ -146,7 +148,7 @@ const upsertUser = async (user) => {
     if (display_name) updates.display_name = display_name;
     if (global_name) updates.global_name = global_name;
 
-
+    // update or create if there's nothing
     return User
         .findOne(filter)
         .then(user => {
@@ -252,67 +254,85 @@ const getMessagesByTimestamp = async (msg_timestamp) => {
 
 
 /**
- * 
+ * Add a check-in schedule for a user
+ * @param {string} userId
  * @param {{
- * userId: string, 
- * utcDays: string[], 
- * utcTime: number[], 
- * localDays: string[], 
- * localTime: number[]}} schedule 
+ * utc_days: string[], 
+ * utc_time: number[], 
+ * local_days: string[], 
+ * local_time: number[]}} schedule 
  * 
  */
-const addCheckinSchedule = async (schedule) => {
+const addCheckInSchedule = async (userId, schedule) => {
+    const discord_user_id = userId?.toString().trim() ?? '';
+    const utc_days = schedule?.utc_days;
+    const utc_time = schedule?.utc_time;
+    const local_days = schedule?.local_days;
+    const local_time = schedule?.local_time;
 
-
-    const id = schedule?.userId?.toString().trim() ?? '';
-    const utcDays = schedule?.utcDays;
-    const utcTime = schedule?.utcTime;
-    const localDays = schedule?.localDays;
-    const localTime = schedule?.localTime;
-
-    assertArgument(id.length > 0, 'Invalid argument: schedule.id');
+    assertArgument(discord_user_id.length > 0, 'Invalid argument: schedule.id');
 
     // replace with schedule.validDays() or something
-    assertArgument(utcDays.constructor === Array, 'Invalid argument: schedule.utcDays');
-    assertArgument(utcTime.constructor === Array && utcTime.length === 2, 'Invalid argument: schedule.utcTime');
-    assertArgument(localDays.constructor === Array, 'Invalid argument: schedule.localDays');
-    assertArgument(localTime.constructor === Array && localTime.length === 2, 'Invalid argument: schedule.localTime');
+    assertArgument(utc_days.constructor === Array, 'Invalid argument: schedule.utc_days');
+    assertArgument(utc_time.constructor === Array && utc_time.length === 2, 'Invalid argument: schedule.utc_time');
+    assertArgument(local_days.constructor === Array, 'Invalid argument: schedule.local_days');
+    assertArgument(local_time.constructor === Array && local_time.length === 2, 'Invalid argument: schedule.local_time');
 
-    const values = [id, utcDays, utcTime, localDays, localTime];
-    const query =
-`
-INSERT INTO checkin_schedules (user_id, utc_days, utc_time, local_days, local_time)
-    VALUES ($1, $2, $3, $4, $5);
-`;
-    return pool.query(query, values);
+    return getUser(discord_user_id)
+        .then(user => CheckInSchedule.create({
+            user_id: user.id,
+            discord_user_id,
+            utc_days,
+            utc_time,
+            local_days,
+            local_time
+        }));
+};
+
+/**
+ * Soft deletes a schedule
+ * @param {number} scheduleId
+ */
+const deleteCheckInSchedule = async (scheduleId) => {
+    return CheckInSchedule.destroy({ where: { id: scheduleId } });
 };
 
 /**
  * Marks a schedule for deletion
- * @param {*} schedule 
+ * @param {number} scheduleId
  */
-const deleteCheckinSchedule = (schedule) => {
+const markCheckInScheduleForDelete = async (scheduleId) => {
+    return CheckInSchedule.findOne({ where: { id: scheduleId } })
+        .then(schedule => schedule.update({ mark_delete: true }));
+};
 
+const getCheckInSchedulesMarkedForDelete = async () => {
+    return CheckInSchedule.findAll({ where: { mark_delete: true } });
+};
 
-    // TODO: figure out best way to delete a schedule
+/**
+ * Deletes all marked tables
+ * @param {number} scheduleId
+ */
+const deleteMarkedCheckInSchedules = async () => {
+    return CheckInSchedule.destroy({ where: { mark_delete: true } });
 };
 
 /**
  * Get a list of check in schedules for a specific user
- * @param {string} userId 
+ * @param {string?} userId 
  * @returns 
  */
-const getUserCheckinSchedules = (id) => {
+const getCheckInSchedules = async (userId) => {
+    const discord_user_id = userId?.toString()?.trim() ?? '';
 
+    // if there's no user, just get all schedules
+    if (discord_user_id.length === 0) return CheckInSchedule.findAll();
 
-    const user_id = id?.toString()?.trim() ?? '';
-
-    assertArgument(user_id.length > 0, 'Invalid argument: userId');
-
-    const filter = { where: { user_id } };
-
-    return CheckInReminder.findAll(filter);
+    const filter = { where: { discord_user_id } };
+    return CheckInSchedule.findAll(filter);
 };
+
 
 /**
  * Get a list of check in schedules for a that contain today utc day
@@ -387,14 +407,14 @@ const getCheckInResponses = (userId, limit = 5) => {
 * min: int}} reminder required
 */
 const addQueue = async (schedule) => {
-    const user_id = schedule?.id?.toString()?.trim() ?? '';
+    const discord_user_id = schedule?.id?.toString()?.trim() ?? '';
     const hour = schedule?.utcTime[0];
     const min = schedule?.utcTime[1];
 
-    assertArgument(user_id.length > 0, 'Invalid Argument: schedule.id');
+    assertArgument(discord_user_id.length > 0, 'Invalid Argument: schedule.id');
 
     return CheckInReminder.create({
-        user_id,
+        discord_user_id,
         hour,
         min
     });
@@ -570,7 +590,12 @@ module.exports = {
     upsertUser,
     getUser,
     addMessage,
-    addCheckinSchedule,
+    addCheckInSchedule,
+    deleteCheckInSchedule,
+    markCheckInScheduleForDelete,
+    getCheckInSchedulesMarkedForDelete,
+    deleteMarkedCheckInSchedules,
+    getCheckInSchedules,
     addCheckInResponse,
     getCheckInResponses,
     addUnavailable,

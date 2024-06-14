@@ -4,7 +4,9 @@ dayjs.extend(utc);
 const { ScheduleError, parseDaysList } = require('./schedule.js');
 const { addUnavailableRole, removeUnavailableRole } = require('./roles.js');
 const { EmbedBuilder } = require('discord.js');
-const { addUnavailable, setAvailable, upsertUser, getConfig, updateConfig, getAvailable, getUnavailable } = require('../database');
+const {
+    addUnavailable, setAvailable, upsertUser, getConfig, updateConfig, getAvailable, getUnavailable
+} = require('../database');
 
 /**
  * Get the channel where availability is being tracked
@@ -74,7 +76,7 @@ const createUnavailability = (start, end, reason) => {
 };
 
 
-/////////////////////// UPDATE vvvvvvvvvvvvvvvvvvvvv
+// ///////////////////// UPDATE vvvvvvvvvvvvvvvvvvvvv
 /**
  * Removes any unavailability events that have passed for a specific user
  * @param {object} data Data from the savedAvailability file
@@ -104,17 +106,17 @@ const removeExpired = (data, userId) => {
 const saveUnavailability = async (userId, userTag, unavail) => {
 
     await upsertUser({
-        id: userId,
+        id:  userId,
         tag: userTag
     })
-    .then(() => addUnavailable({
-        id: userId,
-        ...unavail
-    }));
+        .then(() => addUnavailable({
+            id: userId,
+            ...unavail
+        }));
 
     // Update queues
     getQueues('./src/savedAvailability.json');
-    throw new Error("Make sure the above statement is used correctly");
+    throw new Error('Make sure the above statement is used correctly');
 };
 
 /**
@@ -125,21 +127,21 @@ const saveUnavailability = async (userId, userTag, unavail) => {
  * @param {string} path path to JSON file
  */
 const saveAvailability =  async (userId, userTag, avail) => {
-    
+
     await upsertUser({
-        id: userId,
+        id:  userId,
         tag: userTag
     })
-    .then(() => setAvailable({
-        id: userId,
-        ...avail
-    }));
+        .then(() => setAvailable({
+            id: userId,
+            ...avail
+        }));
 
     // Update queues
     getQueues('./src/savedAvailability.json');
 };
 
-/////////////////////// UPDATE ^^^^^^^^^^^^^^^^^^^^^^
+// ///////////////////// UPDATE ^^^^^^^^^^^^^^^^^^^^^^
 
 
 const updateAvailabilityChannel = async newChannel => {
@@ -278,10 +280,10 @@ const setUnavail = async (userId, userTag, dateFrom, dateTo, timeFrom, timeTo, r
 
         // Save data to file
         await saveUnavailability(userId, userTag, unavail)
-        .catch(err => {
-            reply = `*Failed to save to database*`
-            console.log(err);
-    });
+            .catch(err => {
+                reply = `*Failed to save to database*`;
+                console.log(err);
+            });
         return { content: reply };
     }
     catch (error) {
@@ -331,9 +333,9 @@ const setUnavailAI = async (userId, userTag, dateFrom, dateTo, reason) => {
         // await interaction.editReply({ content: reply });
         // Save data to file
         await saveUnavailability(userId, userTag, unavail).catch(err => {
-            reply = `*Failed to save to database*`
+            reply = `*Failed to save to database*`;
             console.log(err);
-    });;
+        });
         return { content: reply };
     }
     catch (error) {
@@ -381,9 +383,9 @@ const setAvail = async (userId, userTag, timeFrom, timeTo, days) => {
 
         // Save data to file
         await saveAvailability(userId, avail).catch(err => {
-            reply = `*Failed to save to database*`
+            reply = `*Failed to save to database*`;
             console.log(err);
-    });;
+        });
         return { content: reply };
     }
     catch (error) {
@@ -469,7 +471,6 @@ module.exports = {
     displayUnavail,
     setUnavailAI,
     getAvailabilityChannel,
-    newAvailabilityEntry,
     createAvailability,
     createUnavailability
 };

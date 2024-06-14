@@ -5,6 +5,7 @@ const { Client, IntentsBitField } = require('discord.js');
 const eventHandler = require('./handlers/eventHandler');
 const db = require('./database');
 const dayjs = require('dayjs');
+const { createSchedule } = require('./utils/schedule');
 
 // setup discord
 const client = new Client({
@@ -29,10 +30,11 @@ db.authenticate()
     console.log('database tests starting');
 
     // ESPECIALLY REMOVE .sync()
-    // THESE LINES BREAK DATABASES
+    // THESE LINES BREAK DATABASES IN PRODUCTION
     await db.Models.CheckInResponse.sync({ force: true });
     await db.Models.UnavailableSchedule.sync({ force: true });
     await db.Models.AvailableSchedule.sync({ force: true });
+    await db.Models.CheckInSchedule.sync({ force: true });
     await db.Models.User.sync({ force: true });
     await db.Models.Config.sync();
 
@@ -45,6 +47,13 @@ db.authenticate()
             display_name: 'BIG MAN 67',
             global_name:  'name'
         });
+
+        console.log(await db.addCheckInSchedule(
+            '1234',
+            createSchedule(['monday', 'wednesday'], dayjs())
+        ));
+
+        console.log(`deleted ${await db.deleteCheckInSchedule(1)}`);
 
         console.log(await db.addCheckInResponse(
             '1234',

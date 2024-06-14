@@ -1,7 +1,7 @@
 const {
     ActionRowBuilder, ButtonStyle, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ButtonBuilder, PermissionFlagsBits, SlashCommandBuilder
 } = require('discord.js');
-const { getSchedules, scheduleCheckIn, getScheduleObjs } = require('../../utils/schedule');
+const { getSchedules, scheduleCheckIn, displaySchedule } = require('../../utils/schedule');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -48,10 +48,10 @@ const viewSchedules = async (interaction) => {
 
     try {
         const user = interaction.member.user;
-        const response = getSchedules(user);
+        const response = await getSchedules(user);
 
         if (response.status === 'Fail') {
-            await interaction.editReply({ content: response.description });
+            await interaction.editReply({ content: response.description.toString() });
             return;
         }
 
@@ -63,7 +63,7 @@ const viewSchedules = async (interaction) => {
                 .setCustomId('show-schedule-dropdown')
                 .addOptions(schedules.map((s, i) =>
                     new StringSelectMenuOptionBuilder()
-                        .setLabel(s)
+                        .setLabel(displaySchedule(s))
                         .setValue(`${i}`)))
                 .setMinValues(0)
                 .setMaxValues(schedules.length);
@@ -86,9 +86,9 @@ const addScheduleCheckIn = async (interaction) => {
     const rawDays = interaction.options.get('days').value;
     const rawTime = interaction.options.get('time').value;
 
-    const response = scheduleCheckIn(user, rawDays, rawTime);
+    const response = await scheduleCheckIn(user, rawDays, rawTime);
 
-    await interaction.editReply({ content: response.description });
+    await interaction.editReply({ content: response.description.toString() });
 
 
 };
@@ -98,14 +98,19 @@ const remove = async (interaction) => {
     const user = interaction.member.user;
 
     try {
-        const response = getScheduleObjs(user);
+        const response = await getSchedules(user);
 
         if (response.status === 'Fail') {
-            await interaction.editReply({ content: response.description });
+            interaction.editReply({ content: response.description.toString() });
             return;
         }
 
         const schedules = response.schedules;
+
+        if (schedules.length === 0) {
+            interaction.editReply({ content: 'You have no schedules to delete. ' });
+            return;
+        }
 
         const row1 = new ActionRowBuilder();
         const row2 = new ActionRowBuilder();
@@ -113,10 +118,10 @@ const remove = async (interaction) => {
         const scheduleDropdown =
             new StringSelectMenuBuilder()
                 .setCustomId('remove-schedule-dropdown')
-                .addOptions(schedules.map((s, i) =>
+                .addOptions(schedules.map((s) =>
                     new StringSelectMenuOptionBuilder()
-                        .setLabel(s.name)
-                        .setValue(`${i}`)))
+                        .setLabel(displaySchedule(s))
+                        .setValue(`${s.id}`)))
                 .setMinValues(0)
                 .setMaxValues(schedules.length);
         const removeButton = new ButtonBuilder()

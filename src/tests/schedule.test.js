@@ -39,7 +39,7 @@ describe('schedule utils', () => {
 
     describe('createSchedule', () => {
         test('days should be in chronological order with work week starting on sunday', () => {
-            expect(scheduleUtils.createSchedule(['tuesday', 'monday', 'sunday'], dayjs()).localDays).toEqual(['sunday', 'monday', 'tuesday']);
+            expect(scheduleUtils.createSchedule(['tuesday', 'monday', 'sunday'], dayjs()).local_days).toEqual(['sunday', 'monday', 'tuesday']);
         });
     });
 

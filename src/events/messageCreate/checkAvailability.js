@@ -196,8 +196,9 @@ const parseResults = (message, calledFunction) =>{
         'rememberAvailability':   () => rememberAvailability(message, JSON.parse(calledFunction.arguments)),
         'unableToParse':          () => unableToParse(message),
     };
-    
-    try {action[calledFunction.name]()}catch(error){console.log(`There was an issue ${error}`)};
+
+    try { action[calledFunction.name](); }
+    catch (error) { console.log(`There was an issue ${error}`); }
 };
 
 // checks the message sent in the channel and sends it to openai to parse, then if possible saves the availability data

@@ -3,12 +3,12 @@ const utc = require('dayjs/plugin/utc');
 const weekday = require('dayjs/plugin/weekday');
 const localizedFormat = require('dayjs/plugin/localizedFormat');
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { addCheckInSchedule, getCheckInSchedules, upsertUser } = require('../database');
 
 dayjs.extend(utc);
 dayjs.extend(weekday);
 dayjs.extend(localizedFormat);
 
-const fakeScheduleEntry = {};
 const queue = [];
 const validDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 const abbreviations = {
@@ -35,14 +35,14 @@ class ScheduleError extends Error {
  * @returns 
  */
 const displaySchedule = (schedule) => {
-    const everyDay = validDays.every(d => schedule.localDays.includes(d));
-    const days = everyDay ? 'every day' : `[${schedule.localDays.join(', ')}]`;
+    const everyDay = validDays.every(d => schedule.local_days.includes(d));
+    const days = everyDay ? 'every day' : `[${schedule.local_days.join(', ')}]`;
 
     // Adds a zero if necessary. Ex: '5:5' to '5:05'
-    let min = schedule.localTime[1].toString();
+    let min = schedule.local_time[1].toString();
     min = min.length === 1 ? `0${min}` : min;
 
-    const time = `${schedule.localTime[0]}:${min} (24 hr time)`;
+    const time = `${schedule.local_time[0]}:${min} (24 hr time)`;
     return `${days} at ${time}`;
 };
 
@@ -51,10 +51,12 @@ const displaySchedule = (schedule) => {
  * just a valid time and returns a schedule object.
  * @param {string[]} daysList 
  * @param {Dayjs} time 
- * @returns { Object } schedule
- * @returns { String[] } schedule.days
- * @returns { Number[] } schedule.utcTime,
- * @returns { string } schedule.displaySchedule
+ * @returns {{
+ * utc_days: string[],
+ * utc_time: number[],
+ * local_days: string[],
+ * local_time: number[]
+ * }}
  */
 const createSchedule = (daysList, time) => {
 
@@ -94,10 +96,10 @@ const createSchedule = (daysList, time) => {
     });
 
     return {
-        utcDays:   utcDays,
-        utcTime:   [utcHour, utcMin],
-        localDays: [...daysList],
-        localTime: [timeHours, timeMinutes],
+        utc_days:   utcDays,
+        utc_time:   [utcHour, utcMin],
+        local_days: [...daysList],
+        local_time: [timeHours, timeMinutes],
     };
 };
 
@@ -252,18 +254,17 @@ const updateQueue = (days, utcTime, id, toRemove = false) => {
  * gets the current day's scheduled times & users
  * orders them chronologically in the queue[]
  */
-const getDayOrder = () => {
+const getDayOrder = async () => {
 
     /**
     * checks to see if users have a scheduled day today
     * creates and adds a reminder object with the time and user id to the queue using updateQueue()
     */
-    for (let user in fakeScheduleEntry) {
-        for (let schedule of fakeScheduleEntry[user].schedules) {
-            updateQueue(schedule.utcDays, schedule.utcTime[0], schedule.utcTime[1], user);
-
-        }
-    }
+    getCheckInSchedules().then(schedules => {
+        schedules.forEach(schedule => {
+            updateQueue(schedule.utc_days, schedule.utc_time, schedule.user_id);
+        });
+    });
 
 };
 
@@ -292,7 +293,7 @@ const getQueue = () => {
 * @param {object} user - The discord user who's schedules are being checked
 * @return {object} a response that states if the user doesn't have any schedules or an error occurred, or if they do
 */
-const validScheduleUser = (user) => {
+const validScheduleUser = async (user) => {
     const userId = user?.id;
 
     // todo: command should include a user
@@ -301,21 +302,25 @@ const validScheduleUser = (user) => {
     }
 
     // verify the person has schedules
-    if (!fakeScheduleEntry[userId] || fakeScheduleEntry[userId]?.schedules?.length === 0) {
+    if ((await getCheckInSchedules(userId)).length === 0) {
         return { status: 'Fail', description: '*You have no schedules! Create one with `/check-in schedule`*' };
     }
 
     return { status: 'Success' };
 };
 
-// ! The two methods below this comment are very similar, 
-// ! they could possibly be refactored into one method, but I am 
-// ! unaware of how that will affect where they are used, this 
-// ! should be looked at by the initial implementer
-const getSchedules = (user) => {
+/**
+ * 
+ * @param {User} user 
+ * @returns {{
+ * status: string,
+ * description: string,
+ * schedules: object}}
+ */
+const getSchedules = async (user) => {
 
     try {
-        const response = validScheduleUser(user);
+        const response = await validScheduleUser(user);
         if (response.status === 'Fail') {
             return response;
         }
@@ -323,33 +328,13 @@ const getSchedules = (user) => {
         const userId = user?.id;
 
         // get and return the schedules
-        const schedules = fakeScheduleEntry[userId]
-            ?.schedules
-            ?.map(s => displaySchedule(s));
+        const schedules = await getCheckInSchedules(userId);
 
         return { status: 'Success', description: 'Here are your schedules', schedules: schedules };
     }
     catch (error) {
         return { status: 'Fail', description: error };
     }
-};
-
-const getScheduleObjs = (user) => {
-    const response = validScheduleUser(user);
-    if (response.status === 'Fail') {
-        return response;
-    }
-
-    const userId = user?.id;
-
-    const schedules = fakeScheduleEntry[userId]?.schedules?.map(s => (
-        {
-            name:     displaySchedule(s),
-            schedule: s
-        }
-    ));
-
-    return { status: 'Success', schedules: schedules };
 };
 
 /**
@@ -359,7 +344,7 @@ const getScheduleObjs = (user) => {
  * @param {String} time the time the user will be reminded
  * @returns either a successful response, or a failed one with a description as to why
  */
-const scheduleCheckIn = (user, days, time) => {
+const scheduleCheckIn = async (user, days, time) => {
     try {
         const userId = user.id;
         const userTag = user.tag;
@@ -373,20 +358,15 @@ const scheduleCheckIn = (user, days, time) => {
         const parsedTime = parseTime(time);
         const schedule = createSchedule(parsedDays, parsedTime);
 
-        // update the database
-        fakeScheduleEntry[userId] ??= {};
+        await
+        upsertUser({
+            id:           userId,
+            tag:          userTag,
+            display_name: user.display_name ?? '',
+            global_name:  user.display_name ?? '',
+        }).then(() => addCheckInSchedule(user.id, schedule));
 
-        Object.assign(
-            fakeScheduleEntry[userId],
-            {
-                id:  userId,
-                tag: userTag,
-            }
-        );
-        fakeScheduleEntry[userId].schedules ??= [];
-        fakeScheduleEntry[userId].schedules.push(schedule);
-
-        updateQueue(schedule.utcDays, schedule.utcTime, userId);
+        updateQueue(schedule.utc_days, schedule.utc_time, userId);
 
         return { status: 'Success', description: `Check ins scheduled for ${displaySchedule(schedule)}` };
 
@@ -404,11 +384,9 @@ module.exports = {
     sendCheckInReminder,
     getQueue,
     updateQueue,
-    fakeScheduleEntry,
     getSchedules,
     scheduleCheckIn,
     queue,
-    getScheduleObjs,
     ScheduleError,
     validScheduleUser
 };

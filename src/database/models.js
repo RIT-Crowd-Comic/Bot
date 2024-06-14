@@ -28,7 +28,7 @@ const User = sequelize.define(
             allowNull: false
         },
         display_name: { type: DataTypes.STRING },
-        global_name: { type: DataTypes.STRING }
+        global_name:  { type: DataTypes.STRING }
     },
     { ...paranoidConfig }
 );
@@ -61,36 +61,43 @@ const Message = sequelize.define(
 );
 
 const CheckInSchedule = sequelize.define(
-    'schedule',
+    'checkin_schedule',
     {
         discord_user_id: {
             type:      DataTypes.STRING,
             allowNull: false
         },
-        utcDays:
+        utc_days:
         {
             type:      DataTypes.ARRAY(DataTypes.STRING),
             allowNull: false
         },
-        utcTime:
+        utc_time:
         {
             type:      DataTypes.ARRAY(DataTypes.INTEGER),
             allowNull: false
         },
-        localDays:
+        local_days:
         {
             type:      DataTypes.ARRAY(DataTypes.STRING),
             allowNull: false
         },
-        localTime:
+        local_time:
         {
             type:      DataTypes.ARRAY(DataTypes.INTEGER),
             allowNull: false
+        },
+        mark_delete: {
+            type:         DataTypes.BOOLEAN,
+            defaultValue: false
         }
 
     },
     { paranoid: true }
 );
+
+User.hasMany(CheckInSchedule, user_fk);
+CheckInSchedule.belongsTo(User);
 
 
 const UnavailableSchedule = sequelize.define(
@@ -174,9 +181,9 @@ User.hasMany(CheckInResponse, user_fk);
 CheckInResponse.belongsTo(User);
 
 const CheckInReminder = sequelize.define(
-    'reminder',
+    'checkin_reminder',
     {
-        user_id: {
+        discord_user_id: {
             type:      DataTypes.STRING,
             allowNull: false
         },
