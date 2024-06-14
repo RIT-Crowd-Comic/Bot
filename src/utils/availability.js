@@ -5,7 +5,10 @@ const { ScheduleError, parseDaysList } = require('./schedule.js');
 const { addUnavailableRole, removeUnavailableRole } = require('./roles.js');
 const { EmbedBuilder } = require('discord.js');
 const {
-    addUnavailable, setAvailable, upsertUser, getConfig, updateConfig, getAvailable, getUnavailable
+    addUnavailable, setAvailable, upsertUser, getConfig, updateConfig, 
+    getAvailable, getUnavailable,
+    addAvailableQueue,addUnavailableQueue,
+    deleteUnavailableStart,deleteUnavailableStop
 } = require('../database');
 
 /**
@@ -172,9 +175,9 @@ const isToday = (date) => {
  * @param {object[]} queue Array to be updated
  * @param {Dayjs} time Time to be added to the queue
  * @param {string} id ID of user
- * @param {boolean} toRemove If the given time is meant to be removed from queue
+ * @param {string} queueType whether it is start queue or stop queue: start, stop
  */
-const updateQueue = (queue, time, id) => {
+const updateQueue = async (queue, time, id,queueType) => {
     if (isToday(time)) {
         const hour = dayjs(time).hour();
         const min = dayjs(time).minute();
@@ -184,9 +187,17 @@ const updateQueue = (queue, time, id) => {
             'hour': hour,
             'min':  min
         };
-        if (queue.length == 0)
+        if (queue.length == 0){
             queue.push(unavailTime);
-        else {
+             
+            //adds to prespective db tables
+            if(queueType=="start"){
+                await addUnavailableQueue(unavailTime)
+            }else{
+                await addAvailableQueue(unavailTime)
+            }
+            
+        }else {
             for (let i = 0; i < queue.length; i++) {
                 const qTime = queue[i];
                 if (hour <= qTime.hour && min <= qTime.min) {
@@ -196,6 +207,12 @@ const updateQueue = (queue, time, id) => {
                 else if (i == queue.length - 1) {
                     queue.push(unavailTime);
                     return;
+                }
+                //adds to prespective db tables
+                if(queueType=="start"){
+                    await addUnavailableQueue(unavailTime)
+                }else{
+                    await addAvailableQueue(unavailTime)
                 }
             }
         }
@@ -221,7 +238,7 @@ const changeRole = async (client, id, isUnavail) => {
  * Populate the start and end queues with most up to date unavailability info
  * @param {string} path path to JSON file with availability data
  */
-const getQueues = (path) => {
+const getQueues = async() => {
     let data = loadAvailability(path);
 
     // Empty queues when reloading from file
@@ -230,8 +247,8 @@ const getQueues = (path) => {
     for (let user in data) {
         data = removeExpired(data, user);
         for (let i = 0, length = data[user].unavailable.length; i < length; i++) {
-            updateQueue(startQueue, data[user].unavailable[i].from, user);
-            updateQueue(endQueue, data[user].unavailable[i].to, user);
+            await updateQueue(startQueue, data[user].unavailable[i].from, user,"start");
+            await updateQueue(endQueue, data[user].unavailable[i].to, user,"stop");
         }
     }
 };
