@@ -94,9 +94,10 @@ const removeExpired =async (data) => {
     }
 
     // Remove expired unavailability from the data
-    for (let obj of expiredObjects)
+    for (let obj of expiredObjects){
         data.splice(data.indexOf(obj), 1);
         await deleteUnavailableSchedule(obj)
+    }
     return data;
 };
 
