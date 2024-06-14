@@ -8,7 +8,8 @@ const {
     addUnavailable, setAvailable, upsertUser, getConfig, updateConfig, 
     getAvailable, getUnavailable,getAllUnavailable,
     addAvailableQueue,addUnavailableQueue,
-    deleteUnavailableStart,deleteUnavailableStop,deleteUnavailableSchedule
+    deleteUnavailableStart,deleteUnavailableStop,deleteUnavailableSchedule,
+    getUserByDBId
 } = require('../database');
 
 /**
@@ -244,14 +245,15 @@ const changeRole = async (client, queueItem, isUnavail) => {
  * Populate the start and end queues with most up to date unavailability info
  */
 const getQueues = async() => {
-    await getAllUnavailable().then(async data=>{//returns list of unavailable start and stop
+    return getAllUnavailable().then(async data=>{//returns list of unavailable start and stop
         // Empty queues when reloading from file
         startQueue.length = 0;
         endQueue.length = 0;
-        await removeExpired(data).then(async data=>{
+        return removeExpired(data).then(async data=>{
             for (let i = 0; i < data.length; i++) {
-                await updateQueue(startQueue, data[i].from_time, user,"start");////get user ID from user table object *vNote*
-                await updateQueue(endQueue, data[i].to_time, user,"stop");
+                const user= await getUserByDBId(data[i].user_id)
+                await updateQueue(startQueue, data[i].from_time, user.discord_user_id,"start");////get user ID from user table object *vNote*
+                await updateQueue(endQueue, data[i].to_time, user.discord_user_id,"stop");
             }
         })
             
