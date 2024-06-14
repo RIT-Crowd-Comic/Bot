@@ -37,7 +37,7 @@ db.authenticate()
     await db.Models.CheckInSchedule.sync({ force: true });
     await db.Models.User.sync({ force: true });
     await db.Models.Config.sync();
-    await db.Models.Message.sync();
+    await db.Models.Message.sync({ force: true });
 
     try {
 

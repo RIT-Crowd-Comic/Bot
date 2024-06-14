@@ -382,7 +382,7 @@ const setAvail = async (userId, userTag, timeFrom, timeTo, days) => {
         ].join('\n');
 
         // Save data to file
-        await saveAvailability(userId, avail).catch(err => {
+        await saveAvailability(userId, userTag, avail).catch(err => {
             reply = `*Failed to save to database*`;
             console.log(err);
         });
@@ -415,7 +415,7 @@ const displayAvail = async (user, member) => {
         // Create an embed to send to the user
         const embed = new EmbedBuilder()
             .setTitle(`${targetMember.username}'s Availability`)
-            .setDescription(`Available from ${dayjs(availability.from).format('hh:mm A')}-${dayjs(availability.to).format('hh:mm A')} on ${availability.days.join(', ')}`);
+            .setDescription(`Available from ${dayjs(availability.from_time).format('hh:mm A')}-${dayjs(availability.to_time).format('hh:mm A')} on ${availability.days.join(', ')}`);
         return { embeds: [embed] };
     }
     catch (error) {
@@ -435,7 +435,7 @@ const displayUnavail = async (user, member) => {
 
         const targetMember = member ? member.user : user;
 
-        const unavailability = await getUnavailable();
+        const unavailability = await getUnavailable(targetMember.id);
 
         // Create an embed to send to the user
         const embed = new EmbedBuilder()
@@ -447,7 +447,7 @@ const displayUnavail = async (user, member) => {
             // Check for reason (leave empty if none)
             const reason = entry.reason ? `Reason: ${entry.reason}` : ` `;
             embed.addFields({
-                name:  `From ${dayjs(entry.from).format('MM-DD hh:mm A')} to ${dayjs(entry.to).format('MM-DD hh:mm A')}`,
+                name:  `From ${dayjs(entry.from_time).format('MM-DD hh:mm A')} to ${dayjs(entry.to_time).format('MM-DD hh:mm A')}`,
                 value: reason
             });
         });

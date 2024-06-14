@@ -17,7 +17,6 @@ CREATE TABLE users (
 CREATE TABLE messages (
     id SERIAL PRIMARY KEY,
     user_id REFERENCES users(id),
-    discord_user_id VARCHAR NOT NULL,
     content VARCHAR NOT NULL,
     message_id VARCHAR NOT NULL,
     message_ts VARCHAR NOT NULL,
@@ -28,7 +27,6 @@ CREATE TABLE messages (
 CREATE TABLE checkin_schedules (
     id SERIAL PRIMARY KEY,
     user_id REFERENCES users(id),
-    discord_user_id VARCHAR NOT NULL,
     utc_days VARCHAR[],
     utc_time INT[2],
     local_days VARCHAR[],
@@ -46,7 +44,6 @@ CREATE TABLE checkin_schedules (
 CREATE TABLE unavailable_schedules (
     id SERIAL PRIMARY KEY,
     user_id REFERENCES users(id),
-    discord_user_id VARCHAR NOT NULL,
     from_time VARCHAR,
     to_time VARCHAR,
     reason VARCHAR,
@@ -55,7 +52,6 @@ CREATE TABLE unavailable_schedules (
 CREATE TABLE available_schedules (
     id SERIAL PRIMARY KEY,
     user_id REFERENCES users(id),
-    discord_user_id VARCHAR NOT NULL,
     from_time VARCHAR,
     to_time VARCHAR,
     days VARCHAR[],
@@ -84,7 +80,6 @@ CREATE INDEX checkin_q_time_inserted_id
 CREATE TABLE checkin_responses (
     id SERIAL PRIMARY KEY,
     user_id REFERENCES users(id),
-    discord_user_id VARCHAR NOT NULL,
     content JSON
     deleted_at TIMESTAMP
 );

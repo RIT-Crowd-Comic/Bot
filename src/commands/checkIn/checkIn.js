@@ -89,8 +89,6 @@ const addScheduleCheckIn = async (interaction) => {
     const response = await scheduleCheckIn(user, rawDays, rawTime);
 
     await interaction.editReply({ content: response.description.toString() });
-
-
 };
 
 const remove = async (interaction) => {
