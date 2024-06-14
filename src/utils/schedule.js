@@ -3,7 +3,7 @@ const utc = require('dayjs/plugin/utc');
 const weekday = require('dayjs/plugin/weekday');
 const localizedFormat = require('dayjs/plugin/localizedFormat');
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const { addCheckInSchedule, getCheckInSchedules, upsertUser } = require('../database');
+const { addCheckInSchedule, getCheckInSchedules, upsertUser,getDBQueue,addCheckInQueue,deleteCheckInReminder } = require('../database');
 
 dayjs.extend(utc);
 dayjs.extend(weekday);
@@ -213,7 +213,7 @@ const sendCheckInReminder = async (client, id) => {
  * @param {string} id user id
  * @param {bool} toRemove whether or not you want to remove (default=false)
  */
-const updateQueue = (days, utcTime, id, toRemove = false) => {
+const updateQueue = async (days, utcTime, id, toRemove = false) => {
     const hour = utcTime[0];
     const min = utcTime[1];
 
@@ -228,9 +228,11 @@ const updateQueue = (days, utcTime, id, toRemove = false) => {
         let index = queue.indexOf(reminder);
         if (index && toRemove) { // if it exists in the queue and we want to remove
             queue.splice(index, 1);
+            await deleteCheckInReminder(reminder)
         }
         else if (index == -1 && queue.length == 0) { // if queue is empty
             queue.push(reminder);
+            await addCheckInQueue(reminder)
         }
         else { // inserting into queue
             for (let t = 0; t < queue.length; t++) {
@@ -244,6 +246,7 @@ const updateQueue = (days, utcTime, id, toRemove = false) => {
                     queue.push(reminder);
                     return;
                 }
+                await addCheckInQueue(reminder)
             }
         }
 
@@ -251,8 +254,9 @@ const updateQueue = (days, utcTime, id, toRemove = false) => {
 };
 
 /**
+ * called when the day starts and the db queue is empty
  * gets the current day's scheduled times & users
- * orders them chronologically in the queue[]
+ * orders them chronologically in the queue[] via updateQueue
  */
 const getDayOrder = async () => {
 
@@ -282,9 +286,14 @@ const checkCurrentDay = () => {
 };
 
 /**
- * creates a new queue
+ * gets the queue from the database 
+ * then orders it chronologically into the queue via updateQueue()
  */
-const getQueue = () => {
+const getQueue = async() => {
+    queue.length=0
+    await getDBQueue("checkIn").then(reminder=>{
+        updateQueue(reminder)
+    } )
     getDayOrder(checkCurrentDay());
 };
 
@@ -386,6 +395,7 @@ module.exports = {
     updateQueue,
     getSchedules,
     scheduleCheckIn,
+    getDayOrder,
     queue,
     ScheduleError,
     validScheduleUser

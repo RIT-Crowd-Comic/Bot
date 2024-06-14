@@ -10,7 +10,9 @@ const {
     AvailableSchedule,
     CheckInReminder,
     Message,
-    CheckInSchedule
+    CheckInSchedule,
+    UnavailableStart,
+    UnavailableStop
 } = require('./models');
 const { Op } = require('sequelize');
 
@@ -334,25 +336,6 @@ const getCheckInSchedules = async (userId) => {
 };
 
 
-/**
- * Get a list of check in schedules for a that contain today utc day
- * @param {string} utcDay 
- * @returns 
- */
-const getDaySchedules = (utcDay) => {
-
-
-    const day = utcDay?.toString()?.trim() ?? '';
-
-    assertArgument(day.length > 0, 'Invalid argument: day');
-
-    const filter = {
-        where: { [Op.in]: [day], },
-        order: [['hour', 'ASC']]
-    };
-
-    return CheckInReminder.findAll(filter);
-};
 
 /**
  * Save a user's check-in response form
@@ -400,36 +383,186 @@ const getCheckInResponses = (userId, limit = 5) => {
 };
 
 /**
- * Adds a reminder object to the day queue db table
+ * Get a list of check in schedules that contain today utc day
+ * @param {string} utcDay 
+ * @returns 
+ */
+const getDaySchedules = (utcDay) => {
+
+
+    const day = utcDay?.toString()?.trim() ?? '';
+
+    assertArgument(day.length > 0, 'Invalid argument: day');
+
+    const filter = {
+        where: { utc_day:{[Op.contains]: [day], }},
+        order: [['hour', 'DESC']]
+    };
+
+    return CheckInReminder.findAll(filter);
+};
+
+/**
+ * Adds a reminder object to the day's checkIn queue db table
  * @param {{
 * id: string
 * hour: int,
 * min: int}} reminder required
 */
-const addQueue = async (schedule) => {
+const addCheckInQueue = async (schedule) => {
     const discord_user_id = schedule?.id?.toString()?.trim() ?? '';
     const hour = schedule?.utcTime[0];
     const min = schedule?.utcTime[1];
 
     assertArgument(discord_user_id.length > 0, 'Invalid Argument: schedule.id');
 
-    return CheckInReminder.create({
-        discord_user_id,
-        hour,
-        min
-    });
+    // make sure to set the user_id foreign key
+    return getUser(discord_user_id)
+        .then(
+            user => CheckInReminder.create({
+            user_id: user.id,
+            discord_user_id,
+            hour,
+            min
+        }));
+    
 };
 
 /**
- * 
- * @param {string} userId 
- */
-const getDBQueue = async () => {
+ * Adds a unavailableStart object to the day's unavailable queue db table
+ * @param {{
+* id: string
+* hour: int,
+* min: int}} unavailableStart required
+*/
+const addUnavailableQueue = async (schedule) => {
+    const discord_user_id = schedule?.id?.toString()?.trim() ?? '';
+    const hour = schedule?.utcTime[0];
+    const min = schedule?.utcTime[1];
 
-    const filter = { order: [['hour', 'ASC']] };
+    assertArgument(discord_user_id.length > 0, 'Invalid Argument: schedule.id');
 
-    return CheckInReminder.findAll(filter);
+    // make sure to set the user_id foreign key
+    return getUser(discord_user_id)
+        .then(user => UnavailableStart.create({
+            user_id: user.id,
+            discord_user_id,
+            hour,
+            min
+        }));
+    
 };
+
+/**
+ * Adds a unavailableStop object to the day's available queue db table
+ * @param {{
+* id: string
+* hour: int,
+* min: int}} unavailableStop required
+*/
+const addAvailableQueue = async (schedule) => {
+    const discord_user_id = schedule?.id?.toString()?.trim() ?? '';
+    const hour = schedule?.utcTime[0];
+    const min = schedule?.utcTime[1];
+
+    assertArgument(discord_user_id.length > 0, 'Invalid Argument: schedule.id');
+
+    // make sure to set the user_id foreign key
+    return getUser(discord_user_id)
+        .then(user => UnavailableStop.create({
+            user_id: user.id,
+            discord_user_id,
+            hour,
+            min
+        }));
+    
+};
+
+/**
+ * gets the scheduled event from a queue *unordered*
+ * @param {string} queue which queue type to add to
+ */
+const getDBQueue = async (queue) => {
+
+    const filter = { 
+        order: [['hour', 'DESC']] 
+    };
+
+    if(queue=="checkIn"){
+        return CheckInReminder.findAll(filter);
+    }else if(queue=="unavailable"){
+        return UnavailableStart.findAll(filter);
+    }else if(queue=="available"){
+        return UnavailableStop.findAll(filter);
+    }
+   
+};
+
+/**
+ * Soft deletes a schedule reminder
+ * @param {
+ * id:string,
+ * hour:number,
+ * min:number
+ * } schedule
+ */
+const deleteCheckInReminder = async (schedule) => {
+    return CheckInReminder.destroy({ where: {
+         id: schedule.id,
+         hour:schedule.hour,
+         min:schedule.min
+        } });
+};
+
+/**
+ * Soft deletes an unavailableStart
+ * @param {
+* id:string,
+* hour:number,
+* min:number
+* } schedule
+ */
+const deleteUnavailableStart = async (schedule) => {
+    return UnavailableStart.destroy({ where: {
+        id: schedule.id,
+        hour:schedule.hour,
+        min:schedule.min
+       } });
+};
+
+/**
+ * Soft deletes an unavailableStop
+  * @param {
+* id:string,
+* hour:number,
+* min:number
+* } schedule
+ */
+const deleteUnavailableStop = async (schedule) => {
+    return UnavailableStop.destroy({ where: {
+        id: schedule.id,
+        hour:schedule.hour,
+        min:schedule.min
+       } });
+};
+
+/**
+ * hard deletes whole queue table data while keeping table structure
+ * @param {string} queue which queue to delete : checkIn,unavailable,available
+ * @returns 
+ */
+const deleteWholeQueue=async (queue)=>{
+    if(queue=="checkIn"){
+        return CheckInReminder.truncate()
+    }else if(queue=="unavailable"){
+        return UnavailableStart.truncate()
+    }else if(queue=="available"){
+        return UnavailableStop.truncate()
+    }
+    
+}
+
+
 
 /**
  * Add an unavailable schedule to a user
@@ -468,6 +601,23 @@ const addUnavailable = async (schedule) => {
  * @returns 
  */
 const getUnavailable = async (userId) => {
+    const discord_user_id = userId?.toString()?.trim() ?? '';
+
+    assertArgument(discord_user_id.length > 0, 'Invalid Argument: userId');
+
+    // TODO: figure out a way to filter out past dates
+    // TODO: figure out a way to delete past schedules
+
+    const filter = { where: { discord_user_id } };
+    return UnavailableSchedule.findAll(filter);
+};
+
+/**
+ * Get a list of unavailable dates for a user 
+ * @param {string} userId required
+ * @returns 
+ */
+const getUnavailableToday = async (userId,day) => {
     const discord_user_id = userId?.toString()?.trim() ?? '';
 
     assertArgument(discord_user_id.length > 0, 'Invalid Argument: userId');
@@ -602,6 +752,15 @@ module.exports = {
     getUnavailable,
     setAvailable,
     getAvailable,
+    getDaySchedules,
+    addCheckInQueue,
+    addAvailableQueue,
+    addUnavailableQueue,
+    getDBQueue,
+    deleteCheckInReminder,
+    deleteUnavailableStart,
+    deleteUnavailableStop,
+    deleteWholeQueue,
     updateConfig,
     getConfig,
     authenticate
