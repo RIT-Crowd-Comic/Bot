@@ -579,7 +579,7 @@ const getDBQueue = async (queue) => {
     else if (queue == 'available') {
         return UnavailableStop.findAll(filter);
     }
-
+    return undefined;
 };
 
 /**
@@ -651,7 +651,7 @@ const deleteWholeQueue = async (queue)=>{
     else if (queue == 'available') {
         return UnavailableStop.truncate();
     }
-
+    return undefined;
 };
 
 
