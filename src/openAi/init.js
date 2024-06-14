@@ -12,7 +12,8 @@ try {
 
     openAiClient = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     console.log('OpenAI client initialized successfully.');
-} catch (error) {
+}
+catch (error) {
     console.error('Failed to initialize OpenAI client:', error);
 }
 
