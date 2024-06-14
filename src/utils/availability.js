@@ -5,10 +5,10 @@ const { ScheduleError, parseDaysList } = require('./schedule.js');
 const { addUnavailableRole, removeUnavailableRole } = require('./roles.js');
 const { EmbedBuilder } = require('discord.js');
 const {
-    addUnavailable, setAvailable, upsertUser, getConfig, updateConfig, 
-    getAvailable, getUnavailable,getAllUnavailable,
-    addAvailableQueue,addUnavailableQueue,
-    deleteUnavailableStart,deleteUnavailableStop,deleteUnavailableSchedule,
+    addUnavailable, setAvailable, upsertUser, getConfig, updateConfig,
+    getAvailable, getUnavailable, getAllUnavailable,
+    addAvailableQueue, addUnavailableQueue,
+    deleteUnavailableStart, deleteUnavailableStop, deleteUnavailableSchedule,
     getUserByDBId
 } = require('../database');
 
@@ -86,7 +86,7 @@ const createUnavailability = (start, end, reason) => {
  * @param {object[]} data array of UnavailableSchedules
  * @returns {object[]} altered data
  */
-const removeExpired =async (data) => {
+const removeExpired = async (data) => {
     const expiredObjects = [];
     for (let i = 0; i < data.length; i++) {
         if (dayjs(data[i].to_time).isBefore(dayjs()))
@@ -94,9 +94,9 @@ const removeExpired =async (data) => {
     }
 
     // Remove expired unavailability from the data
-    for (let obj of expiredObjects){
+    for (let obj of expiredObjects) {
         data.splice(data.indexOf(obj), 1);
-        await deleteUnavailableSchedule(obj)
+        await deleteUnavailableSchedule(obj);
     }
     return data;
 };
@@ -179,7 +179,7 @@ const isToday = (date) => {
  * @param {string} id ID of user
  * @param {string} queueType whether it is start queue or stop queue: start, stop
  */
-const updateQueue = async (queue, time, id,queueType) => {
+const updateQueue = async (queue, time, id, queueType) => {
     if (isToday(time)) {
         const hour = dayjs(time).hour();
         const min = dayjs(time).minute();
@@ -189,17 +189,19 @@ const updateQueue = async (queue, time, id,queueType) => {
             'hour': hour,
             'min':  min
         };
-        if (queue.length == 0){
+        if (queue.length == 0) {
             queue.push(unavailTime);
-             
-            //adds to prespective db tables
-            if(queueType=="start"){
-                await addUnavailableQueue(unavailTime)
-            }else{
-                await addAvailableQueue(unavailTime)
+
+            // adds to prespective db tables
+            if (queueType == 'start') {
+                await addUnavailableQueue(unavailTime);
             }
-            
-        }else {
+            else {
+                await addAvailableQueue(unavailTime);
+            }
+
+        }
+        else {
             for (let i = 0; i < queue.length; i++) {
                 const qTime = queue[i];
                 if (hour <= qTime.hour && min <= qTime.min) {
@@ -210,11 +212,13 @@ const updateQueue = async (queue, time, id,queueType) => {
                     queue.push(unavailTime);
                     return;
                 }
-                //adds to prespective db tables
-                if(queueType=="start"){
-                    await addUnavailableQueue(unavailTime)
-                }else{
-                    await addAvailableQueue(unavailTime)
+
+                // adds to prespective db tables
+                if (queueType == 'start') {
+                    await addUnavailableQueue(unavailTime);
+                }
+                else {
+                    await addAvailableQueue(unavailTime);
                 }
             }
         }
@@ -233,12 +237,13 @@ const changeRole = async (client, queueItem, isUnavail) => {
         user = await client.users.fetch(queueItem.id); // Fetches user and adds to cache
 
     // Add or remove unavailable role depending on isUnavail
-    if(isUnavail){
-        addUnavailableRole(user)
-        await deleteUnavailableStart(queueItem)
-    }else{
+    if (isUnavail) {
+        addUnavailableRole(user);
+        await deleteUnavailableStart(queueItem);
+    }
+    else {
         removeUnavailableRole(user);
-        await deleteUnavailableStop(queueItem)
+        await deleteUnavailableStop(queueItem);
     }
 };
 
@@ -246,19 +251,19 @@ const changeRole = async (client, queueItem, isUnavail) => {
  * Populate the start and end queues with most up to date unavailability info
  */
 const getQueues = async() => {
-    return getAllUnavailable().then(async data=>{//returns list of unavailable start and stop
+    return getAllUnavailable().then(async data=>{ // returns list of unavailable start and stop
         // Empty queues when reloading from file
         startQueue.length = 0;
         endQueue.length = 0;
         return removeExpired(data).then(async data=>{
             for (let i = 0; i < data.length; i++) {
-                const user= await getUserByDBId(data[i].user_id)
-                await updateQueue(startQueue, data[i].from_time, user.discord_user_id,"start");////get user ID from user table object *vNote*
-                await updateQueue(endQueue, data[i].to_time, user.discord_user_id,"stop");
+                const user = await getUserByDBId(data[i].user_id);
+                await updateQueue(startQueue, data[i].from_time, user.discord_user_id, 'start');// //get user ID from user table object *vNote*
+                await updateQueue(endQueue, data[i].to_time, user.discord_user_id, 'stop');
             }
-        })
-            
-    })
+        });
+
+    });
 };
 
 

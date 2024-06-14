@@ -1,8 +1,19 @@
 const { DataTypes, Sequelize } = require('sequelize');
 
 const sequelize = new Sequelize(
-    `postgres://${process.env.PGUSER}:${process.env.PGPASSWORD}@${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PGDATABASE}`,
-    { logging: false }
+    process.env.DATABASE_URL ?? `postgres://${process.env.PGUSER}:${process.env.PGPASSWORD}@${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PGDATABASE}`,
+    {
+        logging:        false,
+        protocol:       'postgres',
+        dialect:        'postgres',
+        dialectOptions: { ssl: { rejectUnauthorized: false }, },
+        pool:           {
+            max:     5,
+            min:     0,
+            acquire: 30000,
+            idle:    10000
+        }
+    }
 );
 
 // soft deletion
@@ -97,7 +108,6 @@ const CheckInSchedule = sequelize.define(
 
 User.hasMany(CheckInSchedule, user_fk);
 CheckInSchedule.belongsTo(User);
-
 
 const UnavailableSchedule = sequelize.define(
     'unavailable_schedule',
@@ -204,7 +214,7 @@ UnavailableStart.belongsTo(User);
 const UnavailableStop = sequelize.define(
     'unavailable_stop',
     {
-        
+
         hour: {
             type:      DataTypes.INTEGER,
             allowNull: false
