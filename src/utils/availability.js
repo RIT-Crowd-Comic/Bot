@@ -494,5 +494,5 @@ module.exports = {
     getAvailabilityChannel,
     newAvailabilityEntry,
     createAvailability,
-    createUnavailability
+    createUnavailability,
 };

@@ -1,6 +1,8 @@
 const { version } = require('../../config.json');
 const baseUrl = `https://discord.com/api/${version}`;
 
+
+
 // helper method for discord get requests
 const getAPICall = async (url, body = {
     method:  'GET',
@@ -106,6 +108,20 @@ const getServerUser = async (serverId, userId) => {
     return await getAPICall(`${baseUrl}/guilds/${serverId}/members/${userId}`);
 };
 
+/** Gets the first 1000 users of a sever
+ * @param {String} serverId the id of the server 
+ * @param {boolean} excludeBots if bots will be excluded in the results 
+ */
+const getServerUsers = async (serverId, excludeBots) => {
+    let response = await getAPICall(`${baseUrl}/guilds/${serverId}/members?limit=1000`);
+    if (excludeBots) {
+        response = response.filter(user => !user.bot);
+    }
+    return response;
+};
+
+
+
 // adds a role to a user
 const addRole = async (serverId, userId, roleId) => {
     return await putAPICall(`${baseUrl}/guilds/${serverId}/members/${userId}/roles/${roleId}`);
@@ -114,6 +130,7 @@ const addRole = async (serverId, userId, roleId) => {
 const removeRole = async (serverId, userId, roleId) => {
     return await deleteAPICall(`${baseUrl}/guilds/${serverId}/members/${userId}/roles/${roleId}`);
 };
+
 
 
 module.exports = {
@@ -127,5 +144,6 @@ module.exports = {
     getRoles,
     getServerUser,
     addRole,
-    removeRole
+    removeRole,
+    getServerUsers,
 };
