@@ -170,7 +170,7 @@ const upsertUser = async (user) => {
  * they might not be present in the users table. In that case,
  * it is a good idea to insert a new user (taking info from the Discord
  * API) if they don't exist yet
- * @param {string} userId 
+ * @param {string} userId discord id
  */
 const getUser = async (userId) => {
     const id = userId?.toString()?.trim() ?? '';
@@ -187,30 +187,92 @@ const getUser = async (userId) => {
 };
 
 /**
+ * Get a user's id, tag, and name. Keep in mind
+ * that even if a user's id exists in another table, 
+ * they might not be present in the users table. In that case,
+ * it is a good idea to insert a new user (taking info from the Discord
+ * API) if they don't exist yet
+ * @param {string} userId discord id
+ */
+const getUserByDBId = async (id) => {
+    const user_id = id?.toString()?.trim() ?? '';
+
+    assertArgument(user_id.length > 0, 'Invalid argument: id');
+
+    const filter = {
+        where: { user_id },
+        order: [['id', 'ASC']],
+        limit: 1
+    };
+
+    return User.findOne(filter);
+};
+
+/**
+ * Get all entries of a table by user, applying additional filter settings
+ * @param {string} userId 
+ * @param {ModelCtor<Model<any, any>>} model 
+ * @param {object} filter additional filter settings
+ * @returns 
+ */
+const getAllByUser = async (userId, model, filter = {}) => {
+    return getUser(userId).then(user => {
+
+        // make sure to get the most recent responses
+        const _filter = {
+            where: { user_id: user.id },
+            ...filter
+        };
+        return model.findAll(_filter);
+    });
+};
+
+/**
+ * Get a single entry of a table by user, applying additional filter settings
+ * @param {string} userId 
+ * @param {ModelCtor<Model<any, any>>} model 
+ * @param {object} filter additional filter settings
+ * @returns 
+ */
+const getModelEntryByUser = async (userId, model, filter = {}) => {
+    return getUser(userId).then(user => {
+
+        // make sure to get the most recent responses
+        const _filter = {
+            where: { user_id: user.id },
+            ...filter
+        };
+        return model.findOne(_filter);
+    });
+};
+
+/**
  * 
  * @param {{
- * userId: string, 
+ * discord_user_id: string, 
  * content: string, 
+ * id: string,
  * timestamp: string}} message 
  */
 const addMessage = async (message) => {
 
 
-    const id = message?.userId?.toString().trim() ?? '';
+    const discord_user_id = message?.discord_user_id?.toString().trim() ?? '';
     const content = message?.content?.toString().trim() ?? '';
-    const timestamp = message?.timestamp?.toString().trim() ??
+    const message_id = message?.id?.toString().trim() ?? '';
+    const message_ts = message?.timestamp?.toString().trim() ??
         'CURRENT_TIMESTAMP';
 
-    assertArgument(id.length > 0, 'Invalid argument: message.id');
+    assertArgument(discord_user_id.length > 0, 'Invalid argument: message.id');
 
-    const values = [id, content, timestamp];
-    const query =
-`
-INSERT INTO messages (user_id, content, timestamp)
-    VALUES ($1, $2, $3);
-`;
-
-    return pool.query(query, values);
+    return getUser(discord_user_id).then(user =>
+        Message.create({
+            user_id:   user.id,
+            content,
+            author_id: discord_user_id,
+            message_id,
+            message_ts
+        }));
 };
 
 // expects 
@@ -230,12 +292,12 @@ const getMessagesRange = async (start_msg_id, end_msg_id) => {
 };
 
 const getMessage = async (msg_id) => {
-    const ms_id = msg_id;
+    const message_id = msg_id;
     assertArgument(message_id.length > 0, 'Invalid argument: msg_id');
 
 
     const filter = {
-        where: { message_id: { [sequelize.eq]: ms_id } },
+        where: { message_id },
         order: [['message_ts', 'ASC']]
     };
 
@@ -243,15 +305,37 @@ const getMessage = async (msg_id) => {
 };
 
 const getMessagesByTimestamp = async (msg_timestamp) => {
-    const message_timestamp = msg_timestamp;
-    assertArgument(message_timestamp.length > 0, 'Invalid argument: msg_timestamp');
+    const message_ts = msg_timestamp;
+    assertArgument(message_ts.length > 0, 'Invalid argument: msg_timestamp');
 
     const filter = {
-        where: { message_ts: { [sequelize.eq]: message_timestamp } },
+        where: { message_ts },
         order: [['message_ts', 'ASC']]
     };
 
     return Message.findOne(filter);
+};
+
+const getAllMessages = async() => {
+
+    const filter = { order: [['message_ts', 'ASC']] };
+
+    return Message.findAll(filter)
+        .then(messages => {
+
+            // get discord_user_id to send as message author
+            return messages.map(message => ({
+                authorId:  message.author_id,
+                timestamp: message.message_ts,
+                messageId: message.message_id,
+                content:   message.content,
+            }));
+        });
+};
+
+const deleteAllMessages = async () => {
+    await Message.truncate();
+    return { content: 'Success' };
 };
 
 
@@ -283,7 +367,6 @@ const addCheckInSchedule = async (userId, schedule) => {
     return getUser(discord_user_id)
         .then(user => CheckInSchedule.create({
             user_id: user.id,
-            discord_user_id,
             utc_days,
             utc_time,
             local_days,
@@ -331,8 +414,14 @@ const getCheckInSchedules = async (userId) => {
     // if there's no user, just get all schedules
     if (discord_user_id.length === 0) return CheckInSchedule.findAll();
 
-    const filter = { where: { discord_user_id } };
-    return CheckInSchedule.findAll(filter);
+    // get all schedules for the specified user
+    return getAllByUser(discord_user_id, CheckInSchedule);
+
+    // return getUser(discord_user_id)
+    //     .then(user => {
+    //         const filter = { where: { user_id: user.id } };
+    //         return CheckInSchedule.findAll(filter);
+    //     });
 };
 
 
@@ -354,7 +443,6 @@ const addCheckInResponse = (userId, content) => {
     return getUser(discord_user_id)
         .then(user => CheckInResponse.create({
             user_id: user.id,
-            discord_user_id,
             content
         }));
 };
@@ -372,14 +460,11 @@ const getCheckInResponses = (userId, limit = 5) => {
     assertArgument(discord_user_id?.length > 0, 'Invalid Argument: userId');
     assertArgument(limit >= 1, 'Invalid Argument: limit must be >= 1');
 
-    // make sure to get the most recent responses
     const filter = {
-        where: { discord_user_id },
         order: [['created_at', 'DESC']],
         limit
     };
-
-    return CheckInResponse.findAll(filter);
+    return getAllByUser(discord_user_id, CheckInResponse, filter);
 };
 
 /**
@@ -588,7 +673,6 @@ const addUnavailable = async (schedule) => {
     return getUser(discord_user_id)
         .then(user => UnavailableSchedule.create({
             user_id: user.id,
-            discord_user_id,
             from_time,
             to_time,
             reason
@@ -605,11 +689,12 @@ const getUnavailable = async (userId) => {
 
     assertArgument(discord_user_id.length > 0, 'Invalid Argument: userId');
 
-    // TODO: figure out a way to filter out past dates
-    // TODO: figure out a way to delete past schedules
+    return getAllByUser(discord_user_id, UnavailableSchedule);
 
-    const filter = { where: { discord_user_id } };
-    return UnavailableSchedule.findAll(filter);
+    // return getUser(discord_user_id).then(user => {
+    // const filter = { where: { user_id: user.id } };
+    //     return UnavailableSchedule.findAll(filter);
+    // });
 };
 
 /**
@@ -657,14 +742,12 @@ const setAvailable = async (schedule) => {
             return AvailableSchedule.findOne(filter)
                 .then(available => {
                     if (available) return available.update({
-                        discord_user_id,
                         from_time,
                         to_time,
                         days
                     });
                     return AvailableSchedule.create({
                         user_id: user.id,
-                        discord_user_id,
                         from_time,
                         to_time,
                         days
@@ -686,8 +769,12 @@ const getAvailable = async (userId) => {
     // TODO: figure out a way to filter out past dates
     // TODO: figure out a way to delete past schedules
 
-    const filter = { where: { discord_user_id } };
-    return AvailableSchedule.findOne(filter);
+    return getModelEntryByUser(discord_user_id, AvailableSchedule);
+
+    // return getUser(discord_user_id).then(user => {
+    //     const filter = { where: { user_id: user.id } };
+    //     return AvailableSchedule.findOne(filter);
+    // }) 
 };
 
 /**
@@ -739,7 +826,13 @@ module.exports = {
     touchUser,
     upsertUser,
     getUser,
+    getUserByDBId,
     addMessage,
+    getMessage,
+    getMessagesByTimestamp,
+    getMessagesRange,
+    getAllMessages,
+    deleteAllMessages,
     addCheckInSchedule,
     deleteCheckInSchedule,
     markCheckInScheduleForDelete,

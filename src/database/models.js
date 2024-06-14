@@ -36,11 +36,12 @@ const User = sequelize.define(
 const Message = sequelize.define(
     'message',
     {
-        discord_user_id: {
+        content:
+        {
             type:      DataTypes.STRING,
             allowNull: false
         },
-        content:
+        author_id:
         {
             type:      DataTypes.STRING,
             allowNull: false
@@ -59,14 +60,12 @@ const Message = sequelize.define(
     },
     { ...paranoidConfig }
 );
+User.hasMany(Message, user_fk);
+Message.belongsTo(User);
 
 const CheckInSchedule = sequelize.define(
     'checkin_schedule',
     {
-        discord_user_id: {
-            type:      DataTypes.STRING,
-            allowNull: false
-        },
         utc_days:
         {
             type:      DataTypes.ARRAY(DataTypes.STRING),
@@ -103,10 +102,6 @@ CheckInSchedule.belongsTo(User);
 const UnavailableSchedule = sequelize.define(
     'unavailable_schedule',
     {
-        discord_user_id: {
-            type:      DataTypes.STRING,
-            allowNull: false
-        },
         from_time: {
             type:      DataTypes.STRING,
             allowNull: false
@@ -126,10 +121,6 @@ UnavailableSchedule.belongsTo(User);
 const AvailableSchedule = sequelize.define(
     'available_schedule',
     {
-        discord_user_id: {
-            type:      DataTypes.STRING,
-            allowNull: false
-        },
         from_time: {
             type:      DataTypes.STRING,
             allowNull: false
@@ -167,13 +158,7 @@ const Config = sequelize.define(
 
 const CheckInResponse = sequelize.define(
     'checkin_response',
-    {
-        discord_user_id: {
-            type:      DataTypes.STRING,
-            allowNull: false
-        },
-        content: { type: DataTypes.JSON },
-    },
+    { content: { type: DataTypes.JSON }, },
     { ...paranoidConfig }
 );
 
