@@ -3,6 +3,10 @@ const utc = require('dayjs/plugin/utc');
 const weekday = require('dayjs/plugin/weekday');
 const localizedFormat = require('dayjs/plugin/localizedFormat');
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { findRole, hasRole } = require('../utils/roles');
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+const serverUsersUtils = require('../utils/serverUsers');
 
 dayjs.extend(utc);
 dayjs.extend(weekday);
@@ -21,6 +25,15 @@ const abbreviations = {
     'sa': 'saturday',
     'su': 'sunday',
 };
+
+let responses = [];
+
+const addResponse = response => { responses.push(response); };
+const getResponses = (user) => {
+    const clone = structuredClone(responses);
+    return user ? clone.filter(response => response.userId === user.id) : clone;
+};
+const clearResponses = () => { responses = []; return { content: 'Success' }; };
 
 class ScheduleError extends Error {
     constructor(message) {
@@ -295,7 +308,7 @@ const getQueue = () => {
 const validScheduleUser = (user) => {
     const userId = user?.id;
 
-    // todo: command should include a user
+    // command should include a user
     if (!userId) {
         return { status: 'Fail', description: '*Invalid user*' };
     }
@@ -396,6 +409,88 @@ const scheduleCheckIn = (user, days, time) => {
     }
 };
 
+/**
+ * @param {Discord User Object} user the user who responses want to be seen
+ * @param {Discord User Object} commandUser the user who sent the command
+ * @returns 
+ */
+const viewCheckInResponses = async (user, commandUser) => {
+    const adminName = 'top diggity dogs';
+    const adminRole = await findRole(adminName);
+
+    // don't continue the command if the commandUser doesn't have the top dog role
+    // check if admin role exists
+    if (!adminRole) {
+        return { status: 'Fail', description: `Role '${adminName}' does not exist` };
+    }
+
+    // check if the commandUser has the role
+    if (!await hasRole(commandUser, adminRole)) {
+        return { status: 'Fail', description: `You do not have permission to use this command` };
+    }
+
+    // if user is undefined, get all of the responses of all users
+    if (!user) {
+        const response = getResponses();
+
+        if (response.length === 0) {
+            return { status: 'Fail', description: `No responses have been logged` };
+        }
+
+        return { status: 'Success', description: `Here are all the responses`, responses: response };
+    }
+
+    // if user is defined get all of that user's responses
+    const response = getResponses(user);
+
+    if (response.length === 0) {
+        return { status: 'Fail', description: `<@${user.id}> does not have any responses` };
+    }
+
+    return { status: 'Success', description: `Here are <@${user.id}>'s response(s)`, responses: response };
+};
+
+
+/**
+ * 
+ * @param {*} rose the pros of th report
+ * @param {*} bud the cons of the report
+ * @param {*} thorn what could be improved on in the report
+ * @param {*} user the person who sent the report
+ * @param {*} timeStamp when the user sent the report
+ * @returns {Response Object} an object of the response
+ */
+const parseResponse = (rose, bud, thorn, user, timeStamp) => {
+    const date = new Date(Number(timeStamp));
+    const dateString = date.toLocaleString();
+    return {
+        userId:    user.id,
+        rose:      rose,
+        bud:       bud,
+        thorn:     thorn,
+        timeStamp: dateString
+    };
+};
+
+/**
+ * 
+ * @param {Response Object} response 
+ * @returns {String} the response in string format
+ */
+const displayResponse = async (response) => {
+
+    // todo: get the user's user name in the server
+    const serverUser = serverUsersUtils.findUser(response.userId);
+    const nick = serverUser.nick;
+    const global = serverUser.user.global_name;
+    const username = serverUser.user.username;
+    return `${nick != null ? nick : global != null ? global : username}
+        ${response.timeStamp}
+            Rose: ${response.rose}
+            Bud: ${response.bud}
+            Thorn ${response.thorn}`;
+};
+
 module.exports = {
     createSchedule,
     parseDaysList,
@@ -410,5 +505,11 @@ module.exports = {
     queue,
     getScheduleObjs,
     ScheduleError,
-    validScheduleUser
+    validScheduleUser,
+    viewCheckInResponses,
+    addResponse,
+    getResponses,
+    clearResponses,
+    parseResponse,
+    displayResponse
 };
