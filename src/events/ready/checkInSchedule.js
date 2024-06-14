@@ -14,9 +14,9 @@ dayjs.extend(timezone);
  * if the first item in the queue has passed or is the current time
  * then it will send the reminder and remove from the queue
  */
-const checkQueue=()=>{
-    while (queue.length > 0 && queue[0].hour <= today.hour()) {
-        if (queue[0].min <= today.minute() || queue[0].hour < today.hour()) {
+const checkQueue=(client,day)=>{
+    while (queue.length > 0 && queue[0].hour <= day.hour()) {
+        if (queue[0].min <= day.minute() || queue[0].hour < day.hour()) {
             sendCheckInReminder(client, queue[0].id); // send dm reminder message
             queue.shift();
         }
@@ -30,15 +30,15 @@ const checkQueue=()=>{
  * keep doing this until all past and current reminders have been sent
  * @param {*} client 
  */
-const checkList = async ()=>{
+const checkList = async (client)=>{
 
     const today = dayjs.utc();
 
     if (today.hour() == 0 && today.minute() == 1) {
-        await deleteWholeQueue().then(async()=>{await getDayOrder().then(()=>{checkQueue()})});
+        await deleteWholeQueue().then(async()=>{await getDayOrder().then(()=>{checkQueue(client,oday)})});
         
     }else{
-        checkQueue()
+        checkQueue(clienttoday)
     }
     
 
