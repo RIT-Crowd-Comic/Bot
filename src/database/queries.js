@@ -165,7 +165,7 @@ const upsertUser = async (user) => {
 };
 
 /**
- * Get a user's id, tag, and name. Keep in mind
+ * Get a user's id, tag, and name from a discord user id. Keep in mind
  * that even if a user's id exists in another table, 
  * they might not be present in the users table. In that case,
  * it is a good idea to insert a new user (taking info from the Discord
@@ -187,7 +187,7 @@ const getUser = async (userId) => {
 };
 
 /**
- * Get a user's id, tag, and name. Keep in mind
+ * Get a user's id, tag, and name from a user_id foreign key. Keep in mind
  * that even if a user's id exists in another table, 
  * they might not be present in the users table. In that case,
  * it is a good idea to insert a new user (taking info from the Discord
