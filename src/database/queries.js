@@ -538,7 +538,7 @@ const addCheckInQueue = async (schedule) => {
     return getUser(discord_user_id)
         .then(user => {
             if (!user) return undefined;
-            CheckInReminder.create({
+            return CheckInReminder.create({
                 user_id: user.id,
                 discord_user_id,
                 hour,
