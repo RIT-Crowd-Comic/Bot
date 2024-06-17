@@ -5,6 +5,7 @@ const {
     rememberRangeGrab, rememberOneMessage, rememberPast, rememberNumber, startRemembering, stopRemembering
 } = require('../../utils/rememberMessages');
 const fs = require('fs');
+const path = require('path');
 const { defaultExcludeBotMessages, ephemeral } = require('../../../config.json');
 const { clamp } = require(`../../utils/mathUtils`);
 const { deleteAllMessages, getAllMessages } = require('../../database');
@@ -57,16 +58,22 @@ const rememberPastMessages = async (client, interaction) => {
 // remember recall
 const rememberRecall = async interaction =>{
     await interaction.deferReply(); // defer waits for logic to finish
-    const jsonFilePath = './src/rememberedMessages.json';
+    const fileDir = path.resolve(__dirname, './tmp/');
+    const filePath = path.resolve(__dirname, './tmp/rememberedMessages.json');
+
+
     const json = JSON.stringify(await getAllMessages(), null, 2);
     interaction.editReply('Success');
 
     // send the json
-    fs.writeFile(jsonFilePath, json, err => err && console.error(err));
+    if (!fs.existsSync(fileDir)) {
+        fs.mkdirSync(fileDir);
+    }
+    fs.writeFile(filePath, json, err => err && console.error(err));
     await interaction.channel.send({
         files: [
             {
-                attachment: jsonFilePath,
+                attachment: filePath,
                 name:       'rememberedMessages.json'
             }
         ]

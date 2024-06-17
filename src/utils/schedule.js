@@ -4,8 +4,11 @@ const weekday = require('dayjs/plugin/weekday');
 const localizedFormat = require('dayjs/plugin/localizedFormat');
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const {
-    addCheckInSchedule, getCheckInSchedules, upsertUser, getDBQueue, addCheckInQueue, deleteCheckInReminder
+    addCheckInSchedule, getCheckInSchedules, upsertUser, getDBQueue, addCheckInQueue, deleteCheckInReminder, getCheckInResponses
 } = require('../database');
+const { findRole, hasRole } = require('../utils/roles');
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 dayjs.extend(utc);
 dayjs.extend(weekday);
@@ -167,8 +170,10 @@ const sendCheckInReminder = async (client, id) => {
 
     let user = await client.users.cache.get(id);
     if (!user) { // checks if user is already in cache
-        user = await client.users.fetch(id); // fetches user (will add to the cache)
+        user = await client.users.fetch(id).catch(); // fetches user (will add to the cache)
     }
+
+    if (!user) return;
 
     // check-in interface module
     let reply = [
@@ -210,7 +215,7 @@ const sendCheckInReminder = async (client, id) => {
 
 /**
  * creates a reminder object to add to the que then inserts it in the correct chronological placement
- * @param {string[]} days array of schedule days
+ * @param {string[] | string} days array of schedule days
  * @param {int[]} utcTime utc reminder [hour,min]
  * @param {string} id user id
  * @param {bool} toRemove whether or not you want to remove (default=false)
@@ -293,9 +298,8 @@ const checkCurrentDay = () => {
  */
 const getQueue = async() => {
     queue.length = 0;
-    await getDBQueue('checkIn').then(reminder=>{
-        updateQueue(reminder);
-    });
+    await getDBQueue('checkIn').then(reminders=>
+        Promise.all(reminders.map(reminder => updateQueue(checkCurrentDay(), [reminder.hour, reminder.min], reminder.id))));
     getDayOrder(checkCurrentDay());
 };
 
@@ -307,13 +311,14 @@ const getQueue = async() => {
 const validScheduleUser = async (user) => {
     const userId = user?.id;
 
-    // todo: command should include a user
+    // command should include a user
     if (!userId) {
         return { status: 'Fail', description: '*Invalid user*' };
     }
 
     // verify the person has schedules
-    if ((await getCheckInSchedules(userId)).length === 0) {
+    const checkinSchedules = await getCheckInSchedules(userId);
+    if (checkinSchedules == undefined || checkinSchedules.length === 0) {
         return { status: 'Fail', description: '*You have no schedules! Create one with `/check-in schedule`*' };
     }
 
@@ -387,6 +392,71 @@ const scheduleCheckIn = async (user, days, time) => {
     }
 };
 
+/**
+ * @param {Discord User Object} user the user who responses want to be seen
+ * @param {Discord User Object} commandUser the user who sent the command
+ * @returns 
+ */
+const viewCheckInResponses = async (user, commandUser) => {
+    const adminName = 'top diggity dogs';
+    const adminRole = await findRole(adminName);
+
+    // don't continue the command if the commandUser doesn't have the top dog role
+    // check if admin role exists
+    if (!adminRole) {
+        return { status: 'Fail', description: `Role '${adminName}' does not exist` };
+    }
+
+    // check if the commandUser has the role
+    if (!await hasRole(commandUser, adminRole)) {
+        return { status: 'Fail', description: `You do not have permission to use this command` };
+    }
+
+    // if user is undefined, get all of the responses of all users
+    if (!user) {
+        const response = await getCheckInResponses();
+
+        if (response.length === 0) {
+            return { status: 'Fail', description: `No responses have been logged` };
+        }
+
+        return { status: 'Success', description: `Here are all the responses`, responses: response };
+    }
+
+    // if user is defined get all of that user's responses
+    const response = await getCheckInResponses(user.id);
+
+    if (response.length === 0) {
+        return { status: 'Fail', description: `<@${user.id}> does not have any responses` };
+    }
+
+    return { status: 'Success', description: `Here are <@${user.id}>'s response(s)`, responses: response };
+};
+
+/**
+ * Convert a check-in response into a readable format
+ * @param {{
+ * content: object,
+ * authorId: string,
+ * authorName: string,
+ * createdAt: Date}} response 
+ * @returns 
+ */
+const displayResponse = (response) => {
+
+    // map into markdown quoted text
+    const content = Object.entries(response.content)
+        .map(entry => `${entry[0]}: \n\t> ${entry[1]}`);
+
+    const result = [
+        response.authorName,
+        `**${dayjs(response.createdAt).format('ddd DD/MM/YY h:ma')}**`,
+        ...content
+    ].join('\n');
+
+    return result;
+};
+
 module.exports = {
     createSchedule,
     parseDaysList,
@@ -400,5 +470,7 @@ module.exports = {
     getDayOrder,
     queue,
     ScheduleError,
-    validScheduleUser
+    validScheduleUser,
+    viewCheckInResponses,
+    displayResponse
 };

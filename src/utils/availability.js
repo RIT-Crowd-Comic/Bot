@@ -1,15 +1,17 @@
 const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
 dayjs.extend(utc);
-const { ScheduleError, parseDaysList } = require('./schedule.js');
+
+const { ScheduleError, parseDaysList, parseTime } = require('./schedule.js');
 const { addUnavailableRole, removeUnavailableRole } = require('./roles.js');
 const { EmbedBuilder } = require('discord.js');
 const {
     addUnavailable, setAvailable, upsertUser, getConfig, updateConfig,
     getAvailable, getUnavailable, getAllUnavailable,
     addAvailableQueue, addUnavailableQueue,
-    deleteUnavailableStart, deleteUnavailableStop, deleteUnavailableSchedule,
-    getUserByDBId
+    deleteUnavailableStart, deleteUnavailableStop,
+    getUserByDBId,
+    deleteExpiredUnavailable
 } = require('../database');
 
 /**
@@ -80,26 +82,6 @@ const createUnavailability = (start, end, reason) => {
 };
 
 
-// ///////////////////// UPDATE vvvvvvvvvvvvvvvvvvvvv
-/**
- * Removes any unavailability events that have passed for a specific user
- * @param {object[]} data array of UnavailableSchedules
- * @returns {object[]} altered data
- */
-const removeExpired = async (data) => {
-    const expiredObjects = [];
-    for (let i = 0; i < data.length; i++) {
-        if (dayjs(data[i].to_time).isBefore(dayjs()))
-            expiredObjects.push(data[i]);
-    }
-
-    // Remove expired unavailability from the data
-    for (let obj of expiredObjects) {
-        data.splice(data.indexOf(obj), 1);
-        await deleteUnavailableSchedule(obj);
-    }
-    return data;
-};
 
 /**
  * Save an Unavailable object to a user in the JSON file
@@ -120,8 +102,7 @@ const saveUnavailability = async (userId, userTag, unavail) => {
         }));
 
     // Update queues
-    getQueues();
-    throw new Error('Make sure the above statement is used correctly');
+    await getQueues();
 };
 
 /**
@@ -143,11 +124,8 @@ const saveAvailability =  async (userId, userTag, avail) => {
         }));
 
     // Update queues
-    getQueues();
+    await getQueues();
 };
-
-// ///////////////////// UPDATE ^^^^^^^^^^^^^^^^^^^^^^
-
 
 const updateAvailabilityChannel = async newChannel => {
     const oldChannel = await getAvailabilityChannel();
@@ -238,11 +216,11 @@ const changeRole = async (client, queueItem, isUnavail) => {
 
     // Add or remove unavailable role depending on isUnavail
     if (isUnavail) {
-        addUnavailableRole(user);
+        await addUnavailableRole(user);
         await deleteUnavailableStart(queueItem);
     }
     else {
-        removeUnavailableRole(user);
+        await removeUnavailableRole(user);
         await deleteUnavailableStop(queueItem);
     }
 };
@@ -251,18 +229,18 @@ const changeRole = async (client, queueItem, isUnavail) => {
  * Populate the start and end queues with most up to date unavailability info
  */
 const getQueues = async() => {
-    return getAllUnavailable().then(async data=>{ // returns list of unavailable start and stop
+    await deleteExpiredUnavailable();
+
+    return getAllUnavailable().then(async schedules=>{ // returns list of unavailable start and stop
         // Empty queues when reloading from file
         startQueue.length = 0;
         endQueue.length = 0;
-        return removeExpired(data).then(async data=>{
-            for (let i = 0; i < data.length; i++) {
-                const user = await getUserByDBId(data[i].user_id);
-                await updateQueue(startQueue, data[i].from_time, user.discord_user_id, 'start');// //get user ID from user table object *vNote*
-                await updateQueue(endQueue, data[i].to_time, user.discord_user_id, 'stop');
-            }
-        });
 
+        for (let i = 0; i < schedules.length; i++) {
+            const user = await getUserByDBId(schedules[i].user_id);
+            await updateQueue(startQueue, schedules[i].from_time, user.discord_user_id, 'start');// //get user ID from user table object *vNote*
+            await updateQueue(endQueue, schedules[i].to_time, user.discord_user_id, 'stop');
+        }
     });
 };
 
@@ -287,14 +265,17 @@ const setUnavail = async (userId, userTag, dateFrom, dateTo, timeFrom, timeTo, r
             throw new ScheduleError('Please select a start time.');
 
         // Check if time given is a number and if it is in proper format
-        if (timeFrom && !isNaN(timeFrom))
-            timeFrom = timeFrom.includes(':') ? timeFrom : `${timeFrom}:00`;
-        if (timeTo && !isNaN(timeTo))
-            timeTo = timeTo.includes(':') ? timeTo : `${timeTo}:00`;
+        if (timeFrom)
+            timeFrom = parseTime(timeFrom);
+        if (timeTo)
+            timeTo = parseTime(timeTo);
+
+        timeFrom ??= dayjs('2024 00:00');
+        timeTo ??= dayjs('2024 23:59');
 
         // Create a start and end dayjs obj (Parse times if present and default times to 0:00 if empty)
-        const startUnavail = dayjs(`2024 ${dateFrom} ${timeFrom ? timeFrom : '0:00'}`);
-        const endUnavail = dayjs(`2024 ${dateTo} ${timeTo ? timeTo : '23:59'}`);
+        const startUnavail = dayjs(`2024 ${dateFrom}`).hour(timeFrom.hour()).minute(timeFrom.minute());
+        const endUnavail = dayjs(`2024 ${dateTo}`).hour(timeTo.hour()).minute(timeTo.minute());
 
         // Check if dates are valid
         if (!dayjs(startUnavail).isValid() || !dayjs(endUnavail).isValid())
@@ -441,9 +422,21 @@ const displayAvail = async (user, member) => {
         const targetMember = member ? member.user : user;
 
         // Get data saved from file
+        await upsertUser({
+            id:           user.id,
+            tag:          user.tag,
+            display_name: user.displayName,
+            global_name:  user.globalName
+        });
         const availability = await getAvailable(user.id);
 
         // Create an embed to send to the user
+
+        // '==' intentional, null == undefined
+        if (availability == undefined) {
+            return { content: `*${targetMember.username} has not set up their availabilities. Try running /available set-availability.*` };
+        }
+
         const embed = new EmbedBuilder()
             .setTitle(`${targetMember.username}'s Availability`)
             .setDescription(`Available from ${dayjs(availability.from_time).format('hh:mm A')}-${dayjs(availability.to_time).format('hh:mm A')} on ${availability.days.join(', ')}`);
@@ -466,7 +459,17 @@ const displayUnavail = async (user, member) => {
 
         const targetMember = member ? member.user : user;
 
+        await upsertUser({
+            id:           user.id,
+            tag:          user.tag,
+            display_name: user.displayName,
+            global_name:  user.globalName
+        });
         const unavailability = await getUnavailable(targetMember.id);
+
+        if (unavailability == undefined) {
+            return { content: `*${targetMember.username} has not set up their availabilities. Try running /available set-availability.*` };
+        }
 
         // Create an embed to send to the user
         const embed = new EmbedBuilder()
@@ -503,5 +506,5 @@ module.exports = {
     setUnavailAI,
     getAvailabilityChannel,
     createAvailability,
-    createUnavailability
+    createUnavailability,
 };

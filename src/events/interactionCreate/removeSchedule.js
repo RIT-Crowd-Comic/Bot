@@ -34,7 +34,7 @@ module.exports = async (client, interaction) => {
         try {
             await interaction.deferReply({ ephemeral: true });
 
-            const removedSchedules = await getCheckInSchedulesMarkedForDelete();
+            const removedSchedules = await getCheckInSchedulesMarkedForDelete(userId);
 
             const numDeleted = await deleteMarkedCheckInSchedules();
 

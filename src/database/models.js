@@ -117,11 +117,11 @@ const UnavailableSchedule = sequelize.define(
     'unavailable_schedule',
     {
         from_time: {
-            type:      DataTypes.STRING,
+            type:      DataTypes.DATE,
             allowNull: false
         },
         to_time: {
-            type:      DataTypes.STRING,
+            type:      DataTypes.DATE,
             allowNull: false
         },
         reason: { type: DataTypes.STRING },
@@ -136,11 +136,11 @@ const AvailableSchedule = sequelize.define(
     'available_schedule',
     {
         from_time: {
-            type:      DataTypes.STRING,
+            type:      DataTypes.DATE,
             allowNull: false
         },
         to_time: {
-            type:      DataTypes.STRING,
+            type:      DataTypes.DATE,
             allowNull: false
         },
         days: {

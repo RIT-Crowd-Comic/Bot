@@ -2,9 +2,7 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const apiCalls = require('./apiCalls');
 const addUnavailableRole = async (user) => {
-    const serverId = process.env.TESTSERVER_ID;
-    const roles = await apiCalls.getRoles(serverId);
-    const unavailableRole = roles.find(role => role.name.toLowerCase() === 'unavailable');
+    const unavailableRole = await findRole('unavailable');
 
     // make sure a role called 'unavailable' exists
     if (!unavailableRole) {
@@ -17,19 +15,17 @@ const addUnavailableRole = async (user) => {
     }
 
     // don't give the role to someone who already has it
-    const serverUser = await apiCalls.getServerUser(serverId, user.id);
-    if (serverUser.roles.some(id => id === unavailableRole.id)) {
+    if (await hasRole(user, unavailableRole)) {
         return { status: 'Fail', description: `<@${user.id}> already has the unavailable role` };
     }
 
     // add the role to the user
-    return await apiCalls.addRole(serverId, user.id, unavailableRole.id);
+    return await apiCalls.addRole(process.env.TESTSERVER_ID, user.id, unavailableRole.id);
 };
 
 const removeUnavailableRole = async (user) => {
     const serverId = process.env.TESTSERVER_ID;
-    const roles = await apiCalls.getRoles(serverId);
-    const unavailableRole = roles.find(role => role.name.toLowerCase() === 'unavailable');
+    const unavailableRole = await findRole('unavailable');
 
     // make sure the role exists
     if (!unavailableRole) {
@@ -37,8 +33,7 @@ const removeUnavailableRole = async (user) => {
     }
 
     // make sure the person is being called has the role
-    const serverUser = await apiCalls.getServerUser(serverId, user.id);
-    if (serverUser.roles.every(id => id !== unavailableRole.id)) {
+    if (!await hasRole(user, unavailableRole)) {
         return { status: 'Fail', description: `<@${user.id}> does not have the unavailable role` };
     }
 
@@ -46,7 +41,30 @@ const removeUnavailableRole = async (user) => {
     return await apiCalls.removeRole(serverId, user.id, unavailableRole.id);
 };
 
+/**
+ * Checks if a role exists in the server
+ * @param {*} roleName 
+ * @returns the role with the name {roleName}. Or undefined if the role doesn't exist
+ */
+const findRole = async (roleName) => {
+    const roles = await apiCalls.getRoles(process.env.TESTSERVER_ID);
+    return roles.find(role => role.name.toLowerCase() === roleName.toLowerCase());
+};
+
+/**
+ * Checks if a user has a specific role
+ * @param {*} user 
+ * @param {*} role 
+ * @returns true if the user has the role. False otherwise
+ */
+const hasRole = async (user, role) => {
+    const serverUser = await apiCalls.getServerUser(process.env.TESTSERVER_ID, user.id);
+    return serverUser.roles.some(id => id === role.id);
+};
+
 module.exports = {
     addUnavailableRole,
-    removeUnavailableRole
+    removeUnavailableRole,
+    findRole,
+    hasRole
 };

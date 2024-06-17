@@ -5,7 +5,7 @@ const timezone = require('dayjs/plugin/timezone');
 const {
     queue, sendCheckInReminder, getQueue, getDayOrder
 } = require('../../utils/schedule');
-const { deleteWholeQueue } = require('../../database');
+const { deleteWholeQueue, getUserByDBId } = require('../../database');
 dayjs.extend(utc);
 dayjs.extend(weekday);
 dayjs.extend(timezone);
@@ -16,10 +16,15 @@ dayjs.extend(timezone);
  * if the first item in the queue has passed or is the current time
  * then it will send the reminder and remove from the queue
  */
-const checkQueue = (client, day)=>{
+const checkQueue = async (client, day)=>{
     while (queue.length > 0 && queue[0].hour <= day.hour()) {
         if (queue[0].min <= day.minute() || queue[0].hour < day.hour()) {
-            sendCheckInReminder(client, queue[0].id); // send dm reminder message
+
+            const user = await getUserByDBId(queue[0].id).catch(err => console.log(err));
+
+            if (!user) continue;
+
+            await sendCheckInReminder(client, user.discord_user_id); // send dm reminder message
             queue.shift();
         }
         else { break; }
@@ -49,11 +54,10 @@ const checkList = async (client)=>{
 
 
 module.exports = async(client) =>{
-
     await getQueue();
 
     try {
-        setInterval(async ()=>{ checkList(client); }, 20 * 1000);// check every 20 seconds
+        setInterval(async ()=>{ await checkList(client); }, 20 * 1000);// check every 20 seconds
 
     }
     catch (error) {

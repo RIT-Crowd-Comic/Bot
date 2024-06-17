@@ -16,6 +16,10 @@ const {
 } = require('./models');
 const { Op } = require('sequelize');
 
+const dayjs = require('dayjs');
+const utc = require('dayjs/plugin/utc');
+dayjs.extend(utc);
+
 // configuration variables must be in .env
 
 /*
@@ -171,19 +175,21 @@ const upsertUser = async (user) => {
  * it is a good idea to insert a new user (taking info from the Discord
  * API) if they don't exist yet
  * @param {string} userId discord id
+ * @param {object} filter additional filter options
  */
-const getUser = async (userId) => {
+const getUser = async (userId, filter) => {
     const id = userId?.toString()?.trim() ?? '';
 
     assertArgument(id.length > 0, 'Invalid argument: userId');
 
-    const filter = {
+    const _filter = {
         where: { discord_user_id: id },
         order: [['id', 'ASC']],
-        limit: 1
+        limit: 1,
+        ...filter
     };
 
-    return User.findOne(filter);
+    return User.findOne(_filter);
 };
 
 /**
@@ -193,19 +199,21 @@ const getUser = async (userId) => {
  * it is a good idea to insert a new user (taking info from the Discord
  * API) if they don't exist yet
  * @param {string} userId discord id
+ * @param {object} filter additional filter options
  */
-const getUserByDBId = async (id) => {
+const getUserByDBId = async (id, filter) => {
     const user_id = id?.toString()?.trim() ?? '';
 
     assertArgument(user_id.length > 0, 'Invalid argument: id');
 
-    const filter = {
-        where: { user_id },
+    const _filter = {
+        where: { id: user_id },
         order: [['id', 'ASC']],
-        limit: 1
+        limit: 1,
+        ...filter
     };
 
-    return User.findOne(filter);
+    return User.findOne(_filter);
 };
 
 /**
@@ -216,15 +224,24 @@ const getUserByDBId = async (id) => {
  * @returns 
  */
 const getAllByUser = async (userId, model, filter = {}) => {
-    return getUser(userId).then(user => {
 
-        // make sure to get the most recent responses
-        const _filter = {
-            where: { user_id: user.id },
+    const _filter = {
+        include: {
+            model,
             ...filter
-        };
-        return model.findAll(_filter);
-    });
+        }
+    };
+    return getUser(userId, _filter);
+
+    // .then(user => {
+
+    //     // make sure to get the most recent responses
+    //     const _filter = {
+    //         where: { user_id: user.id },
+    //         ...filter
+    //     };
+    //     return model.findAll(_filter);
+    // });
 };
 
 /**
@@ -236,6 +253,8 @@ const getAllByUser = async (userId, model, filter = {}) => {
  */
 const getModelEntryByUser = async (userId, model, filter = {}) => {
     return getUser(userId).then(user => {
+
+        if (!user) return undefined;
 
         // make sure to get the most recent responses
         const _filter = {
@@ -391,8 +410,16 @@ const markCheckInScheduleForDelete = async (scheduleId) => {
         .then(schedule => schedule.update({ mark_delete: true }));
 };
 
-const getCheckInSchedulesMarkedForDelete = async () => {
-    return CheckInSchedule.findAll({ where: { mark_delete: true } });
+/**
+ * 
+ * @param {string} userId 
+ * @returns 
+ */
+const getCheckInSchedulesMarkedForDelete = async (userId) => {
+
+    const filter = { where: { mark_delete: true } };
+    return getAllByUser(userId, CheckInSchedule, filter)
+        .then(user => user.checkin_schedules);
 };
 
 /**
@@ -415,7 +442,7 @@ const getCheckInSchedules = async (userId) => {
     if (discord_user_id.length === 0) return CheckInSchedule.findAll();
 
     // get all schedules for the specified user
-    return getAllByUser(discord_user_id, CheckInSchedule);
+    return getAllByUser(discord_user_id, CheckInSchedule).then(user => user.checkin_schedules);
 
     // return getUser(discord_user_id)
     //     .then(user => {
@@ -431,7 +458,7 @@ const getCheckInSchedules = async (userId) => {
  * @param {string} userId
  * @param {object} content
  */
-const addCheckInResponse = (userId, content) => {
+const addCheckInResponse = async (userId, content) => {
     const discord_user_id = userId?.toString()?.trim() ?? '';
 
     assertArgument(discord_user_id?.length > 0, 'Invalid Argument: id');
@@ -451,10 +478,10 @@ const addCheckInResponse = (userId, content) => {
  * Get the most recent list of check-in responses for a user
  * ordered by created date, ascending.
  * @param {string} userId required
- * @param {number} limit optional
+ * @param {number} limit optional. Default set to 5
  * @returns 
  */
-const getCheckInResponses = (userId, limit = 5) => {
+const getCheckInResponses = async (userId, limit = 5) => {
     const discord_user_id = userId?.toString()?.trim() ?? '';
 
     assertArgument(discord_user_id?.length > 0, 'Invalid Argument: userId');
@@ -464,7 +491,13 @@ const getCheckInResponses = (userId, limit = 5) => {
         order: [['created_at', 'DESC']],
         limit
     };
-    return getAllByUser(discord_user_id, CheckInResponse, filter);
+    return getAllByUser(discord_user_id, CheckInResponse, filter).then(user =>
+        user.checkin_responses.map(entry => ({
+            content:    entry.content,
+            authorId:   user.discord_user_id,
+            authorName: user.tag || user.display_name || user.global_name,
+            createdAt:  entry.created_at
+        })));
 };
 
 /**
@@ -496,19 +529,22 @@ const getDaySchedules = (utcDay) => {
 */
 const addCheckInQueue = async (schedule) => {
     const discord_user_id = schedule?.id?.toString()?.trim() ?? '';
-    const hour = schedule?.utcTime[0];
-    const min = schedule?.utcTime[1];
+    const hour = schedule?.hour;
+    const min = schedule?.min;
 
     assertArgument(discord_user_id.length > 0, 'Invalid Argument: schedule.id');
 
     // make sure to set the user_id foreign key
     return getUser(discord_user_id)
-        .then(user => CheckInReminder.create({
-            user_id: user.id,
-            discord_user_id,
-            hour,
-            min
-        }));
+        .then(user => {
+            if (!user) return undefined;
+            CheckInReminder.create({
+                user_id: user.id,
+                discord_user_id,
+                hour,
+                min
+            });
+        });
 
 };
 
@@ -521,8 +557,8 @@ const addCheckInQueue = async (schedule) => {
 */
 const addUnavailableQueue = async (schedule) => {
     const discord_user_id = schedule?.id?.toString()?.trim() ?? '';
-    const hour = schedule?.utcTime[0];
-    const min = schedule?.utcTime[1];
+    const hour = schedule?.hour;
+    const min = schedule?.min;
 
     assertArgument(discord_user_id.length > 0, 'Invalid Argument: schedule.id');
 
@@ -546,8 +582,8 @@ const addUnavailableQueue = async (schedule) => {
 */
 const addAvailableQueue = async (schedule) => {
     const discord_user_id = schedule?.id?.toString()?.trim() ?? '';
-    const hour = schedule?.utcTime[0];
-    const min = schedule?.utcTime[1];
+    const hour = schedule?.hour;
+    const min = schedule?.min;
 
     assertArgument(discord_user_id.length > 0, 'Invalid Argument: schedule.id');
 
@@ -593,7 +629,6 @@ const getDBQueue = async (queue) => {
 const deleteCheckInReminder = async (schedule) => {
     return CheckInReminder.destroy({
         where: {
-            id:   schedule.id,
             hour: schedule.hour,
             min:  schedule.min
         }
@@ -611,7 +646,6 @@ const deleteCheckInReminder = async (schedule) => {
 const deleteUnavailableStart = async (schedule) => {
     return UnavailableStart.destroy({
         where: {
-            id:   schedule.id,
             hour: schedule.hour,
             min:  schedule.min
         }
@@ -629,7 +663,6 @@ const deleteUnavailableStart = async (schedule) => {
 const deleteUnavailableStop = async (schedule) => {
     return UnavailableStop.destroy({
         where: {
-            id:   schedule.id,
             hour: schedule.hour,
             min:  schedule.min
         }
@@ -696,7 +729,15 @@ const getUnavailable = async (userId) => {
 
     assertArgument(discord_user_id.length > 0, 'Invalid Argument: userId');
 
-    return getAllByUser(discord_user_id, UnavailableSchedule);
+    return getAllByUser(discord_user_id, UnavailableSchedule).then(user => {
+        if (!user) return undefined;
+        return user.unavailable_schedules.map(s => ({
+            from_time: s.from_time,
+            to_time:   s.to_time,
+            reason:    s.reason,
+            user_id:   s.user_id
+        }));
+    });
 
     // return getUser(discord_user_id).then(user => {
     // const filter = { where: { user_id: user.id } };
@@ -717,21 +758,10 @@ const getAllUnavailable = async () => {
 };
 
 /**
- * Soft deletes an unavailableSchedule
-  * @param {
-* id:string,
-* hour:number,
-* min:number
-* } schedule
+ * Soft deletes all expired unavailable schedules
  */
-const deleteUnavailableSchedule = async (schedule) => {
-    return UnavailableStop.destroy({
-        where: {
-            id:   schedule.id,
-            hour: schedule.hour,
-            min:  schedule.min
-        }
-    });
+const deleteExpiredUnavailable = async () => {
+    return UnavailableSchedule.destroy({ where: { to_time: { [Op.lte]: dayjs().utc().format() } } });
 };
 
 /**
@@ -866,7 +896,7 @@ module.exports = {
     setAvailable,
     getAvailable,
     getAllUnavailable,
-    deleteUnavailableSchedule,
+    deleteExpiredUnavailable,
     getDaySchedules,
     addCheckInQueue,
     addAvailableQueue,

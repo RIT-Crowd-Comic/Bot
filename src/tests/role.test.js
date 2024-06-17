@@ -1,5 +1,6 @@
-const rolesUtils = require('../utils/roles');
+jest.mock('../utils/roles');
 jest.mock('../utils/apiCalls');
+const rolesUtils = require('../utils/roles');
 const apiCalls = require('../utils/apiCalls');
 const validUser = {
     'id':                     '1234567890',
@@ -21,9 +22,40 @@ describe('role utils', () => {
         jest.clearAllMocks();
     });
 
+    describe('findRole', () => {
+        apiCalls.getRoles.mockResolvedValue([{ name: 'a' }, { name: 'b' }, { name: 'c' }]);
+        test("if the role doesn't exist, undefined should be returned", async () => {
+            const response = await rolesUtils.findRole('d');
+            expect(response).toBe(undefined);
+        });
+
+        test('if the role does exist, the role itself should be returned', async () => {
+            const response = await rolesUtils.findRole('a');
+            expect(response.name).toBe('a');
+        });
+    });
+
+    describe('hasRole', () => {
+        const roles = [{ id: 'a' }, { id: 'b' }];
+        const user = { roles: [{ id: 'a' }] };
+        apiCalls.getServerUser.mockResolvedValue(user);
+        test('if the user has the role, return true', async () => {
+            const response = await rolesUtils.hasRole(user, { id: 'a' });
+            expect(response).toBeTruthy();
+        });
+
+        test("if the user doesn't have the role, return false", async () => {
+            const response = await rolesUtils.hasRole(user, roles[1]);
+            expect(response).toBeFalsy();
+        });
+    });
+
     describe('addUnavailable', () => {
         test('should fail if no "unavailable" role exists', async () => {
+
             apiCalls.getRoles.mockResolvedValue([]);
+            rolesUtils.findRole.mockResolvedValue(undefined);
+            jest.unmock('../utils/roles');
             const response = await rolesUtils.addUnavailableRole(validUser);
             expect(response).toMatchObject({ status: 'Fail', description: 'No role named "unavailable" exists' });
         });

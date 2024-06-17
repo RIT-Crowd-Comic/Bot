@@ -193,7 +193,14 @@ const rememberRangeGrab = async (channelId, startMessageId, endMessageId, exclud
 };
 
 const rememberOneMessage = async(channelId, messageId) =>{
-    const msg = await apiCalls.getMessageObject(channelId, messageId);
+    const msg = await apiCalls.getMessageObject(channelId, messageId).catch(() => undefined);
+
+    if (!msg) {
+        return {
+            content:   `*Could not find message*`,
+            ephemeral: true,
+        };
+    }
 
     // parse the message
     const parsedMessage = parseMessage(msg);

@@ -1,3 +1,4 @@
+
 /**
  * 
  * Handle when a user submits the check in modal survey. 
@@ -23,7 +24,7 @@ module.exports = async (client, interaction) => {
     await interaction.deferReply({ ephemeral: true });
 
     if (userId === undefined) {
-        await interaction.editReply(`Could not process form data`);
+        await interaction.editReply(`User is undefined`);
         return;
     }
 
@@ -33,9 +34,9 @@ module.exports = async (client, interaction) => {
 
         // save to the database
         const response = {
-            rose:  interaction.fields?.getTextInputValue('check-in-form-roses') ?? '',
-            thorn: interaction.fields?.getTextInputValue('check-in-form-thorns') ?? '',
-            bud:   interaction.fields?.getTextInputValue('check-in-form-buds') ?? ''
+            rose:  interaction.fields?.getTextInputValue('check-in-form-roses') ?? 'N/A',
+            thorn: interaction.fields?.getTextInputValue('check-in-form-thorns') ?? 'N/A',
+            bud:   interaction.fields?.getTextInputValue('check-in-form-buds') ?? 'N/A'
         };
 
         // 
