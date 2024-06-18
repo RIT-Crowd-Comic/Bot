@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { openAiClient } = require('../../openAi/init');
 const { stripIndent } = require('common-tags');
 const { splitMessageToFitTokenLimit } = require('../../openAi/splitToken');
-const { getAllMessages, getUser } = require('../../database');
+const { getAllMessages, getUser } = require('../../database/queries');
 
 module.exports = {
     data: new SlashCommandBuilder()

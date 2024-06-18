@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const { defaultExcludeBotMessages, ephemeral } = require('../../../config.json');
 const { clamp } = require(`../../utils/mathUtils`);
-const { deleteAllMessages, getAllMessages } = require('../../database');
+const { deleteAllMessages, getAllMessages } = require('../../database/queries');
 
 // Callbacks
 // remember message 

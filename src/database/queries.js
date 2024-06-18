@@ -2,21 +2,15 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 const { ArgumentError } = require('./errors');
-const {
-    User, sequelize, UnavailableSchedule, CheckInResponse,
-    Config,
-    AvailableSchedule,
-    CheckInReminder,
-    Message,
-    CheckInSchedule,
-    UnavailableStart,
-    UnavailableStop
-} = require('./models');
+const { sequelize } = require('./index');
+
 const { Op } = require('sequelize');
 
 const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
 dayjs.extend(utc);
+
+const models = sequelize.models;
 
 /**
  * Throw an error if a condition is not met
@@ -44,13 +38,6 @@ const assertArgument = (
     if (!_condition) throw new ErrConstructor(message);
 };
 
-/**
- * Check if successfully connected to database
- * @returns 
- */
-const authenticate = () => {
-    return sequelize.authenticate();
-};
 
 /**
  * Create a user entry only if the user doesn't already exist
@@ -71,10 +58,10 @@ const findOrCreateUser = async (user) => {
 
     const filter = { where: { discord_user_id } };
 
-    return User
+    return models.user
         .findOne(filter)
         .then(user => {
-            if (!user) return User.create({
+            if (!user) return models.user.create({
                 discord_user_id,
                 tag,
                 display_name,
@@ -108,11 +95,11 @@ const upsertUser = async (user) => {
     if (global_name) updates.global_name = global_name;
 
     // update or create if there's nothing
-    return User
+    return models.user
         .findOne(filter)
         .then(user => {
             if (user) return user.update(updates);
-            return User.create({
+            return models.user.create({
                 discord_user_id,
                 tag,
                 display_name,
@@ -142,7 +129,7 @@ const getUser = async (userId, filter) => {
         ...filter
     };
 
-    return User.findOne(_filter);
+    return models.user.findOne(_filter);
 };
 
 /**
@@ -166,7 +153,7 @@ const getUserByDBId = async (id, filter) => {
         ...filter
     };
 
-    return User.findOne(_filter);
+    return models.user.findOne(_filter);
 };
 
 /**
@@ -238,7 +225,7 @@ const addMessage = async (message) => {
     assertArgument(discord_user_id.length > 0, 'Invalid argument: message.id');
 
     return getUser(discord_user_id).then(user =>
-        Message.create({
+        models.message.create({
             user_id:   user.id,
             content,
             author_id: discord_user_id,
@@ -260,7 +247,7 @@ const getMessagesRange = async (start_msg_id, end_msg_id) => {
         order: [['message_ts', 'ASC']]
     };
 
-    return Message.findAll(filter);
+    return models.message.findAll(filter);
 };
 
 const getMessage = async (msg_id) => {
@@ -273,7 +260,7 @@ const getMessage = async (msg_id) => {
         order: [['message_ts', 'ASC']]
     };
 
-    return Message.findOne(filter);
+    return models.message.findOne(filter);
 };
 
 const getMessagesByTimestamp = async (msg_timestamp) => {
@@ -285,14 +272,14 @@ const getMessagesByTimestamp = async (msg_timestamp) => {
         order: [['message_ts', 'ASC']]
     };
 
-    return Message.findOne(filter);
+    return models.message.findOne(filter);
 };
 
 const getAllMessages = async() => {
 
     const filter = { order: [['message_ts', 'ASC']] };
 
-    return Message.findAll(filter)
+    return models.message.findAll(filter)
         .then(messages => {
 
             // get discord_user_id to send as message author
@@ -306,7 +293,7 @@ const getAllMessages = async() => {
 };
 
 const deleteAllMessages = async () => {
-    await Message.truncate();
+    await models.message.truncate();
     return { content: 'Success' };
 };
 
@@ -337,7 +324,7 @@ const addCheckInSchedule = async (userId, schedule) => {
     assertArgument(local_time.constructor === Array && local_time.length === 2, 'Invalid argument: schedule.local_time');
 
     return getUser(discord_user_id)
-        .then(user => CheckInSchedule.create({
+        .then(user => models.checkin_schedule.create({
             user_id: user.id,
             utc_days,
             utc_time,
@@ -351,7 +338,7 @@ const addCheckInSchedule = async (userId, schedule) => {
  * @param {number} scheduleId
  */
 const deleteCheckInSchedule = async (scheduleId) => {
-    return CheckInSchedule.destroy({ where: { id: scheduleId } });
+    return models.checkin_schedule.destroy({ where: { id: scheduleId } });
 };
 
 /**
@@ -359,7 +346,7 @@ const deleteCheckInSchedule = async (scheduleId) => {
  * @param {number} scheduleId
  */
 const markCheckInScheduleForDelete = async (scheduleId) => {
-    return CheckInSchedule.findOne({ where: { id: scheduleId } })
+    return models.checkin_schedule.findOne({ where: { id: scheduleId } })
         .then(schedule => schedule.update({ mark_delete: true }));
 };
 
@@ -371,16 +358,18 @@ const markCheckInScheduleForDelete = async (scheduleId) => {
 const getCheckInSchedulesMarkedForDelete = async (userId) => {
 
     const filter = { where: { mark_delete: true } };
-    return getAllByUser(userId, CheckInSchedule, filter)
+    return getAllByUser(userId, models.checkin_schedule, filter)
         .then(user => user.checkin_schedules);
 };
 
 /**
- * Deletes all marked tables
- * @param {number} scheduleId
+ * Deletes all marked check-in schedules for a user
+ * @param {string} userId
  */
-const deleteMarkedCheckInSchedules = async () => {
-    return CheckInSchedule.destroy({ where: { mark_delete: true } });
+const deleteMarkedCheckInSchedules = async (userId) => {
+    const user = await getUser(userId);
+    const filter = { where: { mark_delete: true, user_id: user.id } };
+    return models.checkin_schedule.destroy(filter);
 };
 
 /**
@@ -392,15 +381,15 @@ const getCheckInSchedules = async (userId) => {
     const discord_user_id = userId?.toString()?.trim() ?? '';
 
     // if there's no user, just get all schedules
-    if (discord_user_id.length === 0) return CheckInSchedule.findAll();
+    if (discord_user_id.length === 0) return models.checkin_schedule.findAll();
 
     // get all schedules for the specified user
-    return getAllByUser(discord_user_id, CheckInSchedule).then(user => user.checkin_schedules);
+    return getAllByUser(discord_user_id, models.checkin_schedule).then(user => user.checkin_schedules);
 
     // return getUser(discord_user_id)
     //     .then(user => {
     //         const filter = { where: { user_id: user.id } };
-    //         return CheckInSchedule.findAll(filter);
+    //         return models.checkin_schedule.findAll(filter);
     //     });
 };
 
@@ -421,7 +410,7 @@ const addCheckInResponse = async (userId, content) => {
 
     // make sure to set the user_id foreign key
     return getUser(discord_user_id)
-        .then(user => CheckInResponse.create({
+        .then(user => models.checkin_response.create({
             user_id: user.id,
             content
         }));
@@ -444,7 +433,7 @@ const getCheckInResponses = async (userId, limit = 5) => {
         order: [['created_at', 'DESC']],
         limit
     };
-    return getAllByUser(discord_user_id, CheckInResponse, filter).then(user =>
+    return getAllByUser(discord_user_id, models.checkin_response, filter).then(user =>
         user.checkin_responses.map(entry => ({
             content:    entry.content,
             authorId:   user.discord_user_id,
@@ -470,7 +459,7 @@ const getDaySchedules = (utcDay) => {
         order: [['hour', 'DESC']]
     };
 
-    return CheckInReminder.findAll(filter);
+    return models.checkin_reminder.findAll(filter);
 };
 
 /**
@@ -491,7 +480,7 @@ const addCheckInQueue = async (schedule) => {
     return getUser(discord_user_id)
         .then(user => {
             if (!user) return undefined;
-            return CheckInReminder.create({
+            return models.checkin_reminder.create({
                 user_id: user.id,
                 discord_user_id,
                 hour,
@@ -517,7 +506,7 @@ const addUnavailableQueue = async (schedule) => {
 
     // make sure to set the user_id foreign key
     return getUser(discord_user_id)
-        .then(user => UnavailableStart.create({
+        .then(user => models.unavailable_start.create({
             user_id: user.id,
             discord_user_id,
             hour,
@@ -542,7 +531,7 @@ const addAvailableQueue = async (schedule) => {
 
     // make sure to set the user_id foreign key
     return getUser(discord_user_id)
-        .then(user => UnavailableStop.create({
+        .then(user => models.unavailable_stop.create({
             user_id: user.id,
             discord_user_id,
             hour,
@@ -560,13 +549,13 @@ const getDBQueue = async (queue) => {
     const filter = { order: [['hour', 'DESC']] };
 
     if (queue == 'checkIn') {
-        return CheckInReminder.findAll(filter);
+        return models.checkin_reminder.findAll(filter);
     }
     else if (queue == 'unavailable') {
-        return UnavailableStart.findAll(filter);
+        return models.unavailable_start.findAll(filter);
     }
     else if (queue == 'available') {
-        return UnavailableStop.findAll(filter);
+        return models.unavailable_stop.findAll(filter);
     }
     return undefined;
 };
@@ -580,7 +569,7 @@ const getDBQueue = async (queue) => {
  * } schedule
  */
 const deleteCheckInReminder = async (schedule) => {
-    return CheckInReminder.destroy({
+    return models.checkin_reminder.destroy({
         where: {
             hour: schedule.hour,
             min:  schedule.min
@@ -597,7 +586,7 @@ const deleteCheckInReminder = async (schedule) => {
 * } schedule
  */
 const deleteUnavailableStart = async (schedule) => {
-    return UnavailableStart.destroy({
+    return models.unavailable_start.destroy({
         where: {
             hour: schedule.hour,
             min:  schedule.min
@@ -614,7 +603,7 @@ const deleteUnavailableStart = async (schedule) => {
 * } schedule
  */
 const deleteUnavailableStop = async (schedule) => {
-    return UnavailableStop.destroy({
+    return models.unavailable_stop.destroy({
         where: {
             hour: schedule.hour,
             min:  schedule.min
@@ -629,13 +618,13 @@ const deleteUnavailableStop = async (schedule) => {
  */
 const deleteWholeQueue = async (queue)=>{
     if (queue == 'checkIn') {
-        return CheckInReminder.truncate();
+        return models.checkin_reminder.truncate();
     }
     else if (queue == 'unavailable') {
-        return UnavailableStart.truncate();
+        return models.unavailable_start.truncate();
     }
     else if (queue == 'available') {
-        return UnavailableStop.truncate();
+        return models.unavailable_stop.truncate();
     }
     return undefined;
 };
@@ -664,7 +653,7 @@ const addUnavailable = async (schedule) => {
 
     // make sure to set the user_id foreign key
     return getUser(discord_user_id)
-        .then(user => UnavailableSchedule.create({
+        .then(user => models.unavailable_schedule.create({
             user_id: user.id,
             from_time,
             to_time,
@@ -682,7 +671,7 @@ const getUnavailable = async (userId) => {
 
     assertArgument(discord_user_id.length > 0, 'Invalid Argument: userId');
 
-    return getAllByUser(discord_user_id, UnavailableSchedule).then(user => {
+    return getAllByUser(discord_user_id, models.unavailable_schedule).then(user => {
         if (!user) return undefined;
         return user.unavailable_schedules.map(s => ({
             from_time: s.from_time,
@@ -694,7 +683,7 @@ const getUnavailable = async (userId) => {
 
     // return getUser(discord_user_id).then(user => {
     // const filter = { where: { user_id: user.id } };
-    //     return UnavailableSchedule.findAll(filter);
+    //     return models.unavailable_schedule.findAll(filter);
     // });
 };
 
@@ -707,14 +696,14 @@ const getAllUnavailable = async () => {
     // TODO: figure out a way to filter out past dates
     // TODO: figure out a way to delete past schedules
 
-    return UnavailableSchedule.findAll();
+    return models.unavailable_schedule.findAll();
 };
 
 /**
  * Soft deletes all expired unavailable schedules
  */
 const deleteExpiredUnavailable = async () => {
-    return UnavailableSchedule.destroy({ where: { to_time: { [Op.lte]: dayjs().utc().format() } } });
+    return models.unavailable_schedule.destroy({ where: { to_time: { [Op.lte]: dayjs().utc().format() } } });
 };
 
 /**
@@ -742,14 +731,14 @@ const setAvailable = async (schedule) => {
     return getUser(discord_user_id)
         .then(user => {
             const filter = { where: { user_id: user.id }, };
-            return AvailableSchedule.findOne(filter)
+            return models.available_schedule.findOne(filter)
                 .then(available => {
                     if (available) return available.update({
                         from_time,
                         to_time,
                         days
                     });
-                    return AvailableSchedule.create({
+                    return models.available_schedule.create({
                         user_id: user.id,
                         from_time,
                         to_time,
@@ -772,11 +761,11 @@ const getAvailable = async (userId) => {
     // TODO: figure out a way to filter out past dates
     // TODO: figure out a way to delete past schedules
 
-    return getModelEntryByUser(discord_user_id, AvailableSchedule);
+    return getModelEntryByUser(discord_user_id, models.available_schedule);
 
     // return getUser(discord_user_id).then(user => {
     //     const filter = { where: { user_id: user.id } };
-    //     return AvailableSchedule.findOne(filter);
+    //     return models.available_schedule.findOne(filter);
     // }) 
 };
 
@@ -791,7 +780,7 @@ const updateConfig = async (config) => {
     // this would need to be updated if the Model options change
     const hiddenAttributes = ['created_at', 'updated_at', 'deleted_at', 'id'];
 
-    const configAttributes = Object.keys(Config.getAttributes())
+    const configAttributes = Object.keys(models.config.getAttributes())
         .filter(value => !hiddenAttributes.includes(value));
 
     assertArgument(
@@ -804,9 +793,9 @@ const updateConfig = async (config) => {
         limit: 1
     };
 
-    return Config.findOne(filter).then(configRow => {
+    return models.config.findOne(filter).then(configRow => {
         if (configRow) return configRow.update(config);
-        return Config.create(config);
+        return models.config.create(config);
     });
 };
 
@@ -821,7 +810,7 @@ const getConfig = () => {
         order: [['created_at', 'DESC']],
         limit: 1
     };
-    return Config.findOne(filter);
+    return models.config.findOne(filter);
 };
 
 module.exports = {
@@ -860,5 +849,4 @@ module.exports = {
     deleteWholeQueue,
     updateConfig,
     getConfig,
-    authenticate
 };

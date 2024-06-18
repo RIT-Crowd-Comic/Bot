@@ -1,6 +1,6 @@
 
 // const checkIn = require('../../commands/dailyCheckIn/scheduleCheckIn');
-const { markCheckInScheduleForDelete, deleteMarkedCheckInSchedules, getCheckInSchedulesMarkedForDelete } = require('../../database');
+const { markCheckInScheduleForDelete, deleteMarkedCheckInSchedules, getCheckInSchedulesMarkedForDelete } = require('../../database/queries');
 const { displaySchedule, updateQueue } = require('../../utils/schedule');
 
 /**
@@ -36,7 +36,7 @@ module.exports = async (client, interaction) => {
 
             const removedSchedules = await getCheckInSchedulesMarkedForDelete(userId);
 
-            const numDeleted = await deleteMarkedCheckInSchedules();
+            const numDeleted = await deleteMarkedCheckInSchedules(userId);
 
             // tell the user which schedules they removed
             let reply = '*No schedules removed*';

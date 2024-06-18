@@ -12,7 +12,7 @@ const {
     deleteUnavailableStart, deleteUnavailableStop,
     getUserByDBId,
     deleteExpiredUnavailable
-} = require('../database');
+} = require('../database/queries.js');
 
 /**
  * Get the channel where availability is being tracked

@@ -5,7 +5,7 @@ const timezone = require('dayjs/plugin/timezone');
 const {
     queue, sendCheckInReminder, getQueue, getDayOrder
 } = require('../../utils/schedule');
-const { deleteWholeQueue, getUserByDBId } = require('../../database');
+const { deleteWholeQueue, getUserByDBId } = require('../../database/queries');
 dayjs.extend(utc);
 dayjs.extend(weekday);
 dayjs.extend(timezone);

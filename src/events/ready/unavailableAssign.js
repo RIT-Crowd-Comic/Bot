@@ -3,7 +3,7 @@ const utc = require('dayjs/plugin/utc');
 const {
     startQueue, endQueue, getQueues, changeRole
 } = require('../../utils/availability.js');
-const { deleteWholeQueue } = require('../../database');
+const { deleteWholeQueue } = require('../../database/queries.js');
 dayjs.extend(utc);
 
 

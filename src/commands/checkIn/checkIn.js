@@ -7,7 +7,7 @@ const {
 
 const fs = require('fs');
 const path = require('path');
-const { upsertUser } = require('../../database');
+const { upsertUser } = require('../../database/queries');
 
 module.exports = {
     data: new SlashCommandBuilder()

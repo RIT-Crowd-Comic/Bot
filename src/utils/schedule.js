@@ -5,7 +5,7 @@ const localizedFormat = require('dayjs/plugin/localizedFormat');
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const {
     addCheckInSchedule, getCheckInSchedules, upsertUser, getDBQueue, addCheckInQueue, deleteCheckInReminder, getCheckInResponses
-} = require('../database');
+} = require('../database/queries');
 const { findRole, hasRole } = require('../utils/roles');
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
