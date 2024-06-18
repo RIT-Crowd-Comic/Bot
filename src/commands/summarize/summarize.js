@@ -1,8 +1,8 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { openAiClient } = require('../../openAi/init');
-const { getRememberedMessages } = require('../../utils/rememberMessages');
 const { stripIndent } = require('common-tags');
 const { splitMessageToFitTokenLimit } = require('../../openAi/splitToken');
+const { getAllMessages, getUser } = require('../../database');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -22,16 +22,30 @@ module.exports = {
             // defer reply
             await interaction.deferReply();
 
-            // get messages and remove piece of the message object we dont want to reduce tokens
+            // get messages and remove pieces of the message object we dont want in order to reduce tokens
 
-            const messages = getRememberedMessages().map(message =>{
+
+            const messages = await getAllMessages();
+            const formattedMessages = await Promise.all(messages.map(async message => {
+                const user = await getUser(message.authorId);
                 return {
-                    globalName: message.author.globalName,
+                    globalName: user.global_name ?? user.display_name ?? user.tag ?? message.authorId,
                     content:    message.content,
                 };
-            });
+            }));
 
-            const splitMessages = splitMessageToFitTokenLimit(JSON.stringify(messages, null, 2));
+            // const messages = Promise.all(getAllMessages()
+            //     .then(messages =>
+            //         messages.map(async message => {
+            //             const user = await getUser(message.authorId);
+            //             return {
+            //                 globalName: user.global_name ?? user.display_name ?? user.tag ?? message.authorId,
+            //                 content:    message.content,
+            //             }
+            //         }
+            //     )));
+
+            const splitMessages = splitMessageToFitTokenLimit(JSON.stringify(formattedMessages, null, 2));
 
             // openai stuff
             const prompt = stripIndent`
