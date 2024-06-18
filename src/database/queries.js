@@ -103,7 +103,7 @@ const authenticate = () => {
  * Create a user entry only if the user doesn't already exist
  * @param {{ id: string, tag: string, display_name: string, global_name: string }} user 
  */
-const touchUser = async (user) => {
+const findOrCreateUser = async (user) => {
     const discord_user_id = user?.id?.toString()?.trim() ?? '';
     const tag = user?.tag?.toString()?.trim() ?? '';
 
@@ -873,7 +873,7 @@ const getConfig = () => {
 
 module.exports = {
     testQuery,
-    touchUser,
+    findOrCreateUser,
     upsertUser,
     getUser,
     getUserByDBId,
