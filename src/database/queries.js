@@ -1,8 +1,6 @@
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
-const { Pool } = require('pg');
-
 const { ArgumentError } = require('./errors');
 const {
     User, sequelize, UnavailableSchedule, CheckInResponse,
@@ -19,46 +17,6 @@ const { Op } = require('sequelize');
 const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
 dayjs.extend(utc);
-
-// configuration variables must be in .env
-
-/*
-PGUSER=postgres
-PGHOST=localhost
-PGPASSWORD=testdb
-PGDATABASE=database_name
-PGPORT=port
-
-
-alternatively use config object with Pool()
-{
-    user: 'postgres',
-    host: 'localhost',
-    database: 'testdb',
-    password: '1234abcd',
-    port: port,
-}
-*/
-
-const pool = new Pool();
-
-// pool.query(query, configValues) for most queries
-// This automatically connects/releases clients
-
-// For transactions, use the following:
-// const client = await pool.connect();
-// await client.query(...)
-// ...
-// client.release()
-
-
-pool.on('error', (err) => {
-    console.log(err);
-
-    // in the future, potentially do additional handling
-});
-
-// let retry = true;
 
 /**
  * Throw an error if a condition is not met
@@ -84,11 +42,6 @@ const assertArgument = (
     if (validErrors.some(e => ErrConstructor === e)) ErrConstructor = Error;
 
     if (!_condition) throw new ErrConstructor(message);
-};
-
-const testQuery = async () => {
-
-    return pool.query('SELECT * FROM users');
 };
 
 /**
@@ -872,7 +825,6 @@ const getConfig = () => {
 };
 
 module.exports = {
-    testQuery,
     findOrCreateUser,
     upsertUser,
     getUser,
