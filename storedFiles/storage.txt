@@ -1,3 +1,0 @@
-Messages: 
-                Remembered: "Claim a role below."
-                

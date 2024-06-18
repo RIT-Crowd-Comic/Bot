@@ -1,5 +1,5 @@
 // list of all the users in the server
-let severUsers = [];
+let severUsers;
 const apiCalls = require('./apiCalls');
 
 /**
@@ -28,6 +28,7 @@ const getServerUsers = () => { return structuredClone(severUsers); };
 
 module.exports = {
     updateServerUsers,
+
     getServerUsers,
     findUser
 };

@@ -11,15 +11,14 @@ const path = './src/savedAvailability.json';
 const callSetUnavail = async (interaction) => {
     await interaction.deferReply({ ephemeral: true });
 
-    const reply = setUnavail(
+    const reply = await setUnavail(
         interaction?.user?.id,
         interaction?.user?.tag,
         interaction.options.get('date-from')?.value,
         interaction.options.get('date-to')?.value,
         interaction.options.get('time-from')?.value,
         interaction.options.get('time-to')?.value,
-        interaction.options.get('reason')?.value,
-        path
+        interaction.options.get('reason')?.value
     );
 
     await interaction.editReply(reply);
@@ -29,13 +28,12 @@ const callSetUnavail = async (interaction) => {
 const callSetAvail = async (interaction) => {
     await interaction.deferReply({ ephemeral: true });
 
-    const reply = setAvail(
+    const reply = await setAvail(
         interaction?.user?.id,
         interaction?.user?.tag,
         interaction.options.get('time-from')?.value,
         interaction.options.get('time-to')?.value,
-        interaction.options.get('days')?.value,
-        path
+        interaction.options.get('days')?.value
     );
 
     await interaction.editReply(reply);
@@ -44,7 +42,7 @@ const callSetAvail = async (interaction) => {
 const callDisplayAvail = async (interaction) => {
     await interaction.deferReply({ ephemeral: true });
 
-    const reply = displayAvail(interaction.user, interaction.guild.members.cache.get(interaction.options.get('member')?.value), path);
+    const reply = await displayAvail(interaction.user, interaction.guild.members.cache.get(interaction.options.get('member')?.value), path);
 
     interaction.editReply(reply);
 };
@@ -52,7 +50,7 @@ const callDisplayAvail = async (interaction) => {
 const callDisplayUnavail = async (interaction) => {
     await interaction.deferReply({ ephemeral: true });
 
-    const reply = displayUnavail(interaction.user, interaction.guild.members.cache.get(interaction.options.get('member')?.value), path);
+    const reply = await displayUnavail(interaction.user, interaction.guild.members.cache.get(interaction.options.get('member')?.value), path);
 
     interaction.editReply(reply);
 };

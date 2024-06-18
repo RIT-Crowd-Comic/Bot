@@ -1,4 +1,3 @@
-const scheduleUtils = require('../../utils/schedule');
 
 /**
  * 
@@ -6,7 +5,7 @@ const scheduleUtils = require('../../utils/schedule');
  * 
  */
 
-
+const db = require('../../database/queries');
 
 /**
  * 
@@ -20,27 +19,43 @@ module.exports = async (client, interaction) => {
     if (!interaction?.isModalSubmit()) return;
     if (interaction.customId !== 'check-in-form-modal') return;
 
+    const userId = interaction?.user?.id;
+
     await interaction.deferReply({ ephemeral: true });
-    const user = interaction.user;
-    if (!user) {
+
+    if (userId === undefined) {
         await interaction.editReply(`User is undefined`);
         return;
     }
 
     try {
 
-        // TODO: save to a database and provide feedback
-        let roseResponse = interaction.fields?.getTextInputValue('check-in-form-roses') ?? '';
-        let budResponse = interaction.fields?.getTextInputValue('check-in-form-buds') ?? '';
-        let thornResponse = interaction.fields?.getTextInputValue('check-in-form-thorns') ?? '';
+        let reply = 'Thanks for responding! Make sure to take short breaks and to drink plenty of water!';
 
-        roseResponse = roseResponse ? `"${roseResponse}"` : 'N/A';
-        budResponse = budResponse ? `"${budResponse}"` : 'N/A';
-        thornResponse = thornResponse ? `"${thornResponse}"` : 'N/A';
+        // save to the database
+        const response = {
+            rose:  interaction.fields?.getTextInputValue('check-in-form-roses') ?? 'N/A',
+            thorn: interaction.fields?.getTextInputValue('check-in-form-thorns') ?? 'N/A',
+            bud:   interaction.fields?.getTextInputValue('check-in-form-buds') ?? 'N/A'
+        };
 
-        const response = scheduleUtils.parseResponse(roseResponse, budResponse, thornResponse, user, new Date().getTime().toString());
-        scheduleUtils.addResponse(response);
-        let reply = ['Thanks for responding! Make sure to take short breaks and to drink plenty of water!',].join('\n');
+        // 
+        try {
+            db.upsertUser({
+                id:           userId,
+                tag:          interaction?.user?.tag,
+                display_name: interaction?.user?.displayName,
+                global_name:  interaction?.user?.globalName,
+            }).then(() => {
+                db.addCheckInResponse(userId, response);
+            });
+        }
+        catch {
+            reply = 'Error saving to database.';
+        }
+
+        // db.addCheckInResponse(interaction.user.id, response);
+
 
         // user finished form, give them words of encouragement
         await interaction.editReply({
