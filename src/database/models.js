@@ -1,11 +1,14 @@
 const { DataTypes, Sequelize } = require('sequelize');
 
+/**
+ * SSL is required for Heroku Postgres
+ */
 const sslOptions = process.env.NODE_ENV === 'production' ?
     { dialectOptions: { ssl: { rejectUnauthorized: false }, }, } :
     {};
 
 const sequelize = new Sequelize(
-    process.env.DATABASE_URL ?? `postgres://${process.env.PGUSER}:${process.env.PGPASSWORD}@${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PGDATABASE}`,
+    process.env.DATABASE_URL,
     {
         logging:  false,
         protocol: 'postgres',

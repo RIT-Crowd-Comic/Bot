@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# install 
+# echo "Merge successful. Installing dependencies"
+# npm i
