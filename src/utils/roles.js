@@ -25,7 +25,7 @@ const addUnavailableRole = async (user) => {
 
 const removeUnavailableRole = async (user) => {
     const serverId = process.env.TESTSERVER_ID;
-    const unavailableRole = await findRole(user, 'unavailable');
+    const unavailableRole = await findRole('unavailable');
 
     // make sure the role exists
     if (!unavailableRole) {

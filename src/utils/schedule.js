@@ -3,16 +3,17 @@ const utc = require('dayjs/plugin/utc');
 const weekday = require('dayjs/plugin/weekday');
 const localizedFormat = require('dayjs/plugin/localizedFormat');
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const {
+    addCheckInSchedule, getCheckInSchedules, upsertUser, getDBQueue, addCheckInQueue, deleteCheckInReminder, getCheckInResponses
+} = require('../database/queries');
 const { findRole, hasRole } = require('../utils/roles');
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
-const serverUsersUtils = require('../utils/serverUsers');
 
 dayjs.extend(utc);
 dayjs.extend(weekday);
 dayjs.extend(localizedFormat);
 
-const fakeScheduleEntry = {};
 const queue = [];
 const validDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 const abbreviations = {
@@ -25,15 +26,6 @@ const abbreviations = {
     'sa': 'saturday',
     'su': 'sunday',
 };
-
-let responses = [];
-
-const addResponse = response => { responses.push(response); };
-const getResponses = (user) => {
-    const clone = structuredClone(responses);
-    return user ? clone.filter(response => response.userId === user.id) : clone;
-};
-const clearResponses = () => { responses = []; return { content: 'Success' }; };
 
 class ScheduleError extends Error {
     constructor(message) {
@@ -48,14 +40,14 @@ class ScheduleError extends Error {
  * @returns 
  */
 const displaySchedule = (schedule) => {
-    const everyDay = validDays.every(d => schedule.localDays.includes(d));
-    const days = everyDay ? 'every day' : `[${schedule.localDays.join(', ')}]`;
+    const everyDay = validDays.every(d => schedule.local_days.includes(d));
+    const days = everyDay ? 'every day' : `[${schedule.local_days.join(', ')}]`;
 
     // Adds a zero if necessary. Ex: '5:5' to '5:05'
-    let min = schedule.localTime[1].toString();
+    let min = schedule.local_time[1].toString();
     min = min.length === 1 ? `0${min}` : min;
 
-    const time = `${schedule.localTime[0]}:${min} (24 hr time)`;
+    const time = `${schedule.local_time[0]}:${min} (24 hr time)`;
     return `${days} at ${time}`;
 };
 
@@ -64,10 +56,12 @@ const displaySchedule = (schedule) => {
  * just a valid time and returns a schedule object.
  * @param {string[]} daysList 
  * @param {Dayjs} time 
- * @returns { Object } schedule
- * @returns { String[] } schedule.days
- * @returns { Number[] } schedule.utcTime,
- * @returns { string } schedule.displaySchedule
+ * @returns {{
+ * utc_days: string[],
+ * utc_time: number[],
+ * local_days: string[],
+ * local_time: number[]
+ * }}
  */
 const createSchedule = (daysList, time) => {
 
@@ -107,10 +101,10 @@ const createSchedule = (daysList, time) => {
     });
 
     return {
-        utcDays:   utcDays,
-        utcTime:   [utcHour, utcMin],
-        localDays: [...daysList],
-        localTime: [timeHours, timeMinutes],
+        utc_days:   utcDays,
+        utc_time:   [utcHour, utcMin],
+        local_days: [...daysList],
+        local_time: [timeHours, timeMinutes],
     };
 };
 
@@ -176,8 +170,10 @@ const sendCheckInReminder = async (client, id) => {
 
     let user = await client.users.cache.get(id);
     if (!user) { // checks if user is already in cache
-        user = await client.users.fetch(id); // fetches user (will add to the cache)
+        user = await client.users.fetch(id).catch(); // fetches user (will add to the cache)
     }
+
+    if (!user) return;
 
     // check-in interface module
     let reply = [
@@ -219,12 +215,12 @@ const sendCheckInReminder = async (client, id) => {
 
 /**
  * creates a reminder object to add to the que then inserts it in the correct chronological placement
- * @param {string[]} days array of schedule days
+ * @param {string[] | string} days array of schedule days
  * @param {int[]} utcTime utc reminder [hour,min]
  * @param {string} id user id
  * @param {bool} toRemove whether or not you want to remove (default=false)
  */
-const updateQueue = (days, utcTime, id, toRemove = false) => {
+const updateQueue = async (days, utcTime, id, toRemove = false) => {
     const hour = utcTime[0];
     const min = utcTime[1];
 
@@ -239,9 +235,11 @@ const updateQueue = (days, utcTime, id, toRemove = false) => {
         let index = queue.indexOf(reminder);
         if (index && toRemove) { // if it exists in the queue and we want to remove
             queue.splice(index, 1);
+            await deleteCheckInReminder(reminder);
         }
         else if (index == -1 && queue.length == 0) { // if queue is empty
             queue.push(reminder);
+            await addCheckInQueue(reminder);
         }
         else { // inserting into queue
             for (let t = 0; t < queue.length; t++) {
@@ -255,6 +253,7 @@ const updateQueue = (days, utcTime, id, toRemove = false) => {
                     queue.push(reminder);
                     return;
                 }
+                await addCheckInQueue(reminder);
             }
         }
 
@@ -262,21 +261,21 @@ const updateQueue = (days, utcTime, id, toRemove = false) => {
 };
 
 /**
+ * called when the day starts and the db queue is empty
  * gets the current day's scheduled times & users
- * orders them chronologically in the queue[]
+ * orders them chronologically in the queue[] via updateQueue
  */
-const getDayOrder = () => {
+const getDayOrder = async () => {
 
     /**
     * checks to see if users have a scheduled day today
     * creates and adds a reminder object with the time and user id to the queue using updateQueue()
     */
-    for (let user in fakeScheduleEntry) {
-        for (let schedule of fakeScheduleEntry[user].schedules) {
-            updateQueue(schedule.utcDays, schedule.utcTime[0], schedule.utcTime[1], user);
-
-        }
-    }
+    getCheckInSchedules().then(schedules => {
+        schedules.forEach(schedule => {
+            updateQueue(schedule.utc_days, schedule.utc_time, schedule.user_id);
+        });
+    });
 
 };
 
@@ -294,9 +293,13 @@ const checkCurrentDay = () => {
 };
 
 /**
- * creates a new queue
+ * gets the queue from the database 
+ * then orders it chronologically into the queue via updateQueue()
  */
-const getQueue = () => {
+const getQueue = async() => {
+    queue.length = 0;
+    await getDBQueue('checkIn').then(reminders=>
+        Promise.all(reminders.map(reminder => updateQueue(checkCurrentDay(), [reminder.hour, reminder.min], reminder.id))));
     getDayOrder(checkCurrentDay());
 };
 
@@ -305,7 +308,7 @@ const getQueue = () => {
 * @param {object} user - The discord user who's schedules are being checked
 * @return {object} a response that states if the user doesn't have any schedules or an error occurred, or if they do
 */
-const validScheduleUser = (user) => {
+const validScheduleUser = async (user) => {
     const userId = user?.id;
 
     // command should include a user
@@ -314,21 +317,26 @@ const validScheduleUser = (user) => {
     }
 
     // verify the person has schedules
-    if (!fakeScheduleEntry[userId] || fakeScheduleEntry[userId]?.schedules?.length === 0) {
+    const checkinSchedules = await getCheckInSchedules(userId);
+    if (checkinSchedules == undefined || checkinSchedules.length === 0) {
         return { status: 'Fail', description: '*You have no schedules! Create one with `/check-in schedule`*' };
     }
 
     return { status: 'Success' };
 };
 
-// ! The two methods below this comment are very similar, 
-// ! they could possibly be refactored into one method, but I am 
-// ! unaware of how that will affect where they are used, this 
-// ! should be looked at by the initial implementer
-const getSchedules = (user) => {
+/**
+ * 
+ * @param {User} user 
+ * @returns {{
+ * status: string,
+ * description: string,
+ * schedules: object}}
+ */
+const getSchedules = async (user) => {
 
     try {
-        const response = validScheduleUser(user);
+        const response = await validScheduleUser(user);
         if (response.status === 'Fail') {
             return response;
         }
@@ -336,33 +344,13 @@ const getSchedules = (user) => {
         const userId = user?.id;
 
         // get and return the schedules
-        const schedules = fakeScheduleEntry[userId]
-            ?.schedules
-            ?.map(s => displaySchedule(s));
+        const schedules = await getCheckInSchedules(userId);
 
         return { status: 'Success', description: 'Here are your schedules', schedules: schedules };
     }
     catch (error) {
         return { status: 'Fail', description: error };
     }
-};
-
-const getScheduleObjs = (user) => {
-    const response = validScheduleUser(user);
-    if (response.status === 'Fail') {
-        return response;
-    }
-
-    const userId = user?.id;
-
-    const schedules = fakeScheduleEntry[userId]?.schedules?.map(s => (
-        {
-            name:     displaySchedule(s),
-            schedule: s
-        }
-    ));
-
-    return { status: 'Success', schedules: schedules };
 };
 
 /**
@@ -372,7 +360,7 @@ const getScheduleObjs = (user) => {
  * @param {String} time the time the user will be reminded
  * @returns either a successful response, or a failed one with a description as to why
  */
-const scheduleCheckIn = (user, days, time) => {
+const scheduleCheckIn = async (user, days, time) => {
     try {
         const userId = user.id;
         const userTag = user.tag;
@@ -386,20 +374,15 @@ const scheduleCheckIn = (user, days, time) => {
         const parsedTime = parseTime(time);
         const schedule = createSchedule(parsedDays, parsedTime);
 
-        // update the database
-        fakeScheduleEntry[userId] ??= {};
+        await
+        upsertUser({
+            id:           userId,
+            tag:          userTag,
+            display_name: user.display_name ?? '',
+            global_name:  user.display_name ?? '',
+        }).then(() => addCheckInSchedule(user.id, schedule));
 
-        Object.assign(
-            fakeScheduleEntry[userId],
-            {
-                id:  userId,
-                tag: userTag,
-            }
-        );
-        fakeScheduleEntry[userId].schedules ??= [];
-        fakeScheduleEntry[userId].schedules.push(schedule);
-
-        updateQueue(schedule.utcDays, schedule.utcTime, userId);
+        updateQueue(schedule.utc_days, schedule.utc_time, userId);
 
         return { status: 'Success', description: `Check ins scheduled for ${displaySchedule(schedule)}` };
 
@@ -431,7 +414,7 @@ const viewCheckInResponses = async (user, commandUser) => {
 
     // if user is undefined, get all of the responses of all users
     if (!user) {
-        const response = getResponses();
+        const response = await getCheckInResponses();
 
         if (response.length === 0) {
             return { status: 'Fail', description: `No responses have been logged` };
@@ -441,7 +424,7 @@ const viewCheckInResponses = async (user, commandUser) => {
     }
 
     // if user is defined get all of that user's responses
-    const response = getResponses(user);
+    const response = await getCheckInResponses(user.id);
 
     if (response.length === 0) {
         return { status: 'Fail', description: `<@${user.id}> does not have any responses` };
@@ -450,45 +433,28 @@ const viewCheckInResponses = async (user, commandUser) => {
     return { status: 'Success', description: `Here are <@${user.id}>'s response(s)`, responses: response };
 };
 
-
 /**
- * 
- * @param {*} rose the pros of th report
- * @param {*} bud the cons of the report
- * @param {*} thorn what could be improved on in the report
- * @param {*} user the person who sent the report
- * @param {*} timeStamp when the user sent the report
- * @returns {Response Object} an object of the response
+ * Convert a check-in response into a readable format
+ * @param {{
+ * content: object,
+ * authorId: string,
+ * authorName: string,
+ * createdAt: Date}} response 
+ * @returns 
  */
-const parseResponse = (rose, bud, thorn, user, timeStamp) => {
-    const date = new Date(Number(timeStamp));
-    const dateString = date.toLocaleString();
-    return {
-        userId:    user.id,
-        rose:      rose,
-        bud:       bud,
-        thorn:     thorn,
-        timeStamp: dateString
-    };
-};
+const displayResponse = (response) => {
 
-/**
- * 
- * @param {Response Object} response 
- * @returns {String} the response in string format
- */
-const displayResponse = async (response) => {
+    // map into markdown quoted text
+    const content = Object.entries(response.content)
+        .map(entry => `${entry[0]}: \n\t> ${entry[1]}`);
 
-    // todo: get the user's user name in the server
-    const serverUser = serverUsersUtils.findUser(response.userId);
-    const nick = serverUser.nick;
-    const global = serverUser.user.global_name;
-    const username = serverUser.user.username;
-    return `${nick != null ? nick : global != null ? global : username}
-        ${response.timeStamp}
-            Rose: ${response.rose}
-            Bud: ${response.bud}
-            Thorn ${response.thorn}`;
+    const result = [
+        response.authorName,
+        `**${dayjs(response.createdAt).format('ddd DD/MM/YY h:ma')}**`,
+        ...content
+    ].join('\n');
+
+    return result;
 };
 
 module.exports = {
@@ -499,17 +465,12 @@ module.exports = {
     sendCheckInReminder,
     getQueue,
     updateQueue,
-    fakeScheduleEntry,
     getSchedules,
     scheduleCheckIn,
+    getDayOrder,
     queue,
-    getScheduleObjs,
     ScheduleError,
     validScheduleUser,
     viewCheckInResponses,
-    addResponse,
-    getResponses,
-    clearResponses,
-    parseResponse,
     displayResponse
 };
