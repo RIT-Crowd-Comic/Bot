@@ -136,7 +136,7 @@ const updateAvailabilityChannel = async newChannel => {
     }
 
     // set the new channel as the current one
-    setAvailabilityChannel(newChannel);
+    setAvailabilityChannel(newChannel.id);
 
     return { content: `<#${newChannel.id}> is the new availability channel` };
 };
